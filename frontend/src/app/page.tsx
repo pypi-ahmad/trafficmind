@@ -3,9 +3,11 @@ import {
   fetchCameraList,
   fetchEventCountsByCamera,
   fetchEventsFeed,
+  fetchEventSummaryTotals,
   fetchHotspotAnalytics,
   fetchViolationCountsByCamera,
   fetchViolationsFeed,
+  fetchViolationSummaryTotals,
 } from "@/features/operations/api";
 import { getMapProviderConfig, getSpatialAnalyticsConfig } from "@/features/operations/config";
 import { OperationsDashboard } from "@/features/operations/components/operations-dashboard";
@@ -33,7 +35,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const lookbackMs = getSpatialAnalyticsConfig().lookbackDays * 24 * 60 * 60 * 1000;
   const occurredAfter = new Date(Date.now() - lookbackMs).toISOString();
 
-  const [camerasResult, eventsResult, violationsResult, hotspotAnalyticsResult, selectedCameraDetail, eventCountsResult, violationCountsResult] = await Promise.all([
+  const [camerasResult, eventsResult, violationsResult, hotspotAnalyticsResult, selectedCameraDetail, eventCountsResult, violationCountsResult, eventSummaryTotalsResult, violationSummaryTotalsResult] = await Promise.all([
     fetchCameraList(),
     fetchEventsFeed(),
     fetchViolationsFeed(),
@@ -41,6 +43,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     selectedCameraId ? fetchCameraDetail(selectedCameraId) : Promise.resolve(null),
     fetchEventCountsByCamera({ occurredAfter }),
     fetchViolationCountsByCamera({ occurredAfter }),
+    fetchEventSummaryTotals({ occurredAfter }),
+    fetchViolationSummaryTotals({ occurredAfter }),
   ]);
 
   const model = buildSpatialOperationsModel({
@@ -51,6 +55,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     hotspotAnalyticsResult,
     eventCountsResult,
     violationCountsResult,
+    eventSummaryTotalsResult,
+    violationSummaryTotalsResult,
     selectedCameraDetail,
     selectedCameraId,
     selectedJunctionId,

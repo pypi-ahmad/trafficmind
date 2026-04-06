@@ -64,7 +64,7 @@ Classifies an incident (detection or violation) and recommends actions.
 2. `human_gate` — Optional interrupt for human review (skipped if request and recommendation both say no review needed)
 3. `finalize` — Applies human decision (approve, reject, or approve-with-note); rejection escalates priority
 
-**Input:** `IncidentTriageRequest` with camera, detection event, violation event, plate read, and evidence references
+**Input:** `IncidentTriageRequest` with `violation_event_id` or `detection_event_id` (at least one required), optional operator notes, and a `require_human_review` flag. The service builds `IncidentTriageContext` internally from stored camera, detection, violation, plate, and evidence records.
 
 **Output:** `IncidentTriageOutput` with priority (low/medium/high/critical), summary, recommended actions, and operator brief
 
@@ -77,9 +77,9 @@ Recommends a disposition for a reviewable violation with human-in-the-loop appro
 2. `approval_gate` — Human interrupt for approve/reject/override (configurable)
 3. `finalize` — Applies human decision; rejection defaults to supervisor escalation; override uses human-provided disposition
 
-**Input:** `ViolationReviewRequest` with violation record, detection event, plate read, evidence references, and review context
+**Input:** `ViolationReviewRequest` with `violation_event_id`, optional operator notes, and a configurable `require_human_approval` flag. The service builds `ViolationReviewContext` internally from stored camera, detection, plate, and evidence records.
 
-**Output:** `ViolationReviewOutput` with disposition (confirm_violation, dismiss_false_positive, need_more_evidence, escalate_supervisor), confidence, summary, evidence notes, and operator brief
+**Output:** `ViolationReviewOutput` with disposition (confirm_violation, dismiss_false_positive, need_more_evidence, escalate_supervisor), confidence, summary, rationale, and suggested actions
 
 ### Multimodal Review
 
@@ -268,11 +268,15 @@ The repository uses the same async SQLAlchemy queries and search helpers as the 
 
 Exercise the three core starter workflows locally (triage → review with interrupt/resume → daily summary):
 
+### bash / macOS / Linux
+
 ```bash
 # prerequisites: both services running, database seeded
 python -m apps.api.app.demo.seed --create-schema
-uvicorn apps.api.app.main:app --reload --port 8000 &
-uvicorn apps.workflow.app.main:app --reload --port 8010 &
+
+# start each service in its own terminal
+uvicorn apps.api.app.main:app --reload --port 8000
+uvicorn apps.workflow.app.main:app --reload --port 8010
 
 # grab a demo violation id
 VID=$(curl -s http://localhost:8000/api/v1/violations | python -c "import sys,json;print(json.load(sys.stdin)['items'][0]['id'])")
@@ -299,4 +303,39 @@ curl -s -X POST http://localhost:8010/api/v1/workflows/daily-summary \
   -d '{"report_date":"2026-04-04","require_human_approval":false}' | python -m json.tool
 ```
 
-See [apps/workflow/README.md](../apps/workflow/README.md) for the PowerShell equivalents.
+### Windows PowerShell
+
+```powershell
+# prerequisites: both services running, database seeded
+python -m apps.api.app.demo.seed --create-schema
+
+# start each service in its own terminal
+uvicorn apps.api.app.main:app --reload --port 8000
+uvicorn apps.workflow.app.main:app --reload --port 8010
+
+# grab a demo violation id
+$VID = (Invoke-RestMethod http://localhost:8000/api/v1/violations).items[0].id
+
+# 1. triage — auto-completes, no human gate
+Invoke-RestMethod -Method Post -Uri http://localhost:8010/api/v1/workflows/incident-triage `
+  -ContentType "application/json" `
+  -Body "{`"violation_event_id`":`"$VID`",`"require_human_review`":false}"
+
+# 2. violation review — pauses at approval gate
+$review = Invoke-RestMethod -Method Post -Uri http://localhost:8010/api/v1/workflows/violation-review `
+  -ContentType "application/json" `
+  -Body "{`"violation_event_id`":`"$VID`",`"requested_by`":`"ops.lead`"}"
+$runId = $review.run_id
+
+# 3. resume the review
+Invoke-RestMethod -Method Post -Uri "http://localhost:8010/api/v1/workflows/runs/$runId/resume" `
+  -ContentType "application/json" `
+  -Body '{"approved":true,"reviewer":"analyst.a","note":"Evidence looks consistent."}'
+
+# 4. daily summary — runs to completion
+Invoke-RestMethod -Method Post -Uri http://localhost:8010/api/v1/workflows/daily-summary `
+  -ContentType "application/json" `
+  -Body '{"report_date":"2026-04-04","require_human_approval":false}'
+```
+
+See [apps/workflow/README.md](../apps/workflow/README.md) for additional details.

@@ -248,7 +248,9 @@ The provider boundary is intentionally abstract so a model-backed backend can be
 
 ## Golden-Path Walkthrough
 
-Seed demo data, start the services, and exercise the three core workflows locally:
+Seed demo data, start the services, and exercise the three core workflows locally.
+
+### bash / macOS / Linux
 
 ```bash
 # 1. Seed the database (creates schema + demo records)
@@ -260,40 +262,64 @@ uvicorn apps.api.app.main:app --reload --port 8000
 # 3. Start the workflow service (separate terminal)
 uvicorn apps.workflow.app.main:app --reload --port 8010
 
-# 4. Triage — runs to completion, no human gate needed for medium severity
+# 4. Grab a demo violation ID
+VID=$(curl -s http://localhost:8000/api/v1/violations | python -c "import sys,json;print(json.load(sys.stdin)['items'][0]['id'])")
+
+# 5. Triage — runs to completion, no human gate needed for medium severity
 curl -s -X POST http://localhost:8010/api/v1/workflows/incident-triage \
   -H "Content-Type: application/json" \
-  -d '{"violation_event_id":"<VIOLATION_ID>","require_human_review":false}' | python -m json.tool
+  -d "{\"violation_event_id\":\"$VID\",\"require_human_review\":false}" | python -m json.tool
 
-# 5. Violation review — interrupts for human approval
+# 6. Violation review — interrupts for human approval
 REVIEW=$(curl -s -X POST http://localhost:8010/api/v1/workflows/violation-review \
   -H "Content-Type: application/json" \
-  -d '{"violation_event_id":"<VIOLATION_ID>","requested_by":"ops.lead"}')
+  -d "{\"violation_event_id\":\"$VID\",\"requested_by\":\"ops.lead\"}")
 echo "$REVIEW" | python -m json.tool
 RUN_ID=$(echo "$REVIEW" | python -c "import sys,json;print(json.load(sys.stdin)['run_id'])")
 
-# 6. Resume the interrupted review
+# 7. Resume the interrupted review
 curl -s -X POST "http://localhost:8010/api/v1/workflows/runs/${RUN_ID}/resume" \
   -H "Content-Type: application/json" \
   -d '{"approved":true,"reviewer":"analyst.a","note":"Evidence looks consistent."}' | python -m json.tool
 
-# 7. Daily summary — quick report, no approval gate
+# 8. Daily summary — quick report, no approval gate
 curl -s -X POST http://localhost:8010/api/v1/workflows/daily-summary \
   -H "Content-Type: application/json" \
   -d '{"report_date":"2026-04-04","require_human_approval":false}' | python -m json.tool
 ```
 
-Replace `<VIOLATION_ID>` with a UUID from the demo seed output or from `GET http://localhost:8000/api/v1/violations`.
-
-On **Windows PowerShell**, replace the `curl` calls with `Invoke-RestMethod`:
+### Windows PowerShell
 
 ```powershell
-# Triage
+# 1. Seed the database (creates schema + demo records)
+python -m apps.api.app.demo.seed --create-schema
+
+# 2. Start the API backend (separate terminal)
+uvicorn apps.api.app.main:app --reload --port 8000
+
+# 3. Start the workflow service (separate terminal)
+uvicorn apps.workflow.app.main:app --reload --port 8010
+
+# 4. Grab a demo violation ID
+$VID = (Invoke-RestMethod http://localhost:8000/api/v1/violations).items[0].id
+
+# 5. Triage
 Invoke-RestMethod -Method Post -Uri http://localhost:8010/api/v1/workflows/incident-triage `
   -ContentType "application/json" `
-  -Body '{"violation_event_id":"<VIOLATION_ID>","require_human_review":false}'
+  -Body "{`"violation_event_id`":`"$VID`",`"require_human_review`":false}"
 
-# Daily summary
+# 6. Violation review — interrupts for approval
+$review = Invoke-RestMethod -Method Post -Uri http://localhost:8010/api/v1/workflows/violation-review `
+  -ContentType "application/json" `
+  -Body "{`"violation_event_id`":`"$VID`",`"requested_by`":`"ops.lead`"}"
+$runId = $review.run_id
+
+# 7. Resume the review
+Invoke-RestMethod -Method Post -Uri "http://localhost:8010/api/v1/workflows/runs/$runId/resume" `
+  -ContentType "application/json" `
+  -Body '{"approved":true,"reviewer":"analyst.a","note":"Evidence looks consistent."}'
+
+# 8. Daily summary
 Invoke-RestMethod -Method Post -Uri http://localhost:8010/api/v1/workflows/daily-summary `
   -ContentType "application/json" `
   -Body '{"report_date":"2026-04-04","require_human_approval":false}'

@@ -14,6 +14,7 @@ from apps.api.app.schemas.domain import (
     CameraEventCountRow,
     DetectionEventRead,
     DetectionEventSearchResult,
+    EventSummaryTotals,
 )
 from services.access_control.policy import AccessPermission
 from services.evidence.schemas import EvidenceAccessRole, EvidenceAssetView, EvidenceManifestRead
@@ -89,6 +90,25 @@ async def event_counts_by_camera_endpoint(
         limit=limit,
     )
     return [CameraEventCountRow.model_validate(row) for row in rows]
+
+
+@router.get("/summary/totals", response_model=EventSummaryTotals)
+async def event_summary_totals_endpoint(
+    db: DbSession,
+    camera_id: uuid.UUID | None = Query(None),
+    occurred_after: datetime | None = Query(None),
+    occurred_before: datetime | None = Query(None),
+) -> EventSummaryTotals:
+    """Flat aggregate counts of detection events by status and type."""
+    from apps.api.app.services.feed_summary import event_summary_totals
+
+    result = await event_summary_totals(
+        db,
+        camera_id=camera_id,
+        occurred_after=occurred_after,
+        occurred_before=occurred_before,
+    )
+    return EventSummaryTotals.model_validate(result)
 
 
 @router.get("/{event_id}/evidence", response_model=EvidenceManifestRead)

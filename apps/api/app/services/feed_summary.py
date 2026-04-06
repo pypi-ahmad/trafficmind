@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import func, select
+from sqlalchemy import case, func, select
 
 from apps.api.app.db.enums import ViolationSeverity
 from apps.api.app.db.models import Camera, DetectionEvent, ViolationEvent
@@ -124,3 +124,121 @@ async def violation_counts_by_camera(
         }
         for row in rows
     ]
+
+
+# ---------------------------------------------------------------------------
+# Aggregate totals — flat breakdown for dashboard stat cards
+# ---------------------------------------------------------------------------
+
+
+async def event_summary_totals(
+    session: AsyncSession,
+    *,
+    camera_id: uuid.UUID | None = None,
+    occurred_after: datetime | None = None,
+    occurred_before: datetime | None = None,
+) -> dict:
+    """Return ``{total, by_status, by_type}`` from stored detection events."""
+    filters = []
+    if camera_id is not None:
+        filters.append(DetectionEvent.camera_id == camera_id)
+    if occurred_after is not None:
+        filters.append(DetectionEvent.occurred_at >= occurred_after)
+    if occurred_before is not None:
+        filters.append(DetectionEvent.occurred_at <= occurred_before)
+
+    total_q = select(func.count(DetectionEvent.id))
+    if filters:
+        total_q = total_q.where(*filters)
+    total = (await session.scalar(total_q)) or 0
+
+    status_q = (
+        select(
+            DetectionEvent.status,
+            func.count(DetectionEvent.id).label("cnt"),
+        )
+        .group_by(DetectionEvent.status)
+    )
+    if filters:
+        status_q = status_q.where(*filters)
+    status_rows = (await session.execute(status_q)).all()
+    by_status = {row.status.value if hasattr(row.status, "value") else str(row.status): row.cnt for row in status_rows}
+
+    type_q = (
+        select(
+            DetectionEvent.event_type,
+            func.count(DetectionEvent.id).label("cnt"),
+        )
+        .group_by(DetectionEvent.event_type)
+    )
+    if filters:
+        type_q = type_q.where(*filters)
+    type_rows = (await session.execute(type_q)).all()
+    by_type = {row.event_type.value if hasattr(row.event_type, "value") else str(row.event_type): row.cnt for row in type_rows}
+
+    return {"total": total, "by_status": by_status, "by_type": by_type}
+
+
+async def violation_summary_totals(
+    session: AsyncSession,
+    *,
+    camera_id: uuid.UUID | None = None,
+    occurred_after: datetime | None = None,
+    occurred_before: datetime | None = None,
+) -> dict:
+    """Return ``{total, by_severity, by_type, by_status}`` from stored violations."""
+    filters = []
+    if camera_id is not None:
+        filters.append(ViolationEvent.camera_id == camera_id)
+    if occurred_after is not None:
+        filters.append(ViolationEvent.occurred_at >= occurred_after)
+    if occurred_before is not None:
+        filters.append(ViolationEvent.occurred_at <= occurred_before)
+
+    total_q = select(func.count(ViolationEvent.id))
+    if filters:
+        total_q = total_q.where(*filters)
+    total = (await session.scalar(total_q)) or 0
+
+    sev_q = (
+        select(
+            ViolationEvent.severity,
+            func.count(ViolationEvent.id).label("cnt"),
+        )
+        .group_by(ViolationEvent.severity)
+    )
+    if filters:
+        sev_q = sev_q.where(*filters)
+    sev_rows = (await session.execute(sev_q)).all()
+    by_severity = {row.severity.value if hasattr(row.severity, "value") else str(row.severity): row.cnt for row in sev_rows}
+
+    type_q = (
+        select(
+            ViolationEvent.violation_type,
+            func.count(ViolationEvent.id).label("cnt"),
+        )
+        .group_by(ViolationEvent.violation_type)
+    )
+    if filters:
+        type_q = type_q.where(*filters)
+    type_rows = (await session.execute(type_q)).all()
+    by_type = {row.violation_type.value if hasattr(row.violation_type, "value") else str(row.violation_type): row.cnt for row in type_rows}
+
+    status_q = (
+        select(
+            ViolationEvent.status,
+            func.count(ViolationEvent.id).label("cnt"),
+        )
+        .group_by(ViolationEvent.status)
+    )
+    if filters:
+        status_q = status_q.where(*filters)
+    status_rows = (await session.execute(status_q)).all()
+    by_status = {row.status.value if hasattr(row.status, "value") else str(row.status): row.cnt for row in status_rows}
+
+    return {
+        "total": total,
+        "by_severity": by_severity,
+        "by_type": by_type,
+        "by_status": by_status,
+    }

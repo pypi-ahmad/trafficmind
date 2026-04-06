@@ -28,6 +28,8 @@ import type {
   SpatialMapMarker,
   SpatialMapMarkerTone,
   SpatialOperationsModel,
+  EventSummaryTotalsApi,
+  ViolationSummaryTotalsApi,
   ViolationEventReadApi,
   ViolationSearchResult,
 } from "@/features/operations/types";
@@ -809,6 +811,8 @@ export function buildSpatialOperationsModel(args: {
   hotspotAnalyticsResult: ApiResult<HotspotAnalyticsResponseApi>;
   eventCountsResult: ApiResult<CameraEventCountApi[]>;
   violationCountsResult: ApiResult<CameraViolationCountApi[]>;
+  eventSummaryTotalsResult: ApiResult<EventSummaryTotalsApi>;
+  violationSummaryTotalsResult: ApiResult<ViolationSummaryTotalsApi>;
   selectedCameraDetail: ApiResult<CameraDetailApi> | null;
   selectedCameraId: string | null;
   selectedJunctionId: string | null;
@@ -895,6 +899,8 @@ export function buildSpatialOperationsModel(args: {
     provider: args.provider,
     feeds,
     feedSummary,
+    eventSummaryTotals: args.eventSummaryTotalsResult.ok ? args.eventSummaryTotalsResult.data : null,
+    violationSummaryTotals: args.violationSummaryTotalsResult.ok ? args.violationSummaryTotalsResult.data : null,
     recentEvents,
     recentViolations,
   };

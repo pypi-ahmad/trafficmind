@@ -85,10 +85,11 @@ Copy `.env.example` to `.env` and adjust as needed:
 | `WEB_PORT` | `3000` | Frontend dev server port |
 | `TRAFFICMIND_API_BASE_URL` | `http://127.0.0.1:8000/api/v1` | Canonical API URL for server-rendered frontend fetches |
 | `NEXT_PUBLIC_TRAFFICMIND_API_BASE_URL` | `http://127.0.0.1:8000/api/v1` | Public frontend API URL alias |
-| `REDIS_URL` | `redis://localhost:6379/0` | Redis connection (future use) |
+| `REDIS_URL` | `redis://localhost:6379/0` | Reserved — config field exists but no code reads it yet. Commented out in `.env.example`. |
 | `WORKFLOW_PROVIDER_BACKEND` | `heuristic` | Current workflow provider backend; only `heuristic` is supported today |
 | `WORKFLOW_CHECKPOINT_BACKEND` | `memory` | Current workflow checkpoint backend |
 | `OPENAI_API_KEY` | _(empty)_ | Reserved for a future workflow provider backend and currently unused |
+| `LANGSMITH_API_KEY` | _(empty)_ | Optional — enables LangSmith tracing for the workflow service. Not required for operation. |
 
 Legacy note: `NEXT_PUBLIC_API_BASE_URL` is still accepted as a fallback in the frontend config for compatibility, but `NEXT_PUBLIC_TRAFFICMIND_API_BASE_URL` is the canonical name.
 

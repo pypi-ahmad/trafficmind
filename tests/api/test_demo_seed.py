@@ -33,8 +33,11 @@ async def _count_rows(session, model) -> int:
 @pytest.fixture
 async def demo_client() -> AsyncIterator[tuple[AsyncClient, object]]:
     session_factory, engine = await make_sqlite_session_factory()
+    # Use real wall-clock so heartbeats are fresh when the API route evaluates
+    # health (the route calls datetime.now(utc), not the seed's fixed clock).
+    now = datetime.now(timezone.utc)
     async with session_factory() as session:
-        await seed_demo_scenario(session, now=FIXED_NOW)
+        await seed_demo_scenario(session, now=now)
         await session.commit()
 
     app = create_app()

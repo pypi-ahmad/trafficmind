@@ -2,62 +2,54 @@
 
 from __future__ import annotations
 
-import uuid
-from datetime import datetime
-from enum import StrEnum
 from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
 from apps.api.app.db.enums import ViolationSeverity, ViolationType, ZoneType
-from services.signals.schemas import SignalPhase
-from services.tracking.schemas import CardinalDirection, LineCrossingDirection, Point2D
-from services.vision.schemas import ObjectCategory
+from packages.shared_types.enums import (  # noqa: F401 — re-exported
+    RuleType,
+    ViolationLifecycleStage,
+)
+from packages.shared_types.events import (  # noqa: F401 — re-exported
+    Explanation,
+    PreViolationRecord,
+    RuleEvaluationResult,
+    ViolationRecord,
+)
+from packages.shared_types.geometry import ObjectCategory, Point2D
+from packages.shared_types.scene import (
+    SceneContext,
+    SceneSignalState,
+    SignalConflict,
+    SignalIntegrationMode,
+    SignalPhase,
+    SignalStateSourceKind,
+    TrafficLightState,
+)
+from services.tracking.schemas import CardinalDirection, LineCrossingDirection
 
-# ---------------------------------------------------------------------------
-# Rule type enum
-# ---------------------------------------------------------------------------
+__all__ = [
+    # re-export shared types for backward compatibility
+    "SceneContext",
+    "SceneSignalState",
+    "SignalConflict",
+    "SignalIntegrationMode",
+    "SignalPhase",
+    "SignalStateSourceKind",
+    "TrafficLightState",
+    # re-export shared enums and event contracts
+    "RuleType",
+    "ViolationLifecycleStage",
+    "Explanation",
+    "PreViolationRecord",
+    "ViolationRecord",
+    "RuleEvaluationResult",
+]
 
 
-class RuleType(StrEnum):
-    """Every distinct rule the engine can evaluate."""
-
-    LINE_CROSSING = "line_crossing"
-    STOP_LINE_CROSSING = "stop_line_crossing"
-    ZONE_ENTRY = "zone_entry"
-    ZONE_DWELL_TIME = "zone_dwell_time"
-    WRONG_DIRECTION = "wrong_direction"
-    RED_LIGHT = "red_light"
-    PEDESTRIAN_ON_RED = "pedestrian_on_red"
-    ILLEGAL_PARKING = "illegal_parking"
-    NO_STOPPING = "no_stopping"
-    BUS_STOP_OCCUPATION = "bus_stop_occupation"
-    STALLED_VEHICLE = "stalled_vehicle"
-
-
-class TrafficLightState(StrEnum):
-    """Possible traffic signal states."""
-
-    RED = "red"
-    YELLOW = "yellow"
-    GREEN = "green"
-    UNKNOWN = "unknown"
-
-
-class SignalStateSourceKind(StrEnum):
-    """Where a rules-facing signal state came from."""
-
-    VISION = "vision"
-    CONTROLLER = "controller"
-    RESOLVED = "resolved"
-
-
-class SignalIntegrationMode(StrEnum):
-    """How controller-fed and vision-derived signal states are combined."""
-
-    VISION_ONLY = "vision_only"
-    CONTROLLER_ONLY = "controller_only"
-    HYBRID = "hybrid"
+# TrafficLightState, SignalStateSourceKind, SignalIntegrationMode imported
+# from packages.shared_types — do NOT redefine here.
 
 
 # ---------------------------------------------------------------------------
@@ -242,252 +234,9 @@ class ZoneConfig(BaseModel):
         return self.geometry.model_dump(mode="json")
 
 
-class SceneSignalState(BaseModel):
-    """Rules-facing signal state for one linked signal head on one frame.
-
-    This is a compact, typed representation extracted from the signal
-    perception layer.  It gives the rules engine enough context to resolve
-    the correct signal per stop-line or crosswalk without importing the full
-    signal-service schemas.
-    """
-
-    model_config = ConfigDict(frozen=True)
-
-    head_id: str
-    phase: SignalPhase = SignalPhase.UNKNOWN
-    state: TrafficLightState = TrafficLightState.UNKNOWN
-    confidence: float = Field(default=0.0, ge=0.0, le=1.0)
-    frame_index: int | None = None
-    last_seen_at: datetime | None = None
-    frames_since_seen: int = 0
-    is_stale: bool = False
-    source_id: str | None = None
-    stream_id: uuid.UUID | None = None
-    camera_id: uuid.UUID | None = None
-    lane_id: str | None = None
-    stop_line_id: str | None = None
-    crosswalk_id: str | None = None
-    source_kind: SignalStateSourceKind = SignalStateSourceKind.RESOLVED
-    observed_sources: list[SignalStateSourceKind] = Field(default_factory=list)
-    trust_score: float | None = Field(default=None, ge=0.0, le=1.0)
-    junction_id: str | None = None
-    controller_id: str | None = None
-    phase_id: str | None = None
-    conflict_reason: str | None = None
-
-
-class SignalConflict(BaseModel):
-    """Explicit conflict between controller-fed and vision-derived signal state."""
-
-    model_config = ConfigDict(frozen=True)
-
-    phase: SignalPhase = SignalPhase.UNKNOWN
-    reason: str
-    head_id: str | None = None
-    lane_id: str | None = None
-    stop_line_id: str | None = None
-    crosswalk_id: str | None = None
-    phase_id: str | None = None
-    junction_id: str | None = None
-    controller_id: str | None = None
-    vision_state: TrafficLightState = TrafficLightState.UNKNOWN
-    controller_state: TrafficLightState = TrafficLightState.UNKNOWN
-    vision_confidence: float | None = Field(default=None, ge=0.0, le=1.0)
-    controller_confidence: float | None = Field(default=None, ge=0.0, le=1.0)
-
-
-# ---------------------------------------------------------------------------
-# Scene context (external signals delivered per-frame)
-# ---------------------------------------------------------------------------
-
-
-class SceneContext(BaseModel):
-    """External signals for the current frame (traffic-light state, etc.)."""
-
-    model_config = ConfigDict(frozen=True)
-
-    frame_index: int | None = None
-    timestamp: datetime | None = None
-    # Backward-compatible vehicle-signal alias used by older callers/tests.
-    traffic_light_state: TrafficLightState = TrafficLightState.UNKNOWN
-    traffic_light_zone_name: str | None = None
-    vehicle_signal_state: TrafficLightState = TrafficLightState.UNKNOWN
-    pedestrian_signal_state: TrafficLightState = TrafficLightState.UNKNOWN
-    signal_states: list[SceneSignalState] = Field(default_factory=list)
-    vision_signal_states: list[SceneSignalState] = Field(default_factory=list)
-    controller_signal_states: list[SceneSignalState] = Field(default_factory=list)
-    signal_conflicts: list[SignalConflict] = Field(default_factory=list)
-    integration_mode: SignalIntegrationMode = SignalIntegrationMode.VISION_ONLY
-
-    def _phase_signals(self, *, phase: SignalPhase) -> list[SceneSignalState]:
-        return [signal for signal in self.signal_states if signal.phase == phase]
-
-    def primary_signal(self, *, phase: SignalPhase) -> SceneSignalState | None:
-        phase_signals = self._phase_signals(phase=phase)
-        if len(phase_signals) != 1:
-            return None
-        return phase_signals[0]
-
-    def signal_for_stop_line(
-        self,
-        stop_line_id: str | None,
-        *,
-        phase: SignalPhase = SignalPhase.VEHICLE,
-    ) -> SceneSignalState | None:
-        phase_signals = self._phase_signals(phase=phase)
-        if stop_line_id is not None:
-            linked_signals = [
-                signal for signal in phase_signals if signal.stop_line_id is not None
-            ]
-            for signal in linked_signals:
-                if signal.stop_line_id == stop_line_id:
-                    return signal
-            if linked_signals:
-                return None
-        return self.primary_signal(phase=phase)
-
-    def signal_for_crosswalk(
-        self,
-        crosswalk_id: str | None,
-        *,
-        phase: SignalPhase = SignalPhase.PEDESTRIAN,
-    ) -> SceneSignalState | None:
-        phase_signals = self._phase_signals(phase=phase)
-        if crosswalk_id is not None:
-            linked_signals = [
-                signal for signal in phase_signals if signal.crosswalk_id is not None
-            ]
-            for signal in linked_signals:
-                if signal.crosswalk_id == crosswalk_id:
-                    return signal
-            if linked_signals:
-                return None
-        return self.primary_signal(phase=phase)
-
-    def vehicle_signal_state_for_stop_line(
-        self,
-        stop_line_id: str | None,
-        *,
-        min_confidence: float = 0.0,
-    ) -> TrafficLightState:
-        signal = self.signal_for_stop_line(stop_line_id, phase=SignalPhase.VEHICLE)
-        if signal is not None:
-            if signal.is_stale or signal.confidence < min_confidence:
-                return TrafficLightState.UNKNOWN
-            return signal.state
-        if self.vehicle_signal_state != TrafficLightState.UNKNOWN:
-            return self.vehicle_signal_state
-        return self.traffic_light_state
-
-    def pedestrian_signal_state_for_crosswalk(
-        self,
-        crosswalk_id: str | None,
-        *,
-        min_confidence: float = 0.0,
-    ) -> TrafficLightState:
-        signal = self.signal_for_crosswalk(crosswalk_id, phase=SignalPhase.PEDESTRIAN)
-        if signal is not None:
-            if signal.is_stale or signal.confidence < min_confidence:
-                return TrafficLightState.UNKNOWN
-            return signal.state
-        return self.pedestrian_signal_state
-
-
-class ViolationLifecycleStage(StrEnum):
-    PRE_VIOLATION = "pre_violation"
-    CONFIRMED = "confirmed"
-
-
-# ---------------------------------------------------------------------------
-# Violation output (designed for frontend review UI)
-# ---------------------------------------------------------------------------
-
-
-class Explanation(BaseModel):
-    """Structured evidence for why a violation fired.
-
-    Every field is serialisable so the value can be stored in JSON and
-    rendered by the review UI.
-    """
-
-    rule_type: RuleType
-    rule_config: dict[str, Any] = Field(default_factory=dict)
-    reason: str
-    frame_index: int | None = None
-    conditions_satisfied: list[str] = Field(default_factory=list)
-    details: dict[str, Any] = Field(default_factory=dict)
-    track_snapshot: dict[str, Any] = Field(default_factory=dict)
-    zone_info: dict[str, Any] = Field(default_factory=dict)
-
-
-class PreViolationRecord(BaseModel):
-    """One candidate/pre-violation state emitted before confirmation."""
-
-    stage: ViolationLifecycleStage = ViolationLifecycleStage.PRE_VIOLATION
-    rule_type: RuleType
-    violation_type: ViolationType
-    zone_id: str
-    zone_name: str
-    track_id: str
-    observed_at: datetime
-    candidate_started_at: datetime
-    frame_index: int | None = None
-    certainty: float = Field(default=0.5, ge=0.0, le=1.0)
-    explanation: Explanation
-
-    def to_event_dict(self) -> dict[str, Any]:
-        """Serialisable dict for persistence or downstream consumers."""
-        return {
-            "stage": self.stage.value,
-            "rule_type": self.rule_type.value,
-            "violation_type": self.violation_type.value,
-            "zone_id": self.zone_id,
-            "zone_name": self.zone_name,
-            "track_id": self.track_id,
-            "observed_at": self.observed_at,
-            "candidate_started_at": self.candidate_started_at,
-            "frame_index": self.frame_index,
-            "certainty": self.certainty,
-            "explanation": self.explanation.model_dump(mode="json"),
-        }
-
-
-class ViolationRecord(BaseModel):
-    """One emitted violation from the rules engine."""
-
-    rule_type: RuleType
-    violation_type: ViolationType
-    severity: ViolationSeverity
-    zone_id: str
-    zone_name: str
-    track_id: str
-    occurred_at: datetime
-    frame_index: int | None = None
-    certainty: float = Field(default=1.0, ge=0.0, le=1.0)
-    explanation: Explanation
-
-    def to_orm_kwargs(self) -> dict[str, Any]:
-        """Dict suitable for creating a ViolationEvent ORM instance."""
-        return {
-            "violation_type": self.violation_type,
-            "severity": self.severity,
-            "occurred_at": self.occurred_at,
-            "summary": self.explanation.reason,
-            "rule_metadata": {
-                "rule_type": self.rule_type.value,
-                "frame_index": self.frame_index,
-                "track_id": self.track_id,
-                "certainty": self.certainty,
-                "explanation": self.explanation.model_dump(mode="json"),
-            },
-        }
-
-
-class RuleEvaluationResult(BaseModel):
-    """Full per-frame rules evaluation output, including pre-violations."""
-
-    pre_violations: list[PreViolationRecord] = Field(default_factory=list)
-    violations: list[ViolationRecord] = Field(default_factory=list)
+# ViolationLifecycleStage, Explanation, PreViolationRecord,
+# ViolationRecord, RuleEvaluationResult — canonical definitions live in
+# packages.shared_types.events; re-exported via __all__ above.
 
 
 # ---------------------------------------------------------------------------

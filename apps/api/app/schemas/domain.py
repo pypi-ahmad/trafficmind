@@ -35,11 +35,43 @@ class ORMSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+# ---------------------------------------------------------------------------
+# Junction
+# ---------------------------------------------------------------------------
+
+
+class JunctionBase(ORMSchema):
+    name: str
+    description: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+
+
+class JunctionCreate(JunctionBase):
+    pass
+
+
+class JunctionRead(JunctionBase):
+    id: uuid.UUID
+    created_at: datetime
+    updated_at: datetime
+
+
+class JunctionDetail(JunctionRead):
+    cameras: list["CameraRead"] = Field(default_factory=list)
+
+
+# ---------------------------------------------------------------------------
+# Camera
+# ---------------------------------------------------------------------------
+
+
 class CameraBase(ORMSchema):
     camera_code: str
     name: str
     location_name: str
     approach: str | None = None
+    junction_id: uuid.UUID | None = None
     timezone: str = "UTC"
     status: CameraStatus = CameraStatus.PROVISIONING
     latitude: float | None = None
@@ -372,6 +404,28 @@ class ViolationSearchResult(ORMSchema):
     total: int = 0
     limit: int = 50
     offset: int = 0
+
+
+class CameraEventCountRow(ORMSchema):
+    camera_id: str
+    camera_name: str
+    location_name: str
+    event_count: int
+
+
+class CameraViolationCountRow(ORMSchema):
+    camera_id: str
+    camera_name: str
+    location_name: str
+    violation_count: int
+    severity_counts: dict[str, int] = Field(default_factory=dict)
+
+
+class FeedSummaryResponse(ORMSchema):
+    event_counts: list[CameraEventCountRow] = Field(default_factory=list)
+    violation_counts: list[CameraViolationCountRow] = Field(default_factory=list)
+    total_events: int = 0
+    total_violations: int = 0
 
 
 class WatchlistMatchResult(ORMSchema):

@@ -759,6 +759,53 @@ class AlertingService:
             selectinload(OperationalAlert.audit_events),
         )
 
+    async def dispatch_planned_deliveries(
+        self,
+        session: AsyncSession,
+        *,
+        alert_id: uuid.UUID | None = None,
+        include_failed: bool = False,
+        max_retries: int = 3,
+        limit: int = 100,
+    ) -> list[AlertDeliveryAttempt]:
+        """Send all PLANNED delivery attempts through the channel dispatcher.
+
+        Optionally scoped to a single alert.  When ``include_failed`` is
+        True, FAILED attempts with ``retry_count < max_retries`` are also
+        dispatched.  Returns the mutated attempts with updated
+        ``delivery_state`` and ``attempted_at``.
+        """
+        from apps.api.app.services.delivery import build_default_dispatcher
+
+        states = [AlertDeliveryState.PLANNED]
+        if include_failed:
+            states.append(AlertDeliveryState.FAILED)
+
+        statement = (
+            select(AlertDeliveryAttempt)
+            .where(AlertDeliveryAttempt.delivery_state.in_(states))
+            .order_by(AlertDeliveryAttempt.scheduled_for.asc())
+            .limit(limit)
+        )
+        if alert_id is not None:
+            statement = statement.where(AlertDeliveryAttempt.alert_id == alert_id)
+        if include_failed:
+            statement = statement.where(AlertDeliveryAttempt.retry_count < max_retries)
+
+        attempts = list((await session.execute(statement)).scalars().all())
+        if not attempts:
+            return []
+
+        # Bump retry_count for FAILED attempts being retried
+        for attempt in attempts:
+            if attempt.delivery_state == AlertDeliveryState.FAILED:
+                attempt.retry_count = (attempt.retry_count or 0) + 1
+
+        dispatcher = build_default_dispatcher()
+        results = await dispatcher.dispatch_many(attempts)
+        await session.flush()
+        return results
+
     @staticmethod
     def _sort_alert_detail(alert: OperationalAlert) -> None:
         if alert.policy is not None:

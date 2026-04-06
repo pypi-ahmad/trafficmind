@@ -156,6 +156,7 @@ class AlertDeliveryAttemptRead(ORMSchema):
     scheduled_for: datetime
     attempted_at: datetime | None = None
     error_message: str | None = None
+    retry_count: int = 0
     delivery_payload: dict[str, Any] = Field(default_factory=dict)
     created_at: datetime
     updated_at: datetime
@@ -241,3 +242,29 @@ class AlertEscalationProcessRequest(ORMSchema):
 class AlertEscalationProcessResult(ORMSchema):
     processed_count: int = 0
     alert_ids: list[uuid.UUID] = Field(default_factory=list)
+
+
+class AlertDeliveryDispatchRequest(ORMSchema):
+    alert_id: uuid.UUID | None = Field(
+        default=None,
+        description="Optional alert to scope delivery. Omit to dispatch all pending.",
+    )
+    include_failed: bool = Field(
+        default=False,
+        description="Also retry previously FAILED attempts (up to max_retries).",
+    )
+    max_retries: int = Field(
+        default=3,
+        ge=1,
+        le=10,
+        description="Maximum retry count for FAILED attempts.",
+    )
+    limit: int = Field(default=100, ge=1, le=1000)
+
+
+class AlertDeliveryDispatchResult(ORMSchema):
+    dispatched_count: int = 0
+    sent_count: int = 0
+    failed_count: int = 0
+    skipped_count: int = 0
+    retried_count: int = 0

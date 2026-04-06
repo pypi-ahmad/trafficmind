@@ -16,6 +16,8 @@ from apps.api.app.db.enums import (
 )
 from apps.api.app.schemas.alerts import (
     AlertActionRequest,
+    AlertDeliveryDispatchRequest,
+    AlertDeliveryDispatchResult,
     AlertEscalationProcessRequest,
     AlertEscalationProcessResult,
     AlertPolicyCreate,
@@ -291,3 +293,32 @@ async def escalate_alert(
         await db.rollback()
         _raise_service_error(exc)
     return OperationalAlertDetailRead.model_validate(alert)
+
+
+@router.post("/deliveries/dispatch", response_model=AlertDeliveryDispatchResult)
+async def dispatch_deliveries(
+    db: DbSession,
+    body: AlertDeliveryDispatchRequest,
+) -> AlertDeliveryDispatchResult:
+    """Send all PLANNED delivery attempts via their configured channel adapters."""
+    from apps.api.app.db.enums import AlertDeliveryState
+
+    attempts = await _service.dispatch_planned_deliveries(
+        db,
+        alert_id=body.alert_id,
+        include_failed=body.include_failed,
+        max_retries=body.max_retries,
+        limit=body.limit,
+    )
+    await db.commit()
+    sent = sum(1 for a in attempts if a.delivery_state == AlertDeliveryState.SENT)
+    failed = sum(1 for a in attempts if a.delivery_state == AlertDeliveryState.FAILED)
+    skipped = sum(1 for a in attempts if a.delivery_state == AlertDeliveryState.SKIPPED)
+    retried = sum(1 for a in attempts if (a.retry_count or 0) > 0)
+    return AlertDeliveryDispatchResult(
+        dispatched_count=len(attempts),
+        sent_count=sent,
+        failed_count=failed,
+        skipped_count=skipped,
+        retried_count=retried,
+    )

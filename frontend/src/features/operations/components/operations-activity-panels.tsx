@@ -3,6 +3,8 @@ import Link from "next/link";
 import {
   availabilityClass,
   availabilityLabel,
+  formatTimestamp,
+  severityClass,
   statusClass,
 } from "@/features/operations/components/dashboard-primitives";
 import type { SpatialOperationsModel } from "@/features/operations/types";
@@ -115,6 +117,100 @@ export function OperationsActivityPanels({ model }: { model: SpatialOperationsMo
           )}
         </div>
       </div>
+    </section>
+  );
+}
+
+function RecentViolationsFeed({ model }: { model: SpatialOperationsModel }) {
+  if (model.recentViolations.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.78)] p-5 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[rgba(19,32,41,0.56)]">
+            Recent Violations
+          </p>
+          <p className="mt-1 text-sm text-[rgba(19,32,41,0.68)]">
+            {model.recentViolations.length} most recent from the backend
+          </p>
+        </div>
+        <Link href="/events" className={actionLinkClass}>
+          Full feed
+        </Link>
+      </div>
+      <div className="mt-4 divide-y divide-[rgba(23,57,69,0.08)]">
+        {model.recentViolations.slice(0, 5).map((v) => (
+          <div key={v.id} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+            <span className={`mt-0.5 inline-block rounded-full px-2.5 py-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] ${v.severity === "critical" ? "bg-[rgba(240,90,79,0.14)] text-[var(--color-danger)]" : v.severity === "high" ? "bg-[rgba(240,90,79,0.10)] text-[var(--color-danger)]" : v.severity === "medium" ? "bg-[rgba(226,176,71,0.16)] text-[var(--color-warning-ink)]" : "bg-[rgba(56,183,118,0.14)] text-[var(--color-ok-ink)]"}`}>
+              {v.severity}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-[var(--color-ink)]">{v.violation_type.replace(/_/g, " ")}</p>
+              <p className="mt-0.5 text-xs text-[rgba(19,32,41,0.6)]">
+                {formatTimestamp(v.occurred_at)} · {v.status}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RecentEventsFeed({ model }: { model: SpatialOperationsModel }) {
+  if (model.recentEvents.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.78)] p-5 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[rgba(19,32,41,0.56)]">
+            Recent Detection Events
+          </p>
+          <p className="mt-1 text-sm text-[rgba(19,32,41,0.68)]">
+            {model.recentEvents.length} most recent from the backend
+          </p>
+        </div>
+        <Link href="/events" className={actionLinkClass}>
+          Full feed
+        </Link>
+      </div>
+      <div className="mt-4 divide-y divide-[rgba(23,57,69,0.08)]">
+        {model.recentEvents.slice(0, 5).map((e) => (
+          <div key={e.id} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+            <span className="mt-0.5 inline-block rounded-full bg-[rgba(56,183,118,0.14)] px-2.5 py-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ok-ink)]">
+              {e.object_class}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-[var(--color-ink)]">
+                {e.event_type.replace(/_/g, " ")}
+                {e.track_id ? ` · ${e.track_id}` : ""}
+              </p>
+              <p className="mt-0.5 text-xs text-[rgba(19,32,41,0.6)]">
+                {formatTimestamp(e.occurred_at)} · {(e.confidence * 100).toFixed(0)}% confidence
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function OperationsRecentFeedPanels({ model }: { model: SpatialOperationsModel }) {
+  if (model.recentViolations.length === 0 && model.recentEvents.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="grid gap-6 xl:grid-cols-2">
+      <RecentViolationsFeed model={model} />
+      <RecentEventsFeed model={model} />
     </section>
   );
 }

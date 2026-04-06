@@ -177,6 +177,19 @@ def test_ocr_settings_gpu_resolution_uses_paddle_cuda_capability(monkeypatch: py
     monkeypatch.setitem(sys.modules, "paddle", _FakePaddle())
     s = OcrSettings(use_gpu=True)
     assert s.resolve_use_gpu() is True
+    assert s.resolve_device() == "gpu:0"
+
+
+def test_ocr_settings_device_explicit_overrides_auto_detection() -> None:
+    s = OcrSettings(device="cpu")
+    assert s.resolve_device() == "cpu"
+    assert s.resolve_use_gpu() is False
+
+
+def test_ocr_settings_device_gpu_explicit() -> None:
+    s = OcrSettings(device="gpu:1")
+    assert s.resolve_device() == "gpu:1"
+    assert s.resolve_use_gpu() is True
 
 
 def test_ocr_settings_reject_invalid_length_bounds() -> None:

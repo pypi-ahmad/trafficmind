@@ -1,4 +1,4 @@
-"""Detection event search and evidence endpoints."""
+"""Detection event search, summary, and evidence endpoints."""
 
 from __future__ import annotations
 
@@ -10,7 +10,11 @@ from fastapi import APIRouter, HTTPException, Query, Response, status
 from apps.api.app.api.access import enforce_route_permissions
 from apps.api.app.api.dependencies import DbSession
 from apps.api.app.db.enums import DetectionEventStatus, DetectionEventType, ZoneType
-from apps.api.app.schemas.domain import DetectionEventRead, DetectionEventSearchResult
+from apps.api.app.schemas.domain import (
+    CameraEventCountRow,
+    DetectionEventRead,
+    DetectionEventSearchResult,
+)
 from services.access_control.policy import AccessPermission
 from services.evidence.schemas import EvidenceAccessRole, EvidenceAssetView, EvidenceManifestRead
 from services.evidence.service import (
@@ -66,6 +70,25 @@ async def list_events(
         limit=limit,
         offset=offset,
     )
+
+
+@router.get("/summary/by-camera", response_model=list[CameraEventCountRow])
+async def event_counts_by_camera_endpoint(
+    db: DbSession,
+    occurred_after: datetime | None = Query(None),
+    occurred_before: datetime | None = Query(None),
+    limit: int = Query(50, ge=1, le=200),
+) -> list[CameraEventCountRow]:
+    """Lightweight event counts grouped by camera for dashboard cards."""
+    from apps.api.app.services.feed_summary import event_counts_by_camera
+
+    rows = await event_counts_by_camera(
+        db,
+        occurred_after=occurred_after,
+        occurred_before=occurred_before,
+        limit=limit,
+    )
+    return [CameraEventCountRow.model_validate(row) for row in rows]
 
 
 @router.get("/{event_id}/evidence", response_model=EvidenceManifestRead)

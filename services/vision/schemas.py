@@ -4,30 +4,22 @@ These schemas are the contract between the vision service and all downstream
 consumers (tracking, OCR, rules engine, API persistence layer).  They are
 intentionally decoupled from SQLAlchemy models and API response schemas so
 that the vision service remains a standalone, importable library.
+
+``BBox`` and ``ObjectCategory`` are canonical in ``packages.shared_types``
+and re-exported here for backward compatibility.
 """
 
 from __future__ import annotations
 
 from datetime import datetime
-from enum import StrEnum
 from typing import Any
 
 import numpy as np
 from pydantic import BaseModel, ConfigDict, Field
 
+from packages.shared_types.geometry import BBox, ObjectCategory
 
-class ObjectCategory(StrEnum):
-    """High-level semantic category for detected objects.
-
-    The vision service maps raw COCO (or custom) class names into these
-    categories so that downstream consumers never need to know the mapping.
-    """
-
-    VEHICLE = "vehicle"
-    PERSON = "person"
-    TRAFFIC_LIGHT = "traffic_light"
-    PLATE = "plate"
-    OTHER = "other"
+__all__ = ["BBox", "ObjectCategory", "Detection", "DetectionResult", "COCO_CATEGORY_MAP"]
 
 
 # Map well-known COCO names → ObjectCategory.
@@ -41,40 +33,6 @@ COCO_CATEGORY_MAP: dict[str, ObjectCategory] = {
     "truck": ObjectCategory.VEHICLE,
     "traffic light": ObjectCategory.TRAFFIC_LIGHT,
 }
-
-
-class BBox(BaseModel):
-    """Axis-aligned bounding box in pixel coordinates (x1 y1 x2 y2)."""
-
-    model_config = ConfigDict(frozen=True)
-
-    x1: float
-    y1: float
-    x2: float
-    y2: float
-
-    @property
-    def width(self) -> float:
-        return self.x2 - self.x1
-
-    @property
-    def height(self) -> float:
-        return self.y2 - self.y1
-
-    @property
-    def area(self) -> float:
-        return max(0.0, self.width) * max(0.0, self.height)
-
-    @property
-    def center(self) -> tuple[float, float]:
-        return ((self.x1 + self.x2) / 2, (self.y1 + self.y2) / 2)
-
-    def to_xyxy(self) -> tuple[float, float, float, float]:
-        return (self.x1, self.y1, self.x2, self.y2)
-
-    def to_dict(self) -> dict[str, float]:
-        """Flat dict matching the API's ``DetectionEventBase.bbox`` shape."""
-        return {"x1": self.x1, "y1": self.y1, "x2": self.x2, "y2": self.y2}
 
 
 class Detection(BaseModel):

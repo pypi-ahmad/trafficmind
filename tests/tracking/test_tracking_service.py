@@ -101,6 +101,226 @@ def test_tracker_registry_advertises_bytetrack_without_import_side_effect() -> N
     assert "bytetrack" in TrackerRegistry.available()
 
 
+def test_tracker_registry_advertises_iou_backend() -> None:
+    sys.modules.pop("services.tracking.backends.iou_tracker", None)
+    assert "iou" in TrackerRegistry.available()
+
+
+def test_iou_helper_exact_overlap() -> None:
+    from services.tracking.backends.iou_tracker import _iou
+
+    a = BBox(x1=0, y1=0, x2=10, y2=10)
+    assert _iou(a, a) == 1.0
+
+
+def test_iou_helper_no_overlap() -> None:
+    from services.tracking.backends.iou_tracker import _iou
+
+    a = BBox(x1=0, y1=0, x2=10, y2=10)
+    b = BBox(x1=20, y1=20, x2=30, y2=30)
+    assert _iou(a, b) == 0.0
+
+
+def test_iou_helper_partial_overlap() -> None:
+    from services.tracking.backends.iou_tracker import _iou
+
+    a = BBox(x1=0, y1=0, x2=10, y2=10)
+    b = BBox(x1=5, y1=5, x2=15, y2=15)
+    # intersection = 5*5=25, union = 100+100-25=175
+    assert abs(_iou(a, b) - 25 / 175) < 1e-9
+
+
+# ------------------------------------------------------------------
+# IoU tracker backend tests (no external dependencies)
+# ------------------------------------------------------------------
+
+
+def test_iou_tracker_creates_tracks_from_detections() -> None:
+    tracker = TrackerRegistry.create(
+        "iou",
+        TrackingSettings(trajectory_history_size=8, lost_track_buffer=1, minimum_matching_threshold=0.3),
+    )
+    base = datetime(2026, 4, 4, 12, 0, 0, tzinfo=timezone.utc)
+    r = tracker.update(_make_detection_result(frame_index=0, timestamp=base, x1=20))
+    assert r.active_count == 1
+    assert len(r.new_track_ids) == 1
+    assert r.tracks[0].frame_count == 1
+    assert r.tracks[0].status == TrackLifecycleStatus.ACTIVE
+
+
+def test_iou_tracker_associates_overlapping_detections() -> None:
+    tracker = TrackerRegistry.create(
+        "iou",
+        TrackingSettings(trajectory_history_size=8, lost_track_buffer=1, minimum_matching_threshold=0.3),
+    )
+    base = datetime(2026, 4, 4, 12, 0, 0, tzinfo=timezone.utc)
+
+    r1 = tracker.update(_make_detection_result(frame_index=0, timestamp=base, x1=20))
+    first_id = r1.tracks[0].track_id
+
+    # Small shift — high IoU, should match the same track.
+    r2 = tracker.update(
+        _make_detection_result(frame_index=1, timestamp=base + timedelta(milliseconds=100), x1=22)
+    )
+    assert r2.active_count == 1
+    assert r2.tracks[0].track_id == first_id
+    assert r2.tracks[0].frame_count == 2
+    assert len(r2.tracks[0].trajectory) == 2
+    assert r2.tracks[0].direction is not None
+
+
+def test_iou_tracker_creates_new_track_for_distant_detection() -> None:
+    tracker = TrackerRegistry.create(
+        "iou",
+        TrackingSettings(trajectory_history_size=8, lost_track_buffer=1, minimum_matching_threshold=0.3),
+    )
+    base = datetime(2026, 4, 4, 12, 0, 0, tzinfo=timezone.utc)
+
+    r1 = tracker.update(_make_detection_result(frame_index=0, timestamp=base, x1=20))
+    first_id = r1.tracks[0].track_id
+
+    # Far away — zero IoU → new track.
+    r2 = tracker.update(
+        _make_detection_result(frame_index=1, timestamp=base + timedelta(milliseconds=100), x1=500)
+    )
+    # First track goes lost, new track appears.
+    assert r2.active_count == 1
+    assert r2.tracks[0].track_id != first_id
+    assert first_id in r2.lost_track_ids
+
+
+def test_iou_tracker_lifecycle_active_lost_removed() -> None:
+    tracker = TrackerRegistry.create(
+        "iou",
+        TrackingSettings(trajectory_history_size=8, lost_track_buffer=1, minimum_matching_threshold=0.3),
+    )
+    base = datetime(2026, 4, 4, 12, 0, 0, tzinfo=timezone.utc)
+
+    r1 = tracker.update(_make_detection_result(frame_index=0, timestamp=base, x1=20))
+    tid = r1.tracks[0].track_id
+
+    # Empty frame → lost.
+    r2 = tracker.update(
+        DetectionResult(
+            detections=[], frame_index=1,
+            timestamp=base + timedelta(milliseconds=100),
+            source_width=640, source_height=480,
+        )
+    )
+    assert tid in r2.lost_track_ids
+    assert len(r2.lost_tracks) == 1
+    assert tracker.get_active_tracks() == []
+
+    # Second empty frame → removed.
+    r3 = tracker.update(
+        DetectionResult(
+            detections=[], frame_index=2,
+            timestamp=base + timedelta(milliseconds=200),
+            source_width=640, source_height=480,
+        )
+    )
+    assert tid in r3.removed_track_ids
+    assert len(r3.removed_tracks) == 1
+    assert r3.removed_tracks[0].status == TrackLifecycleStatus.REMOVED
+    assert tracker.snapshot(include_inactive=True) == []
+
+
+def test_iou_tracker_handles_multiple_simultaneous_objects() -> None:
+    tracker = TrackerRegistry.create(
+        "iou",
+        TrackingSettings(trajectory_history_size=8, lost_track_buffer=2, minimum_matching_threshold=0.3),
+    )
+    base = datetime(2026, 4, 4, 12, 0, 0, tzinfo=timezone.utc)
+
+    # Two non-overlapping detections in the same frame.
+    two_dets = DetectionResult(
+        detections=[
+            Detection(
+                class_name="car", category=ObjectCategory.VEHICLE, class_id=2,
+                confidence=0.9, bbox=BBox(x1=10, y1=20, x2=30, y2=40),
+                frame_index=0, timestamp=base,
+            ),
+            Detection(
+                class_name="person", category=ObjectCategory.PERSON, class_id=0,
+                confidence=0.8, bbox=BBox(x1=200, y1=200, x2=220, y2=260),
+                frame_index=0, timestamp=base,
+            ),
+        ],
+        frame_index=0, timestamp=base, source_width=640, source_height=480,
+    )
+    r1 = tracker.update(two_dets)
+    assert r1.active_count == 2
+    assert len(r1.new_track_ids) == 2
+
+    ids = {t.track_id: t.class_name for t in r1.tracks}
+
+    # Same objects slightly shifted.
+    two_dets_shifted = DetectionResult(
+        detections=[
+            Detection(
+                class_name="car", category=ObjectCategory.VEHICLE, class_id=2,
+                confidence=0.9, bbox=BBox(x1=12, y1=21, x2=32, y2=41),
+                frame_index=1, timestamp=base + timedelta(milliseconds=100),
+            ),
+            Detection(
+                class_name="person", category=ObjectCategory.PERSON, class_id=0,
+                confidence=0.8, bbox=BBox(x1=202, y1=201, x2=222, y2=261),
+                frame_index=1, timestamp=base + timedelta(milliseconds=100),
+            ),
+        ],
+        frame_index=1, timestamp=base + timedelta(milliseconds=100),
+        source_width=640, source_height=480,
+    )
+    r2 = tracker.update(two_dets_shifted)
+    assert r2.active_count == 2
+    assert len(r2.new_track_ids) == 0
+    # Both original tracks persisted.
+    for t in r2.tracks:
+        assert t.track_id in ids
+        assert t.frame_count == 2
+
+
+def test_iou_tracker_reset_clears_state() -> None:
+    tracker = TrackerRegistry.create(
+        "iou",
+        TrackingSettings(trajectory_history_size=8, lost_track_buffer=1, minimum_matching_threshold=0.3),
+    )
+    base = datetime(2026, 4, 4, 12, 0, 0, tzinfo=timezone.utc)
+    tracker.update(_make_detection_result(frame_index=0, timestamp=base, x1=20))
+    assert len(tracker.get_active_tracks()) == 1
+    tracker.reset()
+    assert tracker.get_active_tracks() == []
+    assert tracker.snapshot(include_inactive=True) == []
+
+
+def test_iou_tracker_direction_estimation() -> None:
+    """Track moving east should produce an eastward direction vector."""
+    tracker = TrackerRegistry.create(
+        "iou",
+        TrackingSettings(trajectory_history_size=8, lost_track_buffer=2, minimum_matching_threshold=0.3),
+    )
+    base = datetime(2026, 4, 4, 12, 0, 0, tzinfo=timezone.utc)
+
+    for i in range(5):
+        tracker.update(
+            _make_detection_result(
+                frame_index=i,
+                timestamp=base + timedelta(milliseconds=100 * i),
+                x1=20 + i * 4,
+            )
+        )
+
+    tracks = tracker.get_active_tracks()
+    assert len(tracks) == 1
+    assert tracks[0].direction is not None
+    assert tracks[0].direction.direction in {
+        CardinalDirection.EAST,
+        CardinalDirection.NORTH_EAST,
+        CardinalDirection.SOUTH_EAST,
+    }
+    assert tracks[0].frame_count == 5
+
+
 def test_detector_outputs_flow_into_persistent_tracks() -> None:
     base = datetime(2026, 4, 4, 12, 0, 0, tzinfo=timezone.utc)
     tracker = TrackerRegistry.create(

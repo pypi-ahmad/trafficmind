@@ -80,6 +80,7 @@ class DetectorRegistry:
     _backends: dict[str, type[Detector]] = {}
     _lazy_backends: dict[str, str] = {
         "yolo": "services.vision.backends.yolo_detector:YoloDetector",
+        "plate": "services.vision.backends.plate_detector:PlateDetector",
     }
 
     @classmethod

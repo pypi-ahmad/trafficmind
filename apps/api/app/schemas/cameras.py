@@ -32,6 +32,7 @@ class CameraCreateRequest(BaseModel):
     name: str = Field(min_length=1, max_length=120)
     location_name: str = Field(min_length=1, max_length=160)
     approach: str | None = Field(default=None, max_length=64)
+    junction_id: uuid.UUID | None = None
     timezone: str = Field(default="UTC", min_length=1, max_length=64)
     status: CameraStatus = CameraStatus.PROVISIONING
     latitude: float | None = Field(default=None, ge=-90, le=90)
@@ -62,6 +63,7 @@ class CameraUpdateRequest(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=120)
     location_name: str | None = Field(default=None, min_length=1, max_length=160)
     approach: str | None = Field(default=None, max_length=64)
+    junction_id: uuid.UUID | None = None
     timezone: str | None = Field(default=None, min_length=1, max_length=64)
     status: CameraStatus | None = None
     latitude: float | None = Field(default=None, ge=-90, le=90)

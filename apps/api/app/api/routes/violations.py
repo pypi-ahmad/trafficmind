@@ -1,4 +1,4 @@
-"""Violation search and evidence endpoints."""
+"""Violation search, summary, and evidence endpoints."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ from apps.api.app.api.access import enforce_route_permissions
 from apps.api.app.api.dependencies import DbSession
 from apps.api.app.db.enums import ViolationStatus, ViolationType, ZoneType
 from apps.api.app.schemas.domain import (
+    CameraViolationCountRow,
     ViolationEventRead,
     ViolationReviewActionRequest,
     ViolationSearchResult,
@@ -82,6 +83,25 @@ async def list_violations(
         limit=limit,
         offset=offset,
     )
+
+
+@router.get("/summary/by-camera", response_model=list[CameraViolationCountRow])
+async def violation_counts_by_camera_endpoint(
+    db: DbSession,
+    occurred_after: datetime | None = Query(None),
+    occurred_before: datetime | None = Query(None),
+    limit: int = Query(50, ge=1, le=200),
+) -> list[CameraViolationCountRow]:
+    """Lightweight violation counts grouped by camera for dashboard cards."""
+    from apps.api.app.services.feed_summary import violation_counts_by_camera
+
+    rows = await violation_counts_by_camera(
+        db,
+        occurred_after=occurred_after,
+        occurred_before=occurred_before,
+        limit=limit,
+    )
+    return [CameraViolationCountRow.model_validate(row) for row in rows]
 
 
 @router.get("/{violation_id}/evidence", response_model=EvidenceManifestRead)

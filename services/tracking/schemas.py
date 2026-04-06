@@ -1,4 +1,8 @@
-"""Typed schemas for the tracking service."""
+"""Typed schemas for the tracking service.
+
+``Point2D`` is canonical in ``packages.shared_types`` and re-exported here
+for backward compatibility.
+"""
 
 from __future__ import annotations
 
@@ -8,7 +12,13 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from services.vision.schemas import BBox, ObjectCategory
+from packages.shared_types.geometry import BBox, ObjectCategory, Point2D
+
+__all__ = [  # re-export shared primitives
+    "BBox",
+    "ObjectCategory",
+    "Point2D",
+]
 
 
 class TrackLifecycleStatus(StrEnum):
@@ -41,16 +51,7 @@ class ZoneTransitionType(StrEnum):
     OUTSIDE = "outside"
 
 
-class Point2D(BaseModel):
-    """2D point in image pixel coordinates."""
-
-    model_config = ConfigDict(frozen=True)
-
-    x: float
-    y: float
-
-    def as_tuple(self) -> tuple[float, float]:
-        return (self.x, self.y)
+# Point2D imported from packages.shared_types — do NOT redefine here.
 
 
 class TrajectoryPoint(BaseModel):

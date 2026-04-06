@@ -1413,6 +1413,72 @@ def test_workflow_app_exposes_health_and_execution_routes() -> None:
     assert multimodal_response.json()["status"] == "succeeded"
 
 
+def test_violation_review_interrupt_and_resume_via_http() -> None:
+    """Full HTTP round-trip: start violation review → interrupt → GET run → resume → succeeded."""
+    camera = _camera_record()
+    detection = _detection_record()
+    violation = _violation_record(severity=ViolationSeverity.HIGH, evidence=True)
+    triage_context = IncidentTriageContext(
+        source_kind="violation",
+        camera=camera,
+        detection_event=detection,
+        violation_event=violation,
+        evidence=[EvidenceReference(label="img", source="v", uri="s3://img.jpg", available=True)],
+    )
+    review_context = ViolationReviewContext(
+        camera=camera,
+        violation_event=violation,
+        detection_event=detection,
+        plate_read=_plate_record(),
+        evidence=triage_context.evidence,
+    )
+    daily_context = DailySummaryContext(report_date=date(2026, 4, 4))
+    service, _ = _build_service(
+        triage_context=triage_context,
+        review_context=review_context,
+        daily_summary_context=daily_context,
+    )
+    settings = Settings(database_url="sqlite+aiosqlite:///:memory:", provider_backend="heuristic")
+    client = TestClient(create_app(service=service, settings=settings))
+
+    # Step 1: start violation review — should interrupt
+    start_resp = client.post(
+        "/api/v1/workflows/violation-review",
+        json={"violation_event_id": str(violation.id), "requested_by": "ops.lead"},
+    )
+    assert start_resp.status_code == 201
+    body = start_resp.json()
+    assert body["status"] == "running"
+    assert body["interrupted"] is True
+    assert body["interrupt_request"] is not None
+    assert body["output"] is None
+    run_id = body["run_id"]
+
+    # Step 2: GET the run — still running
+    get_resp = client.get(f"/api/v1/workflows/runs/{run_id}")
+    assert get_resp.status_code == 200
+    assert get_resp.json()["status"] == "running"
+    assert get_resp.json()["interrupted"] is True
+
+    # Step 3: resume with approval
+    resume_resp = client.post(
+        f"/api/v1/workflows/runs/{run_id}/resume",
+        json={"approved": True, "reviewer": "analyst.a", "note": "Looks good."},
+    )
+    assert resume_resp.status_code == 200
+    resumed = resume_resp.json()
+    assert resumed["status"] == "succeeded"
+    assert resumed["interrupted"] is False
+    assert resumed["output"] is not None
+    assert resumed["output"]["workflow"] == "violation_review"
+    assert resumed["output"]["disposition"] == "confirm_violation"
+
+    # Step 4: GET the run again — should be succeeded
+    final_resp = client.get(f"/api/v1/workflows/runs/{run_id}")
+    assert final_resp.status_code == 200
+    assert final_resp.json()["status"] == "succeeded"
+
+
 def test_workflow_strict_startup_checks_fail_for_prod_like_settings() -> None:
     camera = _camera_record()
     violation = _violation_record()

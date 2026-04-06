@@ -39,6 +39,9 @@ TrafficMind uses [LangGraph](https://langchain-ai.github.io/langgraph/) for cold
 Workflows are triggered through the workflow service API:
 
 ```
+GET  /api/v1/health
+GET  /api/v1/health/ready
+GET  /api/v1/info
 POST /api/v1/workflows/incident-triage
 POST /api/v1/workflows/violation-review
 POST /api/v1/workflows/multimodal-review
@@ -260,3 +263,40 @@ The repository uses the same async SQLAlchemy queries and search helpers as the 
 - **No workflow queue.** Execution is synchronous within request handling. A proper task queue (e.g., Celery, Dramatiq) is planned for production.
 - **No model-backed provider is wired.** The workflow abstraction exists, but only the deterministic `heuristic` backend is implemented.
 - **Multimodal review is reference-based.** The workflow distinguishes metadata, manifests, attached images, and attached clips, but it does not decode pixels or render overlays itself.
+
+## Golden-Path Walkthrough
+
+Exercise the three core starter workflows locally (triage → review with interrupt/resume → daily summary):
+
+```bash
+# prerequisites: both services running, database seeded
+python -m apps.api.app.demo.seed --create-schema
+uvicorn apps.api.app.main:app --reload --port 8000 &
+uvicorn apps.workflow.app.main:app --reload --port 8010 &
+
+# grab a demo violation id
+VID=$(curl -s http://localhost:8000/api/v1/violations | python -c "import sys,json;print(json.load(sys.stdin)['items'][0]['id'])")
+
+# 1. triage — auto-completes, no human gate
+curl -s -X POST http://localhost:8010/api/v1/workflows/incident-triage \
+  -H "Content-Type: application/json" \
+  -d "{\"violation_event_id\":\"$VID\",\"require_human_review\":false}" | python -m json.tool
+
+# 2. violation review — pauses at approval gate
+REVIEW=$(curl -s -X POST http://localhost:8010/api/v1/workflows/violation-review \
+  -H "Content-Type: application/json" \
+  -d "{\"violation_event_id\":\"$VID\",\"requested_by\":\"ops.lead\"}")
+RUN_ID=$(echo "$REVIEW" | python -c "import sys,json;print(json.load(sys.stdin)['run_id'])")
+
+# 3. resume the review
+curl -s -X POST "http://localhost:8010/api/v1/workflows/runs/${RUN_ID}/resume" \
+  -H "Content-Type: application/json" \
+  -d '{"approved":true,"reviewer":"analyst.a","note":"Evidence looks consistent."}' | python -m json.tool
+
+# 4. daily summary — runs to completion
+curl -s -X POST http://localhost:8010/api/v1/workflows/daily-summary \
+  -H "Content-Type: application/json" \
+  -d '{"report_date":"2026-04-04","require_human_approval":false}' | python -m json.tool
+```
+
+See [apps/workflow/README.md](../apps/workflow/README.md) for the PowerShell equivalents.

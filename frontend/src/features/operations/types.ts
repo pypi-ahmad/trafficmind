@@ -38,6 +38,7 @@ export interface CameraReadApi {
   name: string;
   location_name: string;
   approach: string | null;
+  junction_id: string | null;
   timezone: string;
   status: CameraStatus;
   latitude: number | null;
@@ -87,6 +88,16 @@ export interface CameraDetailApi extends CameraReadApi {
   zones: ZoneReadApi[];
 }
 
+export interface JunctionReadApi {
+  id: string;
+  name: string;
+  description: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CameraListResponse {
   items: CameraReadApi[];
   total: number;
@@ -95,6 +106,110 @@ export interface CameraListResponse {
 export interface PlaceholderApiResponse {
   resource: string;
   detail: string;
+}
+
+// ---------------------------------------------------------------------------
+// Real event / violation feed response types
+// ---------------------------------------------------------------------------
+
+export type DetectionEventType = "detection" | "scene_classification";
+export type DetectionEventStatus = "new" | "processed" | "archived";
+
+export type ViolationTypeName =
+  | "red_light"
+  | "speeding"
+  | "no_turn_on_red"
+  | "stop_line"
+  | "wrong_way"
+  | "illegal_parking"
+  | "no_stopping"
+  | "pedestrian_conflict"
+  | "bus_stop_violation"
+  | "stalled_vehicle";
+export type ViolationSeverity = "low" | "medium" | "high" | "critical";
+export type ViolationStatus = "open" | "confirmed" | "dismissed" | "reviewed";
+
+export interface DetectionEventReadApi {
+  id: string;
+  camera_id: string;
+  stream_id: string | null;
+  zone_id: string | null;
+  event_type: DetectionEventType;
+  status: DetectionEventStatus;
+  occurred_at: string;
+  frame_index: number | null;
+  track_id: string | null;
+  object_class: string;
+  confidence: number;
+  bbox: Record<string, unknown>;
+  event_payload: Record<string, unknown>;
+  image_uri: string | null;
+  video_uri: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DetectionEventSearchResult {
+  items: DetectionEventReadApi[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface ViolationEventReadApi {
+  id: string;
+  camera_id: string;
+  stream_id: string | null;
+  zone_id: string | null;
+  detection_event_id: string | null;
+  plate_read_id: string | null;
+  violation_type: ViolationTypeName;
+  severity: ViolationSeverity;
+  status: ViolationStatus;
+  occurred_at: string;
+  summary: string | null;
+  evidence_image_uri: string | null;
+  evidence_video_uri: string | null;
+  assigned_to: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  review_note: string | null;
+  rule_metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ViolationSearchResult {
+  items: ViolationEventReadApi[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+// ---------------------------------------------------------------------------
+// Feed summary (lightweight camera-level counts)
+// ---------------------------------------------------------------------------
+
+export interface CameraEventCountApi {
+  camera_id: string;
+  camera_name: string;
+  location_name: string;
+  event_count: number;
+}
+
+export interface CameraViolationCountApi {
+  camera_id: string;
+  camera_name: string;
+  location_name: string;
+  violation_count: number;
+  severity_counts: Record<string, number>;
+}
+
+export interface FeedSummaryModel {
+  eventCounts: CameraEventCountApi[];
+  violationCounts: CameraViolationCountApi[];
+  totalEvents: number;
+  totalViolations: number;
 }
 
 export interface HotspotAnalyticsRequestApi {
@@ -220,12 +335,13 @@ export interface CameraMapItem {
   dashboardHref: string;
   eventFeedHref: string;
   junctionId: string;
+  hasExplicitJunction: boolean;
 }
 
 export interface JunctionSummary {
   id: string;
   name: string;
-  groupingSource: "location_name";
+  groupingSource: "location_name" | "junction_entity";
   coordinates: CoordinatePoint | null;
   cameraIds: string[];
   cameras: CameraMapItem[];
@@ -274,6 +390,7 @@ export interface FeedStatus {
   availability: FeedAvailability;
   statusCode: number | null;
   note: string;
+  totalCount: number | null;
 }
 
 export interface MapProviderConfig {
@@ -331,6 +448,9 @@ export interface SpatialOperationsModel {
     events: FeedStatus;
     violations: FeedStatus;
   };
+  feedSummary: FeedSummaryModel;
+  recentEvents: DetectionEventReadApi[];
+  recentViolations: ViolationEventReadApi[];
 }
 
 export interface ApiResult<T> {

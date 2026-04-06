@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from services.evidence.schemas import EvidencePrivacyPolicy
 from services.model_registry.schemas import ModelRegistrySpec, ModelRegistryTaskType
 from services.ocr.config import OcrSettings, get_ocr_settings
 from services.rules.config import RulesSettings, get_rules_settings
@@ -59,6 +58,7 @@ def build_ocr_registry_spec(settings: OcrSettings | None = None) -> ModelRegistr
         config_bundle={
             **current.model_dump(mode="json"),
             "resolved_use_gpu": current.resolve_use_gpu(),
+            "resolved_device": current.resolve_device(),
         },
         notes="Auto-derived from the current OCR runtime settings.",
         entry_metadata={"auto_generated": True, "source": "ocr_settings"},
@@ -86,6 +86,8 @@ def build_rules_registry_spec(
 
 
 def build_evidence_registry_spec(*, storage_namespace: str) -> ModelRegistrySpec:
+    from services.evidence.schemas import EvidencePrivacyPolicy
+
     policy = EvidencePrivacyPolicy()
     return ModelRegistrySpec(
         task_type=ModelRegistryTaskType.EVIDENCE_CONFIG,

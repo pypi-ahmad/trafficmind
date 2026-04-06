@@ -1,13 +1,18 @@
 import type {
   ApiResult,
   CameraDetailApi,
+  CameraEventCountApi,
   CameraListResponse,
+  CameraViolationCountApi,
   CoordinatePoint,
   CameraMapItem,
   CameraReadApi,
   CameraStatus,
+  DetectionEventReadApi,
+  DetectionEventSearchResult,
   FeedAvailability,
   FeedStatus,
+  FeedSummaryModel,
   HotspotSummary,
   HotspotAnalyticsRequestApi,
   HotspotAnalyticsResponseApi,
@@ -18,12 +23,13 @@ import type {
   JunctionSummary,
   LocationIncidentSummary,
   MapProviderConfig,
-  PlaceholderApiResponse,
   SpatialAnalyticsConfig,
   SpatialAnalyticsSummary,
   SpatialMapMarker,
   SpatialMapMarkerTone,
   SpatialOperationsModel,
+  ViolationEventReadApi,
+  ViolationSearchResult,
 } from "@/features/operations/types";
 
 type DashboardSelection = {
@@ -102,15 +108,18 @@ function averageCoordinates(cameras: CameraMapItem[]) {
   return { latitude, longitude };
 }
 
-function toFeedStatus(
-  result: ApiResult<PlaceholderApiResponse>,
-  liveLabel: string,
+function toEventFeedStatus(
+  result: ApiResult<DetectionEventSearchResult>,
 ): FeedStatus {
-  if (result.ok) {
+  if (result.ok && result.data && Array.isArray(result.data.items)) {
     return {
-      availability: "pending_backend",
+      availability: "live",
       statusCode: result.status,
-      note: result.data?.detail ?? `${liveLabel} endpoint is reachable but still scaffolded.`,
+      note:
+        result.data.total > 0
+          ? `${result.data.total} detection events available from the backend.`
+          : "Events feed is live but no detection events have been recorded yet.",
+      totalCount: result.data.total,
     };
   }
 
@@ -118,14 +127,48 @@ function toFeedStatus(
     return {
       availability: "pending_backend",
       statusCode: result.status,
-      note: result.error ?? `${liveLabel} endpoint is scaffolded but not implemented yet.`,
+      note: result.error ?? "Events endpoint is scaffolded but not implemented yet.",
+      totalCount: null,
     };
   }
 
   return {
     availability: "unreachable",
     statusCode: result.status,
-    note: result.error ?? `${liveLabel} endpoint is currently unreachable.`,
+    note: result.error ?? "Events endpoint is currently unreachable.",
+    totalCount: null,
+  };
+}
+
+function toViolationFeedStatus(
+  result: ApiResult<ViolationSearchResult>,
+): FeedStatus {
+  if (result.ok && result.data && Array.isArray(result.data.items)) {
+    return {
+      availability: "live",
+      statusCode: result.status,
+      note:
+        result.data.total > 0
+          ? `${result.data.total} violation events available from the backend.`
+          : "Violations feed is live but no violation events have been recorded yet.",
+      totalCount: result.data.total,
+    };
+  }
+
+  if (result.status === 501) {
+    return {
+      availability: "pending_backend",
+      statusCode: result.status,
+      note: result.error ?? "Violations endpoint is scaffolded but not implemented yet.",
+      totalCount: null,
+    };
+  }
+
+  return {
+    availability: "unreachable",
+    statusCode: result.status,
+    note: result.error ?? "Violations endpoint is currently unreachable.",
+    totalCount: null,
   };
 }
 
@@ -365,7 +408,8 @@ function buildSingleCameraDetailHref(cameraIds: string[], junctionId: string): s
 
 export function toCameraMapItems(cameras: CameraReadApi[]): CameraMapItem[] {
   return cameras.map((camera) => {
-    const junctionId = slugify(camera.location_name);
+    const junctionId = camera.junction_id ?? slugify(camera.location_name);
+    const hasExplicitJunction = camera.junction_id !== null;
     return {
       id: camera.id,
       code: camera.camera_code,
@@ -385,6 +429,7 @@ export function toCameraMapItems(cameras: CameraReadApi[]): CameraMapItem[] {
       dashboardHref: buildDashboardHref({ cameraId: camera.id, junctionId }),
       eventFeedHref: buildEventFeedHref({ cameraId: camera.id, junctionId }),
       junctionId,
+      hasExplicitJunction,
     };
   });
 }
@@ -415,10 +460,11 @@ export function groupCamerasIntoJunctions(cameras: CameraMapItem[]): JunctionSum
       }
 
       const name = groupedCameras[0]?.locationName ?? "Unassigned junction";
+      const hasEntity = groupedCameras.some((camera) => camera.hasExplicitJunction);
       return {
         id: junctionId,
         name,
-        groupingSource: "location_name",
+        groupingSource: hasEntity ? "junction_entity" : "location_name",
         coordinates: averageCoordinates(groupedCameras),
         cameraIds: groupedCameras.map((camera) => camera.id),
         cameras: groupedCameras,
@@ -483,6 +529,8 @@ export function deriveIncidentSummaries(
   violationsStatus: FeedStatus,
   analytics: SpatialAnalyticsSummary,
   analyticsPayload: HotspotAnalyticsResponseApi | null,
+  recentEvents: DetectionEventReadApi[],
+  recentViolations: ViolationEventReadApi[],
 ): LocationIncidentSummary[] {
   if (analytics.availability === "live" && analyticsPayload) {
     const camerasById = new Map(cameras.map((camera) => [camera.id, camera]));
@@ -551,19 +599,63 @@ export function deriveIncidentSummaries(
         ? "pending_backend"
         : "unreachable";
 
+  // When feeds are live, aggregate real event/violation counts per camera → junction
+  if (availability === "live") {
+    const camerasById = new Map(cameras.map((camera) => [camera.id, camera]));
+    const countsByJunction = new Map<string, number>();
+
+    for (const event of recentEvents) {
+      const camera = camerasById.get(event.camera_id);
+      if (camera) {
+        countsByJunction.set(camera.junctionId, (countsByJunction.get(camera.junctionId) ?? 0) + 1);
+      }
+    }
+    for (const violation of recentViolations) {
+      const camera = camerasById.get(violation.camera_id);
+      if (camera) {
+        countsByJunction.set(camera.junctionId, (countsByJunction.get(camera.junctionId) ?? 0) + 1);
+      }
+    }
+
+    const totalEvents = eventsStatus.totalCount ?? 0;
+    const totalViolations = violationsStatus.totalCount ?? 0;
+    const feedNote =
+      totalEvents + totalViolations > 0
+        ? `Live feeds: ${totalEvents} events and ${totalViolations} violations from the backend.`
+        : "Event and violation feeds are live but no incidents have been recorded yet.";
+
+    return junctions
+      .map((junction) => ({
+        id: `incident-${junction.id}`,
+        title: junction.name,
+        locationName: junction.name,
+        locationType: "junction" as const,
+        incidentCount: countsByJunction.get(junction.id) ?? 0,
+        availability: "live" as const,
+        note: feedNote,
+        source: "camera_metadata" as const,
+        trendLabel: null,
+        cameraIds: junction.cameraIds,
+        junctionId: junction.id,
+        dashboardHref: junction.dashboardHref,
+        eventFeedHref: junction.eventFeedHref,
+        cameraDetailHref: junction.cameraCount === 1 ? buildSingleCameraDetailHref(junction.cameraIds, junction.id) : null,
+      }))
+      .sort((left, right) => (right.incidentCount ?? 0) - (left.incidentCount ?? 0) || left.title.localeCompare(right.title))
+      .slice(0, 5);
+  }
+
   const note =
     availability === "pending_backend"
       ? "Top incident counts are waiting on the /events and /violations APIs. Location cards are scaffolded from current junction grouping only."
-      : availability === "unreachable"
-        ? "Incident feeds are currently unreachable, so this section is showing placeholders only."
-        : "Live location incidents available.";
+      : "Incident feeds are currently unreachable, so this section is showing placeholders only.";
 
   return junctions.slice(0, 5).map((junction) => ({
     id: `incident-${junction.id}`,
     title: junction.name,
     locationName: junction.name,
     locationType: "junction",
-    incidentCount: availability === "live" ? 0 : null,
+    incidentCount: null,
     availability,
     note,
     source: "camera_metadata",
@@ -692,12 +784,31 @@ export function buildSpatialMapMarkers(args: {
   return [...junctionMarkers, ...cameraMarkers];
 }
 
+export function deriveFeedSummary(
+  eventCountsResult: ApiResult<CameraEventCountApi[]>,
+  violationCountsResult: ApiResult<CameraViolationCountApi[]>,
+): FeedSummaryModel {
+  const eventCounts =
+    eventCountsResult.ok && eventCountsResult.data ? eventCountsResult.data : [];
+  const violationCounts =
+    violationCountsResult.ok && violationCountsResult.data ? violationCountsResult.data : [];
+
+  return {
+    eventCounts,
+    violationCounts,
+    totalEvents: eventCounts.reduce((sum, row) => sum + row.event_count, 0),
+    totalViolations: violationCounts.reduce((sum, row) => sum + row.violation_count, 0),
+  };
+}
+
 export function buildSpatialOperationsModel(args: {
   camerasResult: ApiResult<CameraListResponse>;
-  eventsResult: ApiResult<PlaceholderApiResponse>;
-  violationsResult: ApiResult<PlaceholderApiResponse>;
+  eventsResult: ApiResult<DetectionEventSearchResult>;
+  violationsResult: ApiResult<ViolationSearchResult>;
   hotspotAnalyticsRequest: HotspotAnalyticsRequestApi;
   hotspotAnalyticsResult: ApiResult<HotspotAnalyticsResponseApi>;
+  eventCountsResult: ApiResult<CameraEventCountApi[]>;
+  violationCountsResult: ApiResult<CameraViolationCountApi[]>;
   selectedCameraDetail: ApiResult<CameraDetailApi> | null;
   selectedCameraId: string | null;
   selectedJunctionId: string | null;
@@ -708,9 +819,13 @@ export function buildSpatialOperationsModel(args: {
   const junctions = groupCamerasIntoJunctions(cameraItems);
   const mappedCameras = cameraItems.filter((camera) => camera.coordinates !== null);
   const feeds = {
-    events: toFeedStatus(args.eventsResult, "Events"),
-    violations: toFeedStatus(args.violationsResult, "Violations"),
+    events: toEventFeedStatus(args.eventsResult),
+    violations: toViolationFeedStatus(args.violationsResult),
   };
+  const recentEvents: DetectionEventReadApi[] =
+    args.eventsResult.ok && args.eventsResult.data ? args.eventsResult.data.items : [];
+  const recentViolations: ViolationEventReadApi[] =
+    args.violationsResult.ok && args.violationsResult.data ? args.violationsResult.data.items : [];
   const spatialAnalytics = toSpatialAnalyticsStatus(
     args.hotspotAnalyticsResult,
     args.hotspotAnalyticsRequest,
@@ -737,6 +852,8 @@ export function buildSpatialOperationsModel(args: {
     feeds.violations,
     spatialAnalytics,
     hotspotAnalyticsPayload,
+    recentEvents,
+    recentViolations,
   );
   const hotspots = deriveHotspots(junctions, cameraItems, spatialAnalytics, hotspotAnalyticsPayload);
   const selectedIncidentSummary =
@@ -750,6 +867,8 @@ export function buildSpatialOperationsModel(args: {
     }
     return false;
   });
+
+  const feedSummary = deriveFeedSummary(args.eventCountsResult, args.violationCountsResult);
 
   return {
     cameras: cameraItems,
@@ -775,5 +894,8 @@ export function buildSpatialOperationsModel(args: {
     spatialAnalytics,
     provider: args.provider,
     feeds,
+    feedSummary,
+    recentEvents,
+    recentViolations,
   };
 }

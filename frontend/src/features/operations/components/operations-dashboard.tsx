@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { StatCard } from "@/features/operations/components/dashboard-primitives";
 import { MapPanel } from "@/features/operations/components/map-panel";
-import { OperationsActivityPanels } from "@/features/operations/components/operations-activity-panels";
+import { OperationsActivityPanels, OperationsRecentFeedPanels } from "@/features/operations/components/operations-activity-panels";
 import { OperationsSidebar } from "@/features/operations/components/operations-sidebar";
 import type { SpatialOperationsModel } from "@/features/operations/types";
 
@@ -19,6 +19,13 @@ export function OperationsDashboard({ model }: { model: SpatialOperationsModel }
   const analyticsMetricNote = model.spatialAnalytics.availability === "live"
     ? "This count comes from persisted violations and watchlist alerts in the configured spatial analytics window."
     : "Hotspots fall back to camera health and coordinate coverage until live spatial analytics is available.";
+
+  const feedSummaryNote =
+    model.feedSummary.totalEvents + model.feedSummary.totalViolations > 0
+      ? `${model.feedSummary.totalEvents} events and ${model.feedSummary.totalViolations} violations across ${model.feedSummary.eventCounts.length} cameras.`
+      : model.feeds.events.availability === "live"
+        ? "Feeds are live but no events have been recorded yet."
+        : "Event and violation feeds are not yet connected.";
 
   return (
     <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-8 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
@@ -58,13 +65,13 @@ export function OperationsDashboard({ model }: { model: SpatialOperationsModel }
             <div className="rounded-[1.5rem] bg-[rgba(255,255,255,0.74)] px-4 py-3 text-sm text-[var(--color-ink)]">
               <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[rgba(19,32,41,0.54)]">Raw Feed Routes</p>
               <p className="mt-2 font-semibold">{model.feeds.events.availability} / {model.feeds.violations.availability}</p>
-              <p className="mt-1 text-[rgba(19,32,41,0.72)]">{model.feeds.events.note}</p>
+              <p className="mt-1 text-[rgba(19,32,41,0.72)]">{feedSummaryNote}</p>
             </div>
           </div>
         </div>
       </header>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <StatCard
           label="Mapped Cameras"
           value={`${model.mappedCameras.length}/${model.cameras.length}`}
@@ -81,6 +88,16 @@ export function OperationsDashboard({ model }: { model: SpatialOperationsModel }
           note={`${multiCameraJunctions} multi-camera intersections are already grouped using current location names.`}
         />
         <StatCard
+          label="Detection Events"
+          value={model.feeds.events.availability === "live" ? `${model.feedSummary.totalEvents}` : "--"}
+          note={model.feeds.events.availability === "live" ? `Across ${model.feedSummary.eventCounts.length} cameras in the analytics window.` : "Waiting for live event feed connection."}
+        />
+        <StatCard
+          label="Violations"
+          value={model.feeds.violations.availability === "live" ? `${model.feedSummary.totalViolations}` : "--"}
+          note={model.feeds.violations.availability === "live" ? `Across ${model.feedSummary.violationCounts.length} cameras in the analytics window.` : "Waiting for live violation feed connection."}
+        />
+        <StatCard
           label={analyticsMetricLabel}
           value={analyticsMetricValue}
           note={analyticsMetricNote}
@@ -91,6 +108,8 @@ export function OperationsDashboard({ model }: { model: SpatialOperationsModel }
         <MapPanel model={model} />
         <OperationsSidebar model={model} />
       </section>
+
+      <OperationsRecentFeedPanels model={model} />
 
       <OperationsActivityPanels model={model} />
     </div>

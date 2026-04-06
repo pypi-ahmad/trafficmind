@@ -112,13 +112,13 @@ export interface PlaceholderApiResponse {
 // Real event / violation feed response types
 // ---------------------------------------------------------------------------
 
-export type DetectionEventType = "detection" | "scene_classification";
-export type DetectionEventStatus = "new" | "processed" | "archived";
+export type DetectionEventType = "detection" | "zone_entry" | "zone_exit" | "line_crossing" | "light_state";
+export type DetectionEventStatus = "new" | "enriched" | "suppressed";
 
 export type ViolationTypeName =
   | "red_light"
   | "speeding"
-  | "no_turn_on_red"
+  | "illegal_turn"
   | "stop_line"
   | "wrong_way"
   | "illegal_parking"
@@ -127,7 +127,7 @@ export type ViolationTypeName =
   | "bus_stop_violation"
   | "stalled_vehicle";
 export type ViolationSeverity = "low" | "medium" | "high" | "critical";
-export type ViolationStatus = "open" | "confirmed" | "dismissed" | "reviewed";
+export type ViolationStatus = "open" | "under_review" | "confirmed" | "dismissed";
 
 export interface DetectionEventReadApi {
   id: string;
@@ -203,6 +203,49 @@ export interface CameraViolationCountApi {
   location_name: string;
   violation_count: number;
   severity_counts: Record<string, number>;
+}
+
+// ---------------------------------------------------------------------------
+// Aggregate summary totals — flat breakdown for stat cards
+// ---------------------------------------------------------------------------
+
+export interface EventSummaryTotalsApi {
+  total: number;
+  by_status: Record<string, number>;
+  by_type: Record<string, number>;
+}
+
+export interface ViolationSummaryTotalsApi {
+  total: number;
+  by_severity: Record<string, number>;
+  by_type: Record<string, number>;
+  by_status: Record<string, number>;
+}
+
+// ---------------------------------------------------------------------------
+// Feed filter params — expanded filter support for search endpoints
+// ---------------------------------------------------------------------------
+
+export interface EventFeedParams {
+  limit?: number;
+  offset?: number;
+  cameraId?: string | null;
+  eventType?: DetectionEventType | null;
+  status?: DetectionEventStatus | null;
+  objectClass?: string | null;
+  occurredAfter?: string | null;
+  occurredBefore?: string | null;
+  minConfidence?: number | null;
+}
+
+export interface ViolationFeedParams {
+  limit?: number;
+  offset?: number;
+  cameraId?: string | null;
+  violationType?: ViolationTypeName | null;
+  status?: ViolationStatus | null;
+  occurredAfter?: string | null;
+  occurredBefore?: string | null;
 }
 
 export interface FeedSummaryModel {
@@ -449,6 +492,8 @@ export interface SpatialOperationsModel {
     violations: FeedStatus;
   };
   feedSummary: FeedSummaryModel;
+  eventSummaryTotals: EventSummaryTotalsApi | null;
+  violationSummaryTotals: ViolationSummaryTotalsApi | null;
   recentEvents: DetectionEventReadApi[];
   recentViolations: ViolationEventReadApi[];
 }

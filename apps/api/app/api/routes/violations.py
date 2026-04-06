@@ -15,6 +15,7 @@ from apps.api.app.schemas.domain import (
     ViolationEventRead,
     ViolationReviewActionRequest,
     ViolationSearchResult,
+    ViolationSummaryTotals,
 )
 from apps.api.app.services.errors import NotFoundError
 from services.access_control.policy import AccessPermission
@@ -102,6 +103,25 @@ async def violation_counts_by_camera_endpoint(
         limit=limit,
     )
     return [CameraViolationCountRow.model_validate(row) for row in rows]
+
+
+@router.get("/summary/totals", response_model=ViolationSummaryTotals)
+async def violation_summary_totals_endpoint(
+    db: DbSession,
+    camera_id: uuid.UUID | None = Query(None),
+    occurred_after: datetime | None = Query(None),
+    occurred_before: datetime | None = Query(None),
+) -> ViolationSummaryTotals:
+    """Flat aggregate counts of violations by severity, type, and status."""
+    from apps.api.app.services.feed_summary import violation_summary_totals
+
+    result = await violation_summary_totals(
+        db,
+        camera_id=camera_id,
+        occurred_after=occurred_after,
+        occurred_before=occurred_before,
+    )
+    return ViolationSummaryTotals.model_validate(result)
 
 
 @router.get("/{violation_id}/evidence", response_model=EvidenceManifestRead)

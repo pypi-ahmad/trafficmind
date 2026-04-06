@@ -665,6 +665,109 @@ async def test_incident_triage_workflow_completes_without_interrupt_when_context
 
 
 @pytest.mark.asyncio
+async def test_incident_triage_workflow_interrupts_and_resumes_when_severity_is_high() -> None:
+    """HIGH-severity triggers requires_human_review; interrupt fires and resume completes."""
+    camera = _camera_record()
+    detection = _detection_record(confidence=0.94)
+    violation = _violation_record(severity=ViolationSeverity.HIGH, evidence=True)
+    triage_context = IncidentTriageContext(
+        source_kind="violation",
+        camera=camera,
+        detection_event=detection,
+        violation_event=violation,
+        plate_read=_plate_record(),
+        evidence=[
+            EvidenceReference(label="violation_image", source="violation", uri="s3://image.jpg", available=True),
+            EvidenceReference(label="violation_clip", source="violation", uri="s3://clip.mp4", available=True),
+        ],
+    )
+    review_context = ViolationReviewContext(
+        camera=camera, violation_event=violation, detection_event=detection, plate_read=_plate_record(), evidence=triage_context.evidence,
+    )
+    daily_context = DailySummaryContext(
+        report_date=date(2026, 4, 4),
+        cameras=[CameraDailySummary(camera_id=camera.id, camera_name=camera.name, location_name=camera.location_name, detection_count=5, violation_count=1, open_violation_count=1)],
+        total_detections=5, total_violations=1, total_open_violations=1,
+        top_violation_types={"red_light": 1},
+    )
+    service, _ = _build_service(
+        triage_context=triage_context,
+        review_context=review_context,
+        daily_summary_context=daily_context,
+    )
+
+    first = await service.start_incident_triage(
+        IncidentTriageRequest(violation_event_id=violation.id, require_human_review=True)
+    )
+
+    assert first.status == WorkflowStatus.RUNNING
+    assert first.interrupted is True
+    assert first.interrupt_request is not None
+    assert first.output is None
+
+    resumed = await service.resume_workflow(
+        first.run_id,
+        WorkflowResumeRequest(approved=True, reviewer="analyst.a", note="Triage accepted."),
+    )
+
+    assert resumed.status == WorkflowStatus.SUCCEEDED
+    assert resumed.interrupted is False
+    assert resumed.output is not None
+    assert resumed.output.workflow == "incident_triage"
+    assert "Reviewer note: Triage accepted." in resumed.output.operator_brief
+    assert any(entry.node == "human_gate" for entry in resumed.trace)
+
+
+@pytest.mark.asyncio
+async def test_incident_triage_rejection_escalates_priority() -> None:
+    """Rejecting an incident triage escalates HIGH to CRITICAL and adds escalate action."""
+    camera = _camera_record()
+    detection = _detection_record(confidence=0.94)
+    violation = _violation_record(severity=ViolationSeverity.HIGH, evidence=True)
+    triage_context = IncidentTriageContext(
+        source_kind="violation",
+        camera=camera,
+        detection_event=detection,
+        violation_event=violation,
+        plate_read=_plate_record(),
+        evidence=[
+            EvidenceReference(label="violation_image", source="violation", uri="s3://image.jpg", available=True),
+            EvidenceReference(label="violation_clip", source="violation", uri="s3://clip.mp4", available=True),
+        ],
+    )
+    review_context = ViolationReviewContext(
+        camera=camera, violation_event=violation, detection_event=detection, plate_read=_plate_record(), evidence=triage_context.evidence,
+    )
+    daily_context = DailySummaryContext(
+        report_date=date(2026, 4, 4),
+        cameras=[CameraDailySummary(camera_id=camera.id, camera_name=camera.name, location_name=camera.location_name, detection_count=5, violation_count=1, open_violation_count=1)],
+        total_detections=5, total_violations=1, total_open_violations=1,
+        top_violation_types={"red_light": 1},
+    )
+    service, _ = _build_service(
+        triage_context=triage_context,
+        review_context=review_context,
+        daily_summary_context=daily_context,
+    )
+
+    first = await service.start_incident_triage(
+        IncidentTriageRequest(violation_event_id=violation.id, require_human_review=True)
+    )
+    assert first.interrupted is True
+
+    resumed = await service.resume_workflow(
+        first.run_id,
+        WorkflowResumeRequest(approved=False, reviewer="shift_lead"),
+    )
+
+    assert resumed.status == WorkflowStatus.SUCCEEDED
+    assert resumed.output is not None
+    assert resumed.output.priority.value == "critical"
+    assert "escalate_manual_triage" in resumed.output.recommended_actions
+    assert "Human reviewer requested manual follow-up." in resumed.output.summary
+
+
+@pytest.mark.asyncio
 async def test_violation_review_workflow_interrupts_then_resumes() -> None:
     camera = _camera_record()
     detection = _detection_record()
@@ -2316,3 +2419,63 @@ async def test_hotspot_report_empty_window_produces_valid_output() -> None:
     assert response.output.total_violations_in_window == 0
     assert len(response.output.hotspots) == 0
     assert response.output.data_gaps == ["No violation records found in the reporting window."]
+
+
+def test_workflow_app_has_no_hot_path_imports() -> None:
+    """The workflow service must not import any per-frame inference modules."""
+    import importlib
+    import pkgutil
+
+    import apps.workflow.app as workflow_pkg
+
+    hot_path_modules = {
+        "services.vision",
+        "services.tracking",
+        "services.ocr",
+        "services.signals",
+        "services.rules",
+        "services.streams",
+        "services.motion",
+        "services.flow",
+        "services.dwell",
+    }
+
+    # Pure utility imports that live under a hot-path namespace but perform
+    # no inference, no network calls, and carry no heavy dependencies.
+    safe_exceptions = {
+        "services.ocr.normalizer",
+    }
+
+    workflow_modules: list[str] = []
+    for importer, modname, ispkg in pkgutil.walk_packages(
+        workflow_pkg.__path__,
+        prefix="apps.workflow.app.",
+    ):
+        workflow_modules.append(modname)
+
+    all_imports: set[str] = set()
+    for modname in workflow_modules:
+        try:
+            mod = importlib.import_module(modname)
+        except Exception:
+            continue
+        source_file = getattr(mod, "__file__", None)
+        if source_file is None:
+            continue
+        with open(source_file) as fh:
+            for line in fh:
+                stripped = line.strip()
+                if stripped.startswith(("import ", "from ")):
+                    all_imports.add(stripped)
+
+    violations = []
+    for imp in all_imports:
+        if any(safe in imp for safe in safe_exceptions):
+            continue
+        for hot in hot_path_modules:
+            if hot in imp:
+                violations.append(f"{imp}  (matches {hot})")
+
+    assert not violations, (
+        "Workflow app must not import hot-path modules:\n" + "\n".join(violations)
+    )

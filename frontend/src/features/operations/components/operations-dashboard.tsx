@@ -90,12 +90,20 @@ export function OperationsDashboard({ model }: { model: SpatialOperationsModel }
         <StatCard
           label="Detection Events"
           value={model.feeds.events.availability === "live" ? `${model.feedSummary.totalEvents}` : "--"}
-          note={model.feeds.events.availability === "live" ? `Across ${model.feedSummary.eventCounts.length} cameras in the analytics window.` : "Waiting for live event feed connection."}
+          note={model.feeds.events.availability === "live"
+            ? model.eventSummaryTotals
+              ? `By status: ${Object.entries(model.eventSummaryTotals.by_status).map(([k, v]) => `${k} ${v}`).join(", ")}.`
+              : `Across ${model.feedSummary.eventCounts.length} cameras in the analytics window.`
+            : "Waiting for live event feed connection."}
         />
         <StatCard
           label="Violations"
           value={model.feeds.violations.availability === "live" ? `${model.feedSummary.totalViolations}` : "--"}
-          note={model.feeds.violations.availability === "live" ? `Across ${model.feedSummary.violationCounts.length} cameras in the analytics window.` : "Waiting for live violation feed connection."}
+          note={model.feeds.violations.availability === "live"
+            ? model.violationSummaryTotals
+              ? `By severity: ${Object.entries(model.violationSummaryTotals.by_severity).map(([k, v]) => `${k} ${v}`).join(", ")}.`
+              : `Across ${model.feedSummary.violationCounts.length} cameras in the analytics window.`
+            : "Waiting for live violation feed connection."}
         />
         <StatCard
           label={analyticsMetricLabel}

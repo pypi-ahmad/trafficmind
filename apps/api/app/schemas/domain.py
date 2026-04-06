@@ -428,6 +428,23 @@ class FeedSummaryResponse(ORMSchema):
     total_violations: int = 0
 
 
+class EventSummaryTotals(ORMSchema):
+    """Flat aggregate counts for detection events."""
+
+    total: int = 0
+    by_status: dict[str, int] = Field(default_factory=dict)
+    by_type: dict[str, int] = Field(default_factory=dict)
+
+
+class ViolationSummaryTotals(ORMSchema):
+    """Flat aggregate counts for violation events."""
+
+    total: int = 0
+    by_severity: dict[str, int] = Field(default_factory=dict)
+    by_type: dict[str, int] = Field(default_factory=dict)
+    by_status: dict[str, int] = Field(default_factory=dict)
+
+
 class WatchlistMatchResult(ORMSchema):
     plate_read: PlateReadRead
     watchlist_entry: WatchlistEntryRead

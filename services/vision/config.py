@@ -32,7 +32,12 @@ class VisionSettings(BaseSettings):
     # ── device ──────────────────────────────────────────────────
     device: str = Field(
         default="auto",
-        description="Torch device: 'auto', 'cpu', 'cuda', 'cuda:0', etc.",
+        description=(
+            "Torch device for YOLO inference.\n"
+            "  'auto' (default) → 'cuda' when torch.cuda.is_available(), else 'cpu'.\n"
+            "  'cuda' / 'cuda:0' → force GPU; raises at inference time if unavailable.\n"
+            "  'cpu' → force CPU even when a GPU is present."
+        ),
     )
 
     # ── thresholds ──────────────────────────────────────────────
@@ -56,7 +61,18 @@ class VisionSettings(BaseSettings):
         return (_REPO_ROOT / path).resolve()
 
     def resolve_device(self) -> str:
-        """Return the concrete torch device string."""
+        """Return the concrete torch device string.
+
+        Resolution order:
+        1. Explicit ``VISION_DEVICE`` env var → used as-is.
+        2. ``"auto"`` (default) → ``"cuda"`` when ``torch.cuda.is_available()``
+           returns ``True``; otherwise ``"cpu"``.
+        3. If PyTorch is not installed → ``"cpu"``.
+
+        On a typical dev machine with an NVIDIA GPU and a CUDA-capable
+        PyTorch build, auto-resolution picks ``"cuda"`` without any
+        extra configuration.
+        """
         if self.device != "auto":
             return self.device
         try:

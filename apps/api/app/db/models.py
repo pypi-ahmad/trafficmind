@@ -65,6 +65,22 @@ def enum_type(enum_cls: type, name: str) -> SAEnum:
     return SAEnum(enum_cls, name=name, native_enum=False, validate_strings=True)
 
 
+class Junction(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    """Logical intersection or junction that groups one or more cameras."""
+
+    __tablename__ = "junctions"
+    __table_args__ = (
+        Index("ix_junctions_name", "name"),
+    )
+
+    name: Mapped[str] = mapped_column(String(160), nullable=False, unique=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+    cameras: Mapped[list["Camera"]] = relationship(back_populates="junction")
+
+
 class Camera(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     """Physical traffic camera device managed by the platform."""
 
@@ -72,12 +88,17 @@ class Camera(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __table_args__ = (
         Index("ix_cameras_status_created_at", "status", "created_at"),
         Index("ix_cameras_location_name", "location_name"),
+        Index("ix_cameras_junction_id", "junction_id"),
     )
 
     camera_code: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     location_name: Mapped[str] = mapped_column(String(160), nullable=False)
     approach: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    junction_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("junctions.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     timezone: Mapped[str] = mapped_column(String(64), nullable=False, default="UTC", server_default="UTC")
     status: Mapped[CameraStatus] = mapped_column(
         enum_type(CameraStatus, "camera_status"),
@@ -95,6 +116,8 @@ class Camera(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         server_default=text("'{}'"),
     )
     calibration_updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    junction: Mapped["Junction | None"] = relationship(back_populates="cameras")
 
     streams: Mapped[list["CameraStream"]] = relationship(
         back_populates="camera",
@@ -936,6 +959,7 @@ class AlertDeliveryAttempt(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     scheduled_for: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     attempted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    retry_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
     delivery_payload: Mapped[dict[str, Any]] = mapped_column(
         JSON,
         nullable=False,

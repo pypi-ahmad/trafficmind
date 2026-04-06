@@ -35,13 +35,39 @@ class OcrSettings(BaseSettings):
         default=None,
         description="Directory to save plate crop images. None disables saving.",
     )
-    use_gpu: bool = Field(
-        default=True,
-        description="Prefer Paddle CUDA when available; falls back to CPU if the installed Paddle build has no CUDA support.",
+    device: str | None = Field(
+        default=None,
+        description=(
+            "PaddleOCR 3.x device string: 'gpu:0', 'cpu', etc.\n"
+            "None (default) → auto-detects via paddle.device.is_compiled_with_cuda():\n"
+            "  • Paddle CUDA wheel installed → 'gpu:0'.\n"
+            "  • Paddle CPU-only wheel installed → 'cpu' (most common on Windows).\n"
+            "Set 'cpu' explicitly to force CPU even when a CUDA wheel is present."
+        ),
     )
     model_dir: Path | None = Field(
         default=None,
         description="Root directory for OCR model weights.",
+    )
+
+    # Kept for backward compat with OCR_USE_GPU env var
+    use_gpu: bool = Field(
+        default=True,
+        exclude=True,
+        description=(
+            "Legacy flag; prefer ``device``.\n"
+            "When ``device`` is None and ``use_gpu`` is True (the default), the "
+            "engine auto-detects whether the installed PaddlePaddle build has CUDA "
+            "support.  Set ``use_gpu=False`` (or ``OCR_USE_GPU=false``) to force "
+            "CPU unconditionally."
+        ),
+    )
+    enable_mkldnn: bool = Field(
+        default=False,
+        description=(
+            "Enable oneDNN (MKL-DNN) acceleration. Disabled by default due to "
+            "PaddlePaddle 3.x oneDNN bugs on Windows; enable on Linux if desired."
+        ),
     )
 
     @field_validator("crop_output_dir", "model_dir", mode="before")
@@ -61,16 +87,39 @@ class OcrSettings(BaseSettings):
             raise ValueError(msg)
         return self
 
-    def resolve_use_gpu(self) -> bool:
-        """Return whether OCR should actually use Paddle CUDA."""
+    def resolve_device(self) -> str:
+        """Return the PaddleOCR 3.x ``device`` string.
+
+        Resolution order:
+        1. If ``OCR_DEVICE`` is explicitly set, return it as-is.
+        2. If ``OCR_USE_GPU`` is ``false``, return ``"cpu"``.
+        3. Auto-detect: ``"gpu:0"`` when ``paddle.device.is_compiled_with_cuda()``
+           is ``True``; otherwise ``"cpu"``.
+
+        On Windows, only CPU-only PaddlePaddle wheels are published
+        by upstream, so auto-detection always resolves to ``"cpu"``.
+        On Linux with ``paddlepaddle-gpu`` installed, this resolves to
+        ``"gpu:0"`` automatically.
+        """
+        if self.device is not None:
+            return self.device
         if not self.use_gpu:
-            return False
+            return "cpu"
         try:
             import paddle
 
-            return bool(paddle.device.is_compiled_with_cuda())
+            if paddle.device.is_compiled_with_cuda():
+                return "gpu:0"
         except ImportError:
-            return False
+            pass
+        return "cpu"
+
+    def resolve_use_gpu(self) -> bool:
+        """Return whether OCR should actually use Paddle CUDA.
+
+        Kept for backward compatibility; delegates to :meth:`resolve_device`.
+        """
+        return self.resolve_device().startswith("gpu")
 
 
 @lru_cache

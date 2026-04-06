@@ -223,8 +223,9 @@ That means human-interrupt resume works while the process is still running. For 
 
 With the service running on port `8010` by default:
 
-- `GET /api/v1/health`
-- `GET /api/v1/info`
+- `GET  /api/v1/health` — liveness
+- `GET  /api/v1/health/ready` — readiness (database probe, provider check)
+- `GET  /api/v1/info` — service metadata (version, provider, checkpoint backend)
 - `POST /api/v1/workflows/incident-triage`
 - `POST /api/v1/workflows/violation-review`
 - `POST /api/v1/workflows/multimodal-review`
@@ -233,14 +234,67 @@ With the service running on port `8010` by default:
 - `POST /api/v1/workflows/hotspot-report`
 - `POST /api/v1/workflows/operator-assist`
 - `POST /api/v1/workflows/runs/{run_id}/resume`
-- `GET /api/v1/workflows/runs/{run_id}`
+- `GET  /api/v1/workflows/runs/{run_id}`
 
 ## Configuration
 
 See `.env.example` for supported environment variables. The key ones are:
 
-- `WORKFLOW_DATABASE_URL`
+- `DATABASE_URL` (also accepts `WORKFLOW_DATABASE_URL` or `TRAFFICMIND_DATABASE_URL`)
 - `WORKFLOW_PROVIDER_BACKEND=heuristic`
 - `WORKFLOW_CHECKPOINT_BACKEND=memory`
 
 The provider boundary is intentionally abstract so a model-backed backend can be introduced later without changing the graph structure.
+
+## Golden-Path Walkthrough
+
+Seed demo data, start the services, and exercise the three core workflows locally:
+
+```bash
+# 1. Seed the database (creates schema + demo records)
+python -m apps.api.app.demo.seed --create-schema
+
+# 2. Start the API backend (separate terminal)
+uvicorn apps.api.app.main:app --reload --port 8000
+
+# 3. Start the workflow service (separate terminal)
+uvicorn apps.workflow.app.main:app --reload --port 8010
+
+# 4. Triage — runs to completion, no human gate needed for medium severity
+curl -s -X POST http://localhost:8010/api/v1/workflows/incident-triage \
+  -H "Content-Type: application/json" \
+  -d '{"violation_event_id":"<VIOLATION_ID>","require_human_review":false}' | python -m json.tool
+
+# 5. Violation review — interrupts for human approval
+REVIEW=$(curl -s -X POST http://localhost:8010/api/v1/workflows/violation-review \
+  -H "Content-Type: application/json" \
+  -d '{"violation_event_id":"<VIOLATION_ID>","requested_by":"ops.lead"}')
+echo "$REVIEW" | python -m json.tool
+RUN_ID=$(echo "$REVIEW" | python -c "import sys,json;print(json.load(sys.stdin)['run_id'])")
+
+# 6. Resume the interrupted review
+curl -s -X POST "http://localhost:8010/api/v1/workflows/runs/${RUN_ID}/resume" \
+  -H "Content-Type: application/json" \
+  -d '{"approved":true,"reviewer":"analyst.a","note":"Evidence looks consistent."}' | python -m json.tool
+
+# 7. Daily summary — quick report, no approval gate
+curl -s -X POST http://localhost:8010/api/v1/workflows/daily-summary \
+  -H "Content-Type: application/json" \
+  -d '{"report_date":"2026-04-04","require_human_approval":false}' | python -m json.tool
+```
+
+Replace `<VIOLATION_ID>` with a UUID from the demo seed output or from `GET http://localhost:8000/api/v1/violations`.
+
+On **Windows PowerShell**, replace the `curl` calls with `Invoke-RestMethod`:
+
+```powershell
+# Triage
+Invoke-RestMethod -Method Post -Uri http://localhost:8010/api/v1/workflows/incident-triage `
+  -ContentType "application/json" `
+  -Body '{"violation_event_id":"<VIOLATION_ID>","require_human_review":false}'
+
+# Daily summary
+Invoke-RestMethod -Method Post -Uri http://localhost:8010/api/v1/workflows/daily-summary `
+  -ContentType "application/json" `
+  -Body '{"report_date":"2026-04-04","require_human_approval":false}'
+```

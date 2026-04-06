@@ -206,6 +206,8 @@ class TrackerRegistry:
     _backends: dict[str, type[Tracker]] = {}
     _lazy_backends: dict[str, str] = {
         "bytetrack": "services.tracking.backends.bytetrack_tracker:ByteTrackTracker",
+        "centroid": "services.tracking.backends.centroid_tracker:CentroidTracker",
+        "iou": "services.tracking.backends.iou_tracker:IoUTracker",
     }
 
     @classmethod

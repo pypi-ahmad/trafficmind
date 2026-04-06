@@ -257,7 +257,9 @@ class StreamWorker:
                 )
 
                 if self._on_frame is not None:
-                    self._on_frame(self._spec, result)
+                    cb_result = self._on_frame(self._spec, result)
+                    if asyncio.iscoroutine(cb_result):
+                        await cb_result
 
                 self._maybe_log_metrics(result)
 

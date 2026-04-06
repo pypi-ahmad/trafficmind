@@ -10,9 +10,11 @@ Plate OCR should only run once a reliable plate-localization path is available.
 
 Runtime defaults:
 
-- request Paddle CUDA by default via `OCR_USE_GPU=true`
-- automatically fall back to CPU when the installed Paddle runtime has no CUDA support
-- optional model directories can still be supplied through `OCR_MODEL_DIR`
+- `OCR_USE_GPU=true` (default) → auto-detect via `paddle.device.is_compiled_with_cuda()`
+- on Linux with `paddlepaddle-gpu` → resolves to `gpu:0`
+- on Windows (or Linux with CPU-only `paddlepaddle`) → resolves to `cpu` with a logged warning
+- override with `OCR_DEVICE=gpu:0` or `OCR_DEVICE=cpu` for explicit control
+- optional model directories via `OCR_MODEL_DIR`
 
 ## Plate Normalization
 

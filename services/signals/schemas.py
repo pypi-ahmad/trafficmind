@@ -3,6 +3,9 @@
 These schemas are the contract between the signal classifier, the temporal
 state tracker, and all downstream consumers (rules engine via SceneContext,
 perception event batches, persistence layer).
+
+``SignalPhase`` is canonical in ``packages.shared_types`` and re-exported
+here for backward compatibility.
 """
 
 from __future__ import annotations
@@ -15,7 +18,10 @@ import uuid
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from services.vision.schemas import BBox
+from packages.shared_types.geometry import BBox
+from packages.shared_types.scene import SignalPhase
+
+__all__ = ["SignalPhase"]  # re-export shared primitive
 
 
 # ---------------------------------------------------------------------------
@@ -38,15 +44,7 @@ class SignalColor(StrEnum):
     UNKNOWN = "unknown"
 
 
-class SignalPhase(StrEnum):
-    """Which traffic participant the signal head controls.
-
-    Kept explicit so vehicle and pedestrian signals are never confused.
-    """
-
-    VEHICLE = "vehicle"
-    PEDESTRIAN = "pedestrian"
-    UNKNOWN = "unknown"
+# SignalPhase imported from packages.shared_types — do NOT redefine here.
 
 
 # ---------------------------------------------------------------------------

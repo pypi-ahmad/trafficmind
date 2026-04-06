@@ -4,6 +4,24 @@ from __future__ import annotations
 
 from enum import StrEnum
 
+# ---------------------------------------------------------------------------
+# Canonical enums — imported from the shared_types package so that the
+# deterministic service layer never has to depend on apps.api.*.
+# Re-exported here for full backward compatibility with existing consumers.
+# ---------------------------------------------------------------------------
+from packages.shared_types.enums import (  # noqa: F401
+    DetectionEventStatus,
+    DetectionEventType,
+    ReIdMatchStatus,
+    ReIdSubjectType,
+    RuleType,
+    ViolationLifecycleStage,
+    ViolationSeverity,
+    ViolationStatus,
+    ViolationType,
+    ZoneType,
+)
+
 
 class CameraStatus(StrEnum):
     PROVISIONING = "provisioning"
@@ -33,34 +51,10 @@ class StreamStatus(StrEnum):
     DISABLED = "disabled"
 
 
-class ZoneType(StrEnum):
-    POLYGON = "polygon"
-    LINE = "line"
-    STOP_LINE = "stop_line"
-    CROSSWALK = "crosswalk"
-    ROI = "roi"
-    LANE = "lane"
-    RESTRICTED = "restricted"
-
-
 class ZoneStatus(StrEnum):
     DRAFT = "draft"
     ACTIVE = "active"
     ARCHIVED = "archived"
-
-
-class DetectionEventType(StrEnum):
-    DETECTION = "detection"
-    ZONE_ENTRY = "zone_entry"
-    ZONE_EXIT = "zone_exit"
-    LINE_CROSSING = "line_crossing"
-    LIGHT_STATE = "light_state"
-
-
-class DetectionEventStatus(StrEnum):
-    NEW = "new"
-    ENRICHED = "enriched"
-    SUPPRESSED = "suppressed"
 
 
 class ModelRegistryTaskType(StrEnum):
@@ -69,33 +63,6 @@ class ModelRegistryTaskType(StrEnum):
     OCR_MODEL = "ocr_model"
     RULES_CONFIG = "rules_config"
     EVIDENCE_CONFIG = "evidence_config"
-
-
-class ViolationType(StrEnum):
-    RED_LIGHT = "red_light"
-    STOP_LINE = "stop_line"
-    WRONG_WAY = "wrong_way"
-    PEDESTRIAN_CONFLICT = "pedestrian_conflict"
-    ILLEGAL_TURN = "illegal_turn"
-    SPEEDING = "speeding"
-    ILLEGAL_PARKING = "illegal_parking"
-    NO_STOPPING = "no_stopping"
-    BUS_STOP_VIOLATION = "bus_stop_violation"
-    STALLED_VEHICLE = "stalled_vehicle"
-
-
-class ViolationSeverity(StrEnum):
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    CRITICAL = "critical"
-
-
-class ViolationStatus(StrEnum):
-    OPEN = "open"
-    UNDER_REVIEW = "under_review"
-    CONFIRMED = "confirmed"
-    DISMISSED = "dismissed"
 
 
 class PlateReadStatus(StrEnum):
@@ -194,23 +161,6 @@ class WorkflowStatus(StrEnum):
     SUCCEEDED = "succeeded"
     FAILED = "failed"
     CANCELLED = "cancelled"
-
-
-# ---------------------------------------------------------------------------
-# Re-identification
-# ---------------------------------------------------------------------------
-
-
-class ReIdSubjectType(StrEnum):
-    VEHICLE = "vehicle"
-    PERSON = "person"
-
-
-class ReIdMatchStatus(StrEnum):
-    CANDIDATE = "candidate"
-    CONFIRMED = "confirmed"
-    REJECTED = "rejected"
-    EXPIRED = "expired"
 
 
 # ---------------------------------------------------------------------------

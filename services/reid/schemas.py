@@ -26,24 +26,10 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 # ---------------------------------------------------------------------------
-# Enums (service-level — mirrored in DB enums for persistence)
+# Enums (canonical source in packages.shared_types.enums; re-exported here)
 # ---------------------------------------------------------------------------
 
-
-class ReIdSubjectType(StrEnum):
-    """Kind of object eligible for re-identification."""
-
-    VEHICLE = "vehicle"
-    PERSON = "person"  # kept separate for privacy policy gating
-
-
-class ReIdMatchStatus(StrEnum):
-    """Lifecycle of a proposed cross-camera match."""
-
-    CANDIDATE = "candidate"  # proposed by similarity search
-    CONFIRMED = "confirmed"  # accepted (auto or manual)
-    REJECTED = "rejected"  # false positive
-    EXPIRED = "expired"  # candidate TTL exceeded
+from packages.shared_types.enums import ReIdMatchStatus, ReIdSubjectType  # noqa: F401
 
 
 class ReIdConfidenceBand(StrEnum):

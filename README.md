@@ -1,46 +1,53 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/🚦-TrafficMind-1a1a2e?style=for-the-badge&labelColor=0d1117&color=16213e" height="60"/>
-
+<!-- Hero Banner -->
 <br/>
 
-### **Unified Traffic Intelligence Platform**
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/%F0%9F%9A%A6-TrafficMind-ffffff?style=for-the-badge&labelColor=0d1117&color=16213e" height="65">
+  <img src="https://img.shields.io/badge/%F0%9F%9A%A6-TrafficMind-1a1a2e?style=for-the-badge&labelColor=0d1117&color=16213e" height="65"/>
+</picture>
 
-<p align="center">
-<em>End-to-end traffic monitoring — from raw video frames to operator-ready violation evidence — in a single, well-tested monorepo.</em>
+<br/><br/>
+
+**Unified Traffic Intelligence Platform**
+
+<p>
+<em>From raw video frames to operator-ready violation evidence — detection, tracking, OCR, rule evaluation, workflow triage, and spatial analytics in one monorepo.</em>
 </p>
 
 <br/>
 
+<!-- Primary Tech Stack Badges -->
 [![Python 3.13](https://img.shields.io/badge/Python-3.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Next.js 16](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
 [![React 19](https://img.shields.io/badge/React_19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![TypeScript 5](https://img.shields.io/badge/TypeScript_5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org)
-[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white)](https://sqlalchemy.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![LangGraph](https://img.shields.io/badge/🦜_LangGraph-1C3C3C?style=for-the-badge)](https://langchain-ai.github.io/langgraph/)
+[![SQLAlchemy 2](https://img.shields.io/badge/SQLAlchemy_2-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white)](https://sqlalchemy.org)
+[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![LangGraph](https://img.shields.io/badge/%F0%9F%A6%9C_LangGraph-1C3C3C?style=for-the-badge)](https://langchain-ai.github.io/langgraph/)
 
 <br/>
 
-<p align="center">
-<a href="#-quick-start"><img src="https://img.shields.io/badge/🚀_Quick_Start-Guide-2ea44f?style=flat-square" alt="Quick Start"/></a>
-<a href="#-architecture"><img src="https://img.shields.io/badge/🏗_Architecture-Overview-blue?style=flat-square" alt="Architecture"/></a>
-<a href="#-testing"><img src="https://img.shields.io/badge/🧪_Tests-813_passed-brightgreen?style=flat-square&logo=pytest&logoColor=white" alt="Tests"/></a>
-<a href="#-documentation"><img src="https://img.shields.io/badge/📚_Docs-17_pages-mediumpurple?style=flat-square" alt="Docs"/></a>
-</p>
+<!-- Navigation -->
+<a href="#-quick-start"><img src="https://img.shields.io/badge/%F0%9F%9A%80_Quick_Start-Guide-2ea44f?style=flat-square" alt="Quick Start"/></a>&nbsp;
+<a href="#-architecture"><img src="https://img.shields.io/badge/%F0%9F%8F%97_Architecture-Overview-blue?style=flat-square" alt="Architecture"/></a>&nbsp;
+<a href="#-testing"><img src="https://img.shields.io/badge/%F0%9F%A7%AA_Tests-813_passed-brightgreen?style=flat-square&logo=pytest&logoColor=white" alt="Tests"/></a>&nbsp;
+<a href="#-documentation"><img src="https://img.shields.io/badge/%F0%9F%93%9A_Docs-17_guides-mediumpurple?style=flat-square" alt="Docs"/></a>
 
-<p align="center">
-<img src="https://img.shields.io/badge/ORM_Models-23-0969da?style=flat-square&logo=database&logoColor=white" alt="Models"/>
+<!-- Metric Badges -->
+<br/><br/>
+<img src="https://img.shields.io/badge/ORM_Models-23-0969da?style=flat-square" alt="Models"/>
 <img src="https://img.shields.io/badge/Migrations-13-0969da?style=flat-square" alt="Migrations"/>
 <img src="https://img.shields.io/badge/Test_Files-50-brightgreen?style=flat-square" alt="Test Files"/>
 <img src="https://img.shields.io/badge/Rule_Types-11-orange?style=flat-square" alt="Rules"/>
 <img src="https://img.shields.io/badge/Workflows-7-8957e5?style=flat-square" alt="Workflows"/>
-<img src="https://img.shields.io/badge/API_Route_Groups-15+-0969da?style=flat-square" alt="Routes"/>
-<img src="https://img.shields.io/badge/Shared_Enums-33-e8590c?style=flat-square" alt="Enums"/>
-</p>
+<img src="https://img.shields.io/badge/API_Routes-15+-0969da?style=flat-square" alt="Routes"/>
+<img src="https://img.shields.io/badge/Services-21-e8590c?style=flat-square" alt="Services"/>
+<img src="https://img.shields.io/badge/Shared_Types-42-9333ea?style=flat-square" alt="Shared Types"/>
 
 ---
 
@@ -59,11 +66,12 @@
 - [Tech Stack](#-tech-stack)
 - [Architecture](#-architecture)
 - [Repository Structure](#-repository-structure)
-- [Perception Pipeline (Hot Path)](#-perception-pipeline-hot-path)
+- [Perception Pipeline](#-perception-pipeline-hot-path)
 - [Backend API](#-backend-api)
 - [Cold-Path Workflows](#-cold-path-workflows)
 - [Frontend](#-frontend)
 - [Rules Engine](#-rules-engine)
+- [Shared Types](#-shared-types)
 - [Data Layer](#-data-layer)
 - [Quick Start](#-quick-start)
 - [Testing](#-testing)
@@ -80,16 +88,23 @@
 
 <table>
 <tr>
-<td width="60%">
+<td width="58%">
 
-Urban traffic enforcement and monitoring require processing high-volume video feeds, detecting violations with temporal evidence, reading license plates, and routing incidents to human reviewers with structured evidence.
+Urban traffic enforcement requires processing high-volume video feeds, detecting violations with temporal evidence, reading license plates, and routing incidents to human reviewers with structured evidence.
 
 **TrafficMind provides all of this in a single monorepo with clear boundaries between deterministic inference and cold-path post-processing.**
 
 The system is split into two clearly separated runtime paths:
 
+| | 🔥 **Hot Path** | 🧊 **Cold Path** |
+|:---:|---|---|
+| **Purpose** | Frame-by-frame perception & rule evaluation | Post-hoc triage, review & reporting |
+| **Runtime** | Detect → Track → OCR → Signals → Rules | LangGraph workflows over stored records |
+| **Guarantees** | Deterministic · No network I/O · No DB writes per-frame | Grounded exclusively over persisted data |
+| **Latency** | Real-time (per-frame) | Async / operator-triggered |
+
 </td>
-<td width="40%">
+<td width="42%">
 
 ```
     ┌─────────────────────┐
@@ -119,13 +134,6 @@ The system is split into two clearly separated runtime paths:
 </tr>
 </table>
 
-| | 🔥 **Hot Path** | 🧊 **Cold Path** |
-|:---:|---|---|
-| **Purpose** | Frame-by-frame perception & rule evaluation | Post-hoc triage, review & reporting |
-| **Runtime** | Detection → Tracking → OCR → Signals → Rules | LangGraph workflows over stored records |
-| **Guarantees** | Fully deterministic · No network I/O · No DB writes in the per-frame loop | Grounded exclusively over persisted data |
-| **Latency** | Real-time (per-frame) | Async / operator-triggered |
-
 ---
 
 ## 🛠 Tech Stack
@@ -138,13 +146,13 @@ The system is split into two clearly separated runtime paths:
 
 | | Technology | Details |
 |:---:|---|---|
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg" width="20"/> | **FastAPI** | Async API, Pydantic v2 validation |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlalchemy/sqlalchemy-original.svg" width="20"/> | **SQLAlchemy 2** | Async ORM, 23 models |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" width="20"/> | **PostgreSQL** | Production data store |
-| <img src="https://img.shields.io/badge/-SQLite-003B57?style=flat&logo=sqlite&logoColor=white" height="16"/> | **SQLite** | Local development |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg" width="18"/> | **FastAPI** | Async API · Pydantic v2 validation |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlalchemy/sqlalchemy-original.svg" width="18"/> | **SQLAlchemy 2** | Async ORM · 23 models |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" width="18"/> | **PostgreSQL** | Production data store |
+| <img src="https://img.shields.io/badge/-SQLite-003B57?style=flat&logo=sqlite&logoColor=white" height="14"/> | **SQLite** | Local dev / CI |
 | 🔄 | **Alembic** | 13 migration revisions |
 | 🦜 | **LangGraph** | 7 cold-path workflow graphs |
-| 📦 | **Pydantic v2** | 33 shared StrEnum types |
+| 📦 | **Pydantic v2** | 42 shared type contracts |
 
 </td>
 <td width="50%">
@@ -153,11 +161,11 @@ The system is split into two clearly separated runtime paths:
 
 | | Technology | Details |
 |:---:|---|---|
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" width="20"/> | **Next.js 16** | React 19, App Router, SSR |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="20"/> | **TypeScript 5** | Strict types end-to-end |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg" width="20"/> | **Tailwind CSS 4** | Utility-first styling |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" width="18"/> | **Next.js 16** | App Router · SSR · RSC |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="18"/> | **React 19** | Server Components |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="18"/> | **TypeScript 5** | Strict types end-to-end |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg" width="18"/> | **Tailwind CSS 4** | Utility-first styling |
 | 🗺️ | **MapLibre GL** | Spatial operations map |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="20"/> | **React 19** | Server components |
 
 </td>
 </tr>
@@ -168,12 +176,12 @@ The system is split into two clearly separated runtime paths:
 
 | | Technology | Details |
 |:---:|---|---|
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg" width="20"/> | **PyTorch 2.11** | CUDA-accelerated inference |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg" width="18"/> | **PyTorch 2.11** | CUDA-accelerated inference |
 | 🎯 | **Ultralytics YOLO** | Object detection backends |
 | 👁️ | **Supervision** | ByteTrack multi-object tracking |
-| 🔤 | **PaddleOCR** | License plate recognition |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opencv/opencv-original.svg" width="20"/> | **OpenCV** | Image processing & heuristics |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg" width="20"/> | **NumPy** | Array operations |
+| 🔤 | **PaddleOCR 3.4** | License plate recognition |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opencv/opencv-original.svg" width="18"/> | **OpenCV 4.13** | Image processing |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg" width="18"/> | **NumPy** | Array operations |
 
 </td>
 <td width="50%">
@@ -182,9 +190,9 @@ The system is split into two clearly separated runtime paths:
 
 | | Technology | Details |
 |:---:|---|---|
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" width="20"/> | **Python 3.13** | Modern runtime |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytest/pytest-original.svg" width="20"/> | **pytest** | 813 tests, 50 test files |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="20"/> | **GitHub Actions** | Lint / test / build CI |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" width="18"/> | **Python 3.13** | Modern runtime |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytest/pytest-original.svg" width="18"/> | **pytest** | 813 tests · 50 test files |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="18"/> | **GitHub Actions** | Lint · test · build CI |
 | 🐳 | **Docker** | Containerization (planned) |
 | 📋 | **uv** | Dependency resolution & locks |
 | 🔍 | **Ruff** | Linting & formatting |
@@ -231,44 +239,45 @@ The system is split into two clearly separated runtime paths:
 ```
 trafficmind/
 │
-├── 🔧  apps/
-│   ├── api/                 # FastAPI backend (routes, schemas, services, ORM, migrations)
-│   ├── workflow/            # LangGraph cold-path workflow service
-│   └── web/                 # Future canonical web app location
+├── 🔧 apps/
+│   ├── api/                  FastAPI backend — routes, schemas, services, ORM, migrations
+│   ├── workflow/             LangGraph cold-path workflow service
+│   └── web/                  Future canonical web app location
 │
-├── 🧠  services/
-│   ├── vision/              # Detection (Detector ABC → YOLO, Plate backends)
-│   ├── tracking/            # Tracking (Tracker ABC → ByteTrack, IoU, Centroid backends)
-│   ├── ocr/                 # Plate OCR (OcrEngine ABC → PaddleOCR backend)
-│   ├── signals/             # Traffic-light classification (HSV + temporal smoothing)
-│   ├── rules/               # Deterministic rule engine (11 rule types)
-│   ├── motion/              # Speed estimation, direction labeling
-│   ├── flow/                # Lane occupancy, queue detection, congestion
-│   ├── streams/             # Stream ingestion, worker lifecycle, frame pipeline
-│   ├── anpr/                # Plate search, normalization, watchlist helpers
-│   ├── events/              # Detection-event search helpers
-│   ├── violations/          # Violation search helpers
-│   ├── evidence/            # Evidence manifest packaging + privacy/redaction
-│   ├── integrations/        # Enterprise adapter contracts + local sinks
-│   ├── model_registry/      # Runtime model/config provenance registry
-│   ├── health/              # Camera and stream health assessment
-│   ├── hotspot/             # Spatial trend analytics and ranking
-│   ├── reid/                # Cross-camera re-identification
-│   ├── dwell/               # Vehicle dwell-time analytics
-│   └── evaluation/          # Fixture-driven benchmarking
+├── 🧠 services/
+│   ├── vision/               Detection (Detector ABC → YOLO, Plate backends)
+│   ├── tracking/             Tracking (Tracker ABC → ByteTrack, IoU, Centroid)
+│   ├── ocr/                  Plate OCR (OcrEngine ABC → PaddleOCR)
+│   ├── signals/              Traffic-light classification (HSV + smoothing)
+│   ├── rules/                Deterministic rule engine — 11 rule types
+│   ├── motion/               Speed estimation, direction labeling
+│   ├── flow/                 Lane occupancy, queue detection, congestion
+│   ├── dwell/                Vehicle dwell-time analytics
+│   ├── streams/              Stream ingestion, worker lifecycle, frame pipeline
+│   ├── anpr/                 Plate search, normalization, watchlist helpers
+│   ├── events/               Detection-event search
+│   ├── violations/           Violation search
+│   ├── evidence/             Evidence packaging + privacy/redaction
+│   ├── integrations/         Enterprise adapters + local sinks
+│   ├── model_registry/       Runtime model/config provenance
+│   ├── health/               Camera/stream health assessment
+│   ├── hotspot/              Spatial trend analytics and ranking
+│   ├── reid/                 Cross-camera re-identification
+│   └── evaluation/           Fixture-driven benchmarking
 │
-├── 🖥   frontend/            # Next.js 16 operations dashboard
-├── 📦  packages/
-│   └── shared_types/        # Cross-boundary type contracts (BBox, ObjectCategory, enums, events)
+├── 🖥  frontend/              Next.js 16 operations dashboard
 │
-├── 🏗   infra/
-│   ├── docker/              # Docker assets
-│   └── scripts/             # Automation (run_checks, render_env, doctor)
+├── 📦 packages/
+│   └── shared_types/         Cross-boundary contracts — geometry, enums, events, scene
 │
-├── 🗃   alembic/             # 13 database migration revisions
-├── 📚  docs/                 # 17 documentation pages
-├── 🧪  tests/               # 813 tests · 50 test files · 15+ modules
-└── 🤖  models/              # ML model weights (gitignored)
+├── 🏗  infra/
+│   ├── docker/               Container assets
+│   └── scripts/              Automation — run_checks, render_env, doctor, local_smoke
+│
+├── 🗃  alembic/               13 database migration revisions
+├── 📚 docs/                  17 documentation guides
+├── 🧪 tests/                 813 tests · 50 test files · 15+ modules
+└── 🤖 models/                ML model weights (gitignored)
 ```
 
 ---
@@ -278,53 +287,53 @@ trafficmind/
 The hot-path perception pipeline composes pluggable backends into a single deterministic `process_frame()` loop:
 
 ```
-  📹 Frame In  →  🎯 Detect  →  📍 Track  →  🔤 OCR  →  🚦 Classify  →  📏 Evaluate Rules  →  📸 Package Evidence
+  📹 Frame In  →  🎯 Detect  →  📍 Track  →  🔤 OCR  →  🚦 Classify  →  📏 Evaluate Rules  →  📸 Evidence
 ```
 
 <table>
 <tr><th>Capability</th><th>Module</th><th>Backends</th><th>Status</th></tr>
-<tr><td>🎯 Object Detection</td><td><code>services/vision/</code></td><td>YOLO v8 · Plate Heuristic</td><td><img src="https://img.shields.io/badge/-2_backends-brightgreen?style=flat-square"/></td></tr>
+<tr><td>🎯 Object Detection</td><td><code>services/vision/</code></td><td>YOLO · Plate Heuristic</td><td><img src="https://img.shields.io/badge/-2_backends-brightgreen?style=flat-square"/></td></tr>
 <tr><td>📍 Multi-Object Tracking</td><td><code>services/tracking/</code></td><td>ByteTrack · IoU · Centroid</td><td><img src="https://img.shields.io/badge/-3_backends-brightgreen?style=flat-square"/></td></tr>
 <tr><td>🔤 License Plate OCR</td><td><code>services/ocr/</code></td><td>PaddleOCR + normalization</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
 <tr><td>🚦 Traffic-Light State</td><td><code>services/signals/</code></td><td>HSV voting + temporal smoothing</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
-<tr><td>📏 Rule Evaluation</td><td><code>services/rules/</code></td><td>11 deterministic rule types</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
-<tr><td>🏎 Speed Estimation</td><td><code>services/motion/</code></td><td>Calibration-aware, 3 tiers</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
-<tr><td>🚗 Dwell Analysis</td><td><code>services/dwell/</code></td><td>Parking, bus-stop, stalled</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
-<tr><td>📊 Lane Analytics</td><td><code>services/flow/</code></td><td>Occupancy, queues, congestion</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
-<tr><td>🔥 Hotspot Analytics</td><td><code>services/hotspot/</code></td><td>Ranking, heatmap, trends</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
+<tr><td>📏 Rule Evaluation</td><td><code>services/rules/</code></td><td>11 deterministic rule types</td><td><img src="https://img.shields.io/badge/-11_rules-brightgreen?style=flat-square"/></td></tr>
+<tr><td>🏎 Speed Estimation</td><td><code>services/motion/</code></td><td>Calibration-aware · 3 quality tiers</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
+<tr><td>🚗 Dwell Analysis</td><td><code>services/dwell/</code></td><td>Parking · bus-stop · stalled</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
+<tr><td>📊 Lane Analytics</td><td><code>services/flow/</code></td><td>Occupancy · queues · congestion</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
+<tr><td>🔥 Hotspot Analytics</td><td><code>services/hotspot/</code></td><td>Ranking · heatmap · trends</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
 <tr><td>🔄 Cross-Camera Re-ID</td><td><code>services/reid/</code></td><td>Entity association + review</td><td><img src="https://img.shields.io/badge/-Foundation-blue?style=flat-square"/></td></tr>
-<tr><td>📹 Stream Orchestration</td><td><code>services/streams/</code></td><td>Worker lifecycle, metrics</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
+<tr><td>📹 Stream Orchestration</td><td><code>services/streams/</code></td><td>Worker lifecycle · metrics</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
 <tr><td>📸 Evidence Packaging</td><td><code>services/evidence/</code></td><td>Deterministic frame selection</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
-<tr><td>🔒 Privacy & Redaction</td><td><code>services/evidence/</code></td><td>Role-based, plate masking</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
+<tr><td>🔒 Privacy & Redaction</td><td><code>services/evidence/</code></td><td>Role-based · plate masking</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
 <tr><td>📋 Model Provenance</td><td><code>services/model_registry/</code></td><td>Versioned runtime bundles</td><td><img src="https://img.shields.io/badge/-Implemented-brightgreen?style=flat-square"/></td></tr>
 </table>
 
-> **🔌 Pluggable Backends** — Both detector and tracker abstractions use an ABC + registry pattern. New backends (e.g. RT-DETR, custom ANPR model) can be registered without modifying existing code.
+> **🔌 Pluggable Backends** — Both detector and tracker use an ABC + registry pattern. New backends (e.g. RT-DETR, custom ANPR model) can be registered without modifying existing code.
 
 ---
 
 ## ⚡ Backend API
 
-**15+ endpoint groups** powering the full traffic operations lifecycle:
+**15 endpoint groups** powering the full traffic operations lifecycle:
 
-| Endpoint Group | Routes | Description |
-|:---:|---|---|
-| 📷 | **Cameras & Streams** `/cameras`, `/streams` | CRUD, health, video source registration |
-| 🔗 | **Junctions** `/junctions` | Junction entity CRUD, camera grouping |
-| 🎯 | **Detection Events** `/events` | Paginated search with 14+ filters |
-| ⚠️ | **Violations** `/violations` | Search by type/severity/status, review workflow |
-| 🔤 | **Plate Search** `/plates` | ANPR lookup, normalization-aware matching |
-| 📋 | **Watchlists** `/watchlist` | Entry CRUD, plate matching alerts |
-| 📸 | **Evidence** `/{type}/{id}/evidence` | Manifest build and retrieval |
-| 📊 | **Analytics** `/analytics/hotspots` | Spatial ranking, trends, heatmaps |
-| 📈 | **Summary Totals** `/events/summary`, `/violations/summary` | Dashboard stat aggregations |
-| 🩺 | **Observability** `/observability/dashboard` | Camera/stream health dashboard |
-| 🔔 | **Alerts** `/alerts` | Routing, escalation, delivery dispatch |
-| 📦 | **Case Export** `/exports` | JSON bundles, markdown, zip-manifest |
-| 🤖 | **Model Registry** `/model-registry` | Runtime bundle tracking, provenance |
-| 🔐 | **Access Policy** `/access/policy` | Role-to-permission matrix |
-| 💚 | **Health** `/health/ready` | Startup & readiness probes |
-| 🏭 | **Jobs** `/jobs` | Stream job management |
+| | Endpoint Group | Routes | Description |
+|:---:|---|---|---|
+| 📷 | **Cameras & Streams** | `/cameras` `/streams` | CRUD · health · video source registration |
+| 🔗 | **Junctions** | `/junctions` | Junction entity CRUD · camera grouping |
+| 🎯 | **Detection Events** | `/events` | Paginated search · 14+ filters |
+| ⚠️ | **Violations** | `/violations` | Search by type/severity/status · review |
+| 📈 | **Summary Totals** | `/events/summary` `/violations/summary` | Dashboard stat aggregations |
+| 🔤 | **Plate Search** | `/plates` | ANPR lookup · normalization-aware matching |
+| 📋 | **Watchlists** | `/watchlist` | Entry CRUD · plate matching alerts |
+| 📸 | **Evidence** | `/{type}/{id}/evidence` | Manifest build and retrieval |
+| 📊 | **Analytics** | `/analytics/hotspots` | Spatial ranking · trends · heatmaps |
+| 🩺 | **Observability** | `/observability/dashboard` | Camera/stream health dashboard |
+| 🔔 | **Alerts** | `/alerts` | Routing · escalation · delivery dispatch |
+| 📦 | **Case Export** | `/exports` | JSON bundles · markdown · zip-manifest |
+| 🤖 | **Model Registry** | `/model-registry` | Runtime bundle tracking · provenance |
+| 🔐 | **Access Policy** | `/access/policy` | Role-to-permission matrix |
+| 💚 | **Health** | `/health/ready` | Startup & readiness probes |
+| 🏭 | **Jobs** | `/jobs` | Stream job management |
 
 ---
 
@@ -336,7 +345,7 @@ Seven LangGraph-powered workflow graphs operating exclusively over stored record
 |:---:|---|---|:---:|
 | 1 | 🔍 **Incident Triage** | Automated incident classification and routing | ✅ |
 | 2 | ✅ **Violation Review** | Human-in-the-loop violation confirmation | ✅ |
-| 3 | 🤖 **Multimodal Review Copilot** | Grounded advisory analysis of evidence | ✅ |
+| 3 | 🤖 **Multimodal Review** | Grounded advisory analysis of evidence | ✅ |
 | 4 | 📅 **Daily Summary** | Automated daily operations report | ✅ |
 | 5 | 📆 **Weekly Summary** | Automated weekly trend report | ✅ |
 | 6 | 🔥 **Hotspot Report** | Spatial concentration analysis | ✅ |
@@ -348,18 +357,18 @@ Seven LangGraph-powered workflow graphs operating exclusively over stored record
 
 ## 🖥 Frontend
 
-The **Next.js 16** operations dashboard provides a map-first view of the camera network with real-time data:
+The **Next.js 16** operations dashboard provides a map-first view of the camera network:
 
 | Feature | Status | Details |
 |---|:---:|---|
-| 🗺️ Map-first operations dashboard | ✅ | Camera markers, junction grouping, hotspot overlays |
-| 📷 Camera detail and stream view | ✅ | Status, metadata, linked events |
-| 🎯 Live event and violation feeds | ✅ | Real paginated data from `GET /events/` and `GET /violations/` |
-| 🔍 Feed filters and pagination | ✅ | Type, status, time presets, camera scope, offset pagination |
-| 📊 Summary totals and breakdowns | ✅ | By-status, by-severity, by-type aggregations |
-| 🔗 Junction-level camera grouping | ✅ | Derived from location names, multi-camera intersections |
+| 🗺️ Map-first operations dashboard | ✅ | Camera markers · junction grouping · hotspot overlays |
+| 📷 Camera detail and stream view | ✅ | Status · metadata · linked events |
+| 🎯 Event and violation feeds | ✅ | Real paginated data from `GET /events` and `GET /violations` |
+| 🔍 Feed filters and pagination | ✅ | Type · status · time presets · camera scope |
+| 📊 Summary totals and breakdowns | ✅ | By-status · by-severity · by-type aggregations |
+| 🔗 Junction-level camera grouping | ✅ | Derived from location names · multi-camera intersections |
 | 📊 Hotspot and spatial analytics | ✅ | Backed by persisted hotspot analytics when available |
-| 📈 Evaluation benchmark summaries | ✅ | Detection, tracking, OCR, rule, workflow metrics |
+| 📈 Evaluation benchmark summaries | ✅ | Detection · tracking · OCR · rule · workflow metrics |
 | ⚠️ Violation review UI | 🔜 | Planned |
 | 📊 Analytics charts | 🚧 | In progress |
 
@@ -374,9 +383,9 @@ The **Next.js 16** operations dashboard provides a map-first view of the camera 
 | 🔴 Red-light crossing | Multi-frame ✅ | Pre + post violation frames |
 | 🚶 Pedestrian on red | Multi-frame ✅ | Trajectory evidence |
 | 🛑 Stop-line crossing | Multi-frame ✅ | Approach + violation frames |
-| ↩️ Wrong-way travel | — | Direction vector evidence |
-| ➖ Line crossing | — | Crossing geometry |
-| 🚧 Zone entry | — | Zone boundary breach |
+| ↩️ Wrong-way travel | Instant | Direction vector evidence |
+| ➖ Line crossing | Instant | Crossing geometry |
+| 🚧 Zone entry | Instant | Zone boundary breach |
 | ⏱ Zone dwell time | Duration-based | Timestamped occupancy |
 | 🅿️ Illegal parking | Duration-based | Timestamped occupancy |
 | 🚫 No stopping | Duration-based | Timestamped occupancy |
@@ -387,13 +396,28 @@ The **Next.js 16** operations dashboard provides a map-first view of the camera 
 
 ---
 
+## 📦 Shared Types
+
+Cross-boundary type contracts live in `packages/shared_types/` — the single source of truth for types that cross service boundaries:
+
+| Module | Contents | Consumers |
+|---|---|---|
+| `enums.py` | 13 StrEnum types — zone · event · violation · rule · re-id · source · workflow | API ORM · rules · tracking · streams · workflow · reid |
+| `geometry.py` | `BBox` · `Point2D` · `ObjectCategory` · `LineSegment` · `PolygonZone` | Vision · tracking · OCR · rules · signals · flow · motion · dwell |
+| `scene.py` | `SceneContext` · `TrafficLightState` · `SignalPhase` · signal state types | Signals · rules · streams |
+| `events.py` | `ViolationRecord` · `PreViolationRecord` · `Explanation` · `RuleEvaluationResult` | Rules · streams · API persistence |
+
+> 📖 See [packages/shared_types/README.md](packages/shared_types/README.md) for governance rules on what belongs here vs. what stays in service-local schemas.
+
+---
+
 ## 🗄 Data Layer
 
 <div align="center">
 
-| 📊 ORM Models | 🔄 Migrations | 📦 Enum Types | 🔗 Shared Contracts |
-|:---:|:---:|:---:|:---:|
-| **23** SQLAlchemy models | **13** Alembic revisions | **33** StrEnum types | `packages/shared_types/` |
+| 📊 ORM Models | 🔄 Migrations | 📦 Shared Enums | 🏠 Local Enums | 🔗 Type Contracts |
+|:---:|:---:|:---:|:---:|:---:|
+| **23** models | **13** revisions | **13** cross-cutting | **20** domain-scoped | **42** in `shared_types` |
 
 </div>
 
@@ -401,15 +425,15 @@ The **Next.js 16** operations dashboard provides a map-first view of the camera 
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Golden Path (Local)
 
 | Requirement | Version | Notes |
 |:---:|:---:|---|
 | 🐍 Python | 3.12+ (3.13 recommended) | Core runtime |
 | 📦 Node.js | 18+ | Frontend build |
-| 🎮 CUDA GPU | Optional | Auto-detected via PyTorch; OCR falls back to CPU on Windows |
+| 🎮 CUDA GPU | Optional | Not required for the documented smoke path |
 
-### Installation
+Run these commands in order from the repo root:
 
 ```bash
 # 1️⃣  Clone and enter the repository
@@ -419,53 +443,75 @@ cd trafficmind
 # 2️⃣  Create and activate a Python virtual environment
 python -m venv .venv
 .venv\Scripts\activate           # Windows
-source .venv/bin/activate        # Linux / macOS
+source .venv/bin/activate         # Linux / macOS
 
-# 3️⃣  Install dependencies
+# 3️⃣  Install Python dependencies
 pip install -r requirements-dev.lock
 pip install --no-deps -e .
 
-# 4️⃣  (Optional) Add CV extras for detection, OCR, or stream inference
+# 4️⃣  (Optional) Add CV extras for stream inference or local model work
 pip install -e ".[cv]"
 
-# 5️⃣  Configure environment
-cp .env.example .env
-# or: python infra/scripts/render_env.py --profile local --output .env
+# 5️⃣  Install frontend dependencies
+cd frontend
+npm install
+cd ..
 
-# 6️⃣  Initialize the database
+# 6️⃣  Render local env files for Python services and Next.js
+python infra/scripts/render_env.py --profile local --output .env --frontend-output frontend/.env.local --force
+
+# 7️⃣  Run database migrations
 alembic upgrade head
 
-# 7️⃣  Start all services
-uvicorn apps.api.app.main:app --reload --port 8000      # ⚡ API       → localhost:8000
-uvicorn apps.workflow.app.main:app --reload --port 8010  # 🦜 Workflow  → localhost:8010
-cd frontend && npm install && npm run dev                # 🖥  Frontend → localhost:3000
+# 8️⃣  Seed the demo dataset used by the live smoke path
+python -m apps.api.app.demo.seed
 ```
 
-> **📦 Dependency source of truth:** `pyproject.toml`
-> Lock files generated by `uv pip compile` and committed. `requirements.txt` is a thin shim pointing to `requirements.lock`.
-
-### 🎭 Seed Demo Data
+Start the services in three terminals:
 
 ```bash
-python -m apps.api.app.demo.seed --create-schema         # Create tables + seed demo data
-python -m apps.api.app.demo.seed --report-path report.json  # Write walkthrough report
-python -m apps.api.app.demo.seed --list-scenarios           # List available scenarios
+# Terminal A — API
+uvicorn apps.api.app.main:app --reload --port 8000
+
+# Terminal B — Workflow
+uvicorn apps.workflow.app.main:app --reload --port 8010
+
+# Terminal C — Frontend
+cd frontend && npm run dev
 ```
 
-### 🎬 Run Perception Pipeline
+Run the live local smoke check from a fourth terminal:
 
 ```bash
-# Test stream (no GPU required)
+python infra/scripts/local_smoke.py --env-file .env --expect-demo-data
+```
+
+Expected result:
+
+- `api readiness` and `workflow readiness` pass
+- `/cameras`, `/events`, `/violations`, and `/events/summary/totals` return live JSON
+- `operator-assist` succeeds through the workflow service
+- The frontend home page renders live camera content and the events page renders camera-scoped context
+
+> 📖 See [LOCAL_DEVELOPMENT.md](docs/LOCAL_DEVELOPMENT.md) for the explicit golden path, port fallback instructions, expected outputs, and troubleshooting.
+
+### 🎬 Additional Commands
+
+```bash
+# Heavier non-live foundation regression
+python infra/scripts/run_checks.py --suite golden-path
+
+# Demo seeding with walkthrough report
+python -m apps.api.app.demo.seed --report-path report.json
+
+# Test the worker pipeline (no GPU required)
 python -m services.streams --source-kind test --max-frames 60
-
-# Local video file
-python -m services.streams --source-kind file --source-uri path/to/video.mp4
 
 # Evaluation suite
 python -m services.evaluation tests/fixtures/evaluation/benchmark_suite.json
 ```
 
-> 📖 See [LOCAL_DEVELOPMENT.md](docs/LOCAL_DEVELOPMENT.md) for the full setup guide, environment variables, and troubleshooting.
+> **📦 Dependency source of truth:** `pyproject.toml` — lock files generated by `uv pip compile` and committed.
 
 ---
 
@@ -475,7 +521,7 @@ python -m services.evaluation tests/fixtures/evaluation/benchmark_suite.json
 
 [![Tests](https://img.shields.io/badge/Tests-813_passed-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](#)
 [![Test Files](https://img.shields.io/badge/Test_Files-50-blue?style=for-the-badge)](#)
-[![Modules](https://img.shields.io/badge/Modules-15+-orange?style=for-the-badge)](#)
+[![Modules](https://img.shields.io/badge/Module_Coverage-15+-orange?style=for-the-badge)](#)
 
 </div>
 
@@ -486,35 +532,36 @@ python -m pytest tests/ -q
 # 🎯 Specific module
 python -m pytest tests/rules/ -v
 
-# 📊 With coverage report
+# 📊 With coverage
 python -m pytest tests/ --cov=apps --cov=services --cov-report=term-missing
 
-# 🏁 Golden-path regression (DB → pipeline → API → workflow → frontend build)
+# 🏁 Golden-path regression
 python infra/scripts/run_checks.py --suite golden-path
+
+# 🌐 Live local smoke
+python infra/scripts/local_smoke.py --env-file .env --expect-demo-data
 ```
 
 <details>
-<summary><strong>📊 Test Coverage by Module (click to expand)</strong></summary>
-
-<br/>
+<summary><strong>📊 Test Coverage by Module</strong></summary>
 
 | Module | Coverage Area |
 |---|---|
-| 📏 `tests/rules/` | Rule evaluation, flagship temporal rules, fixture-driven progression |
-| 📍 `tests/tracking/` | IoU, centroid, ByteTrack backends, lifecycle, multi-object, direction |
-| 🎯 `tests/vision/` | Detection schemas, registry, plate detector, YOLO integration |
-| 📊 `tests/flow/` | Lane occupancy, queue, congestion, utilization analytics |
-| 🔥 `tests/hotspot/` | Aggregation, trends, severity weighting, recurring issues |
-| 🚦 `tests/signals/` | Signal classifier, state tracker, HSV pipeline |
-| 📹 `tests/streams/` | Integrated pipeline, worker lifecycle, backpressure |
-| 🏎 `tests/motion/` | Speed estimation, direction labeling, calibration tiers |
-| 🔤 `tests/ocr/` | OCR service, normalization |
-| 🩺 `tests/health/` | Camera health assessor, alert thresholds |
-| ⚡ `tests/api/` | Camera, junction, event, violation, alert, export, delivery, summary endpoints |
-| 🦜 `tests/workflow/` | All 7 LangGraph workflows, interrupt/resume, NL planner |
-| 🔌 `tests/integrations/` | Adapter builders, local sinks, object storage, signal bridge |
-| 📈 `tests/evaluation/` | Benchmark foundation, metrics edge cases |
-| 💨 `tests/smoke/` | Golden-path operator flow, E2E persistence |
+| 📏 `tests/rules/` | Rule evaluation · flagship temporal rules · fixture-driven progression |
+| 📍 `tests/tracking/` | IoU · centroid · ByteTrack · lifecycle · multi-object · direction |
+| 🎯 `tests/vision/` | Detection schemas · registry · plate detector · YOLO integration |
+| 📊 `tests/flow/` | Lane occupancy · queue · congestion · utilization analytics |
+| 🔥 `tests/hotspot/` | Aggregation · trends · severity weighting · recurring issues |
+| 🚦 `tests/signals/` | Signal classifier · state tracker · HSV pipeline |
+| 📹 `tests/streams/` | Integrated pipeline · worker lifecycle · backpressure |
+| 🏎 `tests/motion/` | Speed estimation · direction labeling · calibration tiers |
+| 🔤 `tests/ocr/` | OCR service · normalization |
+| 🩺 `tests/health/` | Camera health assessor · alert thresholds |
+| ⚡ `tests/api/` | Camera · junction · event · violation · alert · export · summary endpoints |
+| 🦜 `tests/workflow/` | All 7 LangGraph workflows · interrupt/resume · NL planner |
+| 🔌 `tests/integrations/` | Adapter builders · local sinks · object storage · signal bridge |
+| 📈 `tests/evaluation/` | Benchmark foundation · metrics edge cases |
+| 💨 `tests/smoke/` | Golden-path operator flow · E2E persistence |
 
 </details>
 
@@ -537,27 +584,27 @@ Demo mode seeds the local database with realistic synthetic data for development
 | `demo://` scheme | All asset URIs | Prevent accidental storage lookups |
 | `mode=demo_seed` | All metadata | Full audit traceability |
 
-> 🔁 Demo data is clearly distinguishable from real processed data at every layer. The seeder is **idempotent** — rerunning replaces existing demo records without duplicating.
+> 🔁 Demo data is clearly distinguishable from real processed data at every layer. The seeder is **idempotent** — rerunning replaces existing demo records.
 
 ---
 
 ## 📚 Documentation
 
-| Document | Description |
-|:---:|---|
-| 📐 [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System layers, design decisions, deterministic boundary |
-| 🛠 [LOCAL_DEVELOPMENT.md](docs/LOCAL_DEVELOPMENT.md) | Full setup guide, env vars, database, frontend |
-| 🚀 [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Env profiles, readiness checks, CI scope, secrets |
-| 🗄 [DATA_MODEL.md](docs/DATA_MODEL.md) | ORM models, relationships, enums, migration history |
-| 🔌 [INTEGRATIONS.md](docs/INTEGRATIONS.md) | Core product vs adapter foundations vs enterprise extensions |
-| 📋 [PROVENANCE.md](docs/PROVENANCE.md) | Model/config registry, runtime provenance, reproducibility |
-| 🦜 [WORKFLOWS.md](docs/WORKFLOWS.md) | Cold-path workflow definitions and lifecycle |
-| ⚠️ [LIMITATIONS.md](docs/LIMITATIONS.md) | Known gaps, honest constraints, extension points |
-| 🩺 [camera-health.md](docs/camera-health.md) | Health signals, alert severities, thresholds |
-| 📸 [evidence.md](docs/evidence.md) | Evidence manifest structure and asset-key conventions |
-| 🔒 [PRIVACY.md](docs/PRIVACY.md) | Privacy masking, redaction, request-declared access control |
-| 🔤 [anpr.md](docs/anpr.md) | Plate search behavior, normalization, watchlist matching |
-| 📊 [evaluation.md](docs/evaluation.md) | Evaluation artifacts, benchmark interpretation |
+| | Document | Description |
+|:---:|:---:|---|
+| 📐 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System layers · design decisions · deterministic boundary |
+| 🛠 | [LOCAL_DEVELOPMENT.md](docs/LOCAL_DEVELOPMENT.md) | Full setup guide · env vars · database · golden path |
+| 🚀 | [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Env profiles · readiness checks · CI scope · secrets |
+| 🗄 | [DATA_MODEL.md](docs/DATA_MODEL.md) | ORM models · relationships · enums · migration history |
+| 🔌 | [INTEGRATIONS.md](docs/INTEGRATIONS.md) | Core product vs adapter foundations vs enterprise extensions |
+| 📋 | [PROVENANCE.md](docs/PROVENANCE.md) | Model/config registry · runtime provenance · reproducibility |
+| 🦜 | [WORKFLOWS.md](docs/WORKFLOWS.md) | Cold-path workflow definitions and lifecycle |
+| ⚠️ | [LIMITATIONS.md](docs/LIMITATIONS.md) | Known gaps · honest constraints · extension points |
+| 🩺 | [camera-health.md](docs/camera-health.md) | Health signals · alert severities · thresholds |
+| 📸 | [evidence.md](docs/evidence.md) | Evidence manifest structure · asset-key conventions |
+| 🔒 | [PRIVACY.md](docs/PRIVACY.md) | Privacy masking · redaction · access control |
+| 🔤 | [anpr.md](docs/anpr.md) | Plate search · normalization · watchlist matching |
+| 📊 | [evaluation.md](docs/evaluation.md) | Evaluation artifacts · benchmark interpretation |
 
 ---
 
@@ -572,6 +619,7 @@ Demo mode seeds the local database with realistic synthetic data for development
 | 🔌  Enterprise integration adapters | ✅ Complete | ![100%](https://img.shields.io/badge/-100%25-brightgreen?style=flat-square) |
 | 🔗  Explicit junction entity | ✅ Complete | ![100%](https://img.shields.io/badge/-100%25-brightgreen?style=flat-square) |
 | 🎯  Pluggable backend validation | ✅ Complete | ![100%](https://img.shields.io/badge/-100%25-brightgreen?style=flat-square) |
+| 📦  Shared-types consolidation | ✅ Complete | ![100%](https://img.shields.io/badge/-100%25-brightgreen?style=flat-square) |
 | 🖥  Web product (dashboard, review UI) | 🚧 In progress | ![70%](https://img.shields.io/badge/-70%25-yellow?style=flat-square) |
 | 🚀  Production hardening (CI/CD, containers) | 🚧 In progress | ![50%](https://img.shields.io/badge/-50%25-yellow?style=flat-square) |
 | 🤖  Model maturity (plate detector, signal model) | 📝 Planned | ![15%](https://img.shields.io/badge/-15%25-lightgrey?style=flat-square) |

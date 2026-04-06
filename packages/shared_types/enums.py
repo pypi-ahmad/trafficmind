@@ -127,3 +127,50 @@ class ReIdMatchStatus(StrEnum):
     CONFIRMED = "confirmed"
     REJECTED = "rejected"
     EXPIRED = "expired"
+
+
+# ---------------------------------------------------------------------------
+# Stream / source classification
+# ---------------------------------------------------------------------------
+
+
+class SourceKind(StrEnum):
+    """Type of frame source — used by both the API ORM (``CameraStream``)
+    and the stream-processing service (``JobSpec``).
+
+    Previously duplicated as ``SourceType`` in ``apps.api.app.db.enums``
+    and ``SourceKind`` in ``services.streams.schemas``.
+    """
+
+    RTSP = "rtsp"
+    FILE = "file"
+    UPLOAD = "upload"
+    TEST = "test"
+
+
+# ---------------------------------------------------------------------------
+# Workflow lifecycle
+# ---------------------------------------------------------------------------
+
+
+class WorkflowType(StrEnum):
+    """Coarse workflow classification shared between the API and workflow
+    service.
+    """
+
+    TRIAGE = "triage"
+    REVIEW = "review"
+    REPORT = "report"
+    ASSIST = "assist"
+
+
+class WorkflowStatus(StrEnum):
+    """State machine for workflow run records — shared between the API
+    (ORM persistence) and the workflow service (execution engine).
+    """
+
+    QUEUED = "queued"
+    RUNNING = "running"
+    SUCCEEDED = "succeeded"
+    FAILED = "failed"
+    CANCELLED = "cancelled"

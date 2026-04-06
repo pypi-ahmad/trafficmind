@@ -15,12 +15,20 @@ from packages.shared_types.enums import (  # noqa: F401
     ReIdMatchStatus,
     ReIdSubjectType,
     RuleType,
+    SourceKind,
     ViolationLifecycleStage,
     ViolationSeverity,
     ViolationStatus,
     ViolationType,
+    WorkflowStatus,
+    WorkflowType,
     ZoneType,
 )
+
+# Backward-compatible alias — the API surface historically used ``SourceType``
+# while stream processing used ``SourceKind``.  Both now resolve to the same
+# enum defined in ``packages.shared_types.enums``.
+SourceType = SourceKind
 
 
 class CameraStatus(StrEnum):
@@ -34,13 +42,6 @@ class StreamKind(StrEnum):
     PRIMARY = "primary"
     SUBSTREAM = "substream"
     AUXILIARY = "auxiliary"
-
-
-class SourceType(StrEnum):
-    RTSP = "rtsp"
-    UPLOAD = "upload"
-    FILE = "file"
-    TEST = "test"
 
 
 class StreamStatus(StrEnum):
@@ -148,19 +149,8 @@ class EvidenceSubjectKind(StrEnum):
     VIOLATION_EVENT = "violation_event"
 
 
-class WorkflowType(StrEnum):
-    TRIAGE = "triage"
-    REVIEW = "review"
-    REPORT = "report"
-    ASSIST = "assist"
-
-
-class WorkflowStatus(StrEnum):
-    QUEUED = "queued"
-    RUNNING = "running"
-    SUCCEEDED = "succeeded"
-    FAILED = "failed"
-    CANCELLED = "cancelled"
+# WorkflowType and WorkflowStatus are now canonical in
+# packages.shared_types.enums and re-exported above.
 
 
 # ---------------------------------------------------------------------------

@@ -17,7 +17,7 @@ from packages.shared_types.events import (  # noqa: F401 — re-exported
     RuleEvaluationResult,
     ViolationRecord,
 )
-from packages.shared_types.geometry import ObjectCategory, Point2D
+from packages.shared_types.geometry import LineSegment, ObjectCategory, Point2D, PolygonZone
 from packages.shared_types.scene import (
     SceneContext,
     SceneSignalState,
@@ -56,22 +56,11 @@ __all__ = [
 # Geometry helpers (parsed from Zone.geometry JSON)
 # ---------------------------------------------------------------------------
 
-
-class LineGeometry(BaseModel):
-    """Two-point line geometry (stop-lines, counting lines)."""
-
-    model_config = ConfigDict(frozen=True)
-
-    start: Point2D
-    end: Point2D
-
-
-class PolygonGeometry(BaseModel):
-    """Polygon geometry (zones, crosswalks, lanes)."""
-
-    model_config = ConfigDict(frozen=True)
-
-    points: list[Point2D] = Field(min_length=3)
+# Canonical definitions now live in packages.shared_types.geometry.
+# Backward-compatible aliases preserve all downstream ``isinstance`` checks
+# and constructor calls.
+LineGeometry = LineSegment
+PolygonGeometry = PolygonZone
 
 
 # ---------------------------------------------------------------------------

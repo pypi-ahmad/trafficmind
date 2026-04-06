@@ -8,7 +8,7 @@ from typing import NoReturn
 from fastapi import APIRouter, HTTPException, Query, Request, status
 
 from apps.api.app.api.dependencies import DbSession
-from apps.api.app.db.enums import SourceType, StreamStatus
+from apps.api.app.db.enums import StreamStatus
 from apps.api.app.services import CameraService
 from apps.api.app.services.errors import NotFoundError, ServiceValidationError
 from services.streams.orchestrator import (
@@ -19,7 +19,6 @@ from services.streams.orchestrator import (
 from services.streams.schemas import (
     JobListResponse,
     JobResponse,
-    SourceKind,
     StartJobRequest,
     job_state_to_response,
 )
@@ -51,10 +50,6 @@ def _raise_job_http_error(error: Exception) -> NoReturn:
     raise error
 
 
-def _map_source_type(source_type: SourceType) -> SourceKind:
-    return SourceKind(source_type.value)
-
-
 @router.post("", response_model=JobResponse, status_code=status.HTTP_201_CREATED)
 async def start_job(body: StartJobRequest, request: Request, db_session: DbSession) -> JobResponse:
     """Start a new stream-processing job."""
@@ -71,7 +66,7 @@ async def start_job(body: StartJobRequest, request: Request, db_session: DbSessi
             state = await orch.start_job_for_stream(
                 stream_id=stream.id,
                 camera_id=stream.camera_id,
-                source_kind=_map_source_type(stream.source_type),
+                source_kind=stream.source_type,
                 source_uri=stream.source_uri,
                 source_config=stream.source_config,
                 frame_step=body.frame_step,

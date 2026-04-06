@@ -1,0 +1,26 @@
+{
+  "scenario_name": "city_center_baseline",
+  "camera_codes": [
+    "DEMO-CAM-001",
+    "DEMO-CAM-002",
+    "DEMO-CAM-003"
+  ],
+  "counts": {
+    "cameras": 3,
+    "streams": 4,
+    "zones": 5,
+    "events": 4,
+    "violations": 3,
+    "plate_reads": 3,
+    "review_cases": 3,
+    "evidence_manifests": 3,
+    "workflows": 3
+  },
+  "health_dashboard_preview": {
+    "cameras_online": 1,
+    "cameras_degraded": 1,
+    "cameras_offline": 1,
+    "total_cameras": 3,
+    "total_streams": 4
+  }
+}

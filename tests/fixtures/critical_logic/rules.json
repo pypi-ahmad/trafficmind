@@ -1,0 +1,54 @@
+{
+  "red_light_progression": {
+    "frames": [
+      {
+        "frame_index": 0,
+        "timestamp_offset_ms": 0,
+        "track_id": "veh-1",
+        "category": "vehicle",
+        "class_name": "car",
+        "points": [[300.0, 290.0], [300.0, 304.0]],
+        "signal_state": "red",
+        "expected_pre_violations": 1,
+        "expected_violations": 0
+      },
+      {
+        "frame_index": 1,
+        "timestamp_offset_ms": 100,
+        "track_id": "veh-1",
+        "category": "vehicle",
+        "class_name": "car",
+        "points": [[300.0, 290.0], [300.0, 304.0], [300.0, 328.0]],
+        "signal_state": "red",
+        "expected_pre_violations": 0,
+        "expected_violations": 1
+      }
+    ]
+  },
+  "pedestrian_on_red_progression": {
+    "frames": [
+      {
+        "frame_index": 0,
+        "timestamp_offset_ms": 0,
+        "track_id": "ped-1",
+        "category": "person",
+        "class_name": "person",
+        "points": [[150.0, 340.0], [250.0, 340.0]],
+        "signal_state": "red",
+        "expected_pre_violations": 1,
+        "expected_violations": 0
+      },
+      {
+        "frame_index": 1,
+        "timestamp_offset_ms": 150,
+        "track_id": "ped-1",
+        "category": "person",
+        "class_name": "person",
+        "points": [[150.0, 340.0], [250.0, 340.0], [290.0, 340.0]],
+        "signal_state": "red",
+        "expected_pre_violations": 0,
+        "expected_violations": 1
+      }
+    ]
+  }
+}

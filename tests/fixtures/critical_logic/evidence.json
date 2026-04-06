@@ -1,0 +1,15 @@
+{
+  "selection_reason": "violation_rule_frame_index",
+  "expected_selected_frames": [40, 41, 42, 43, 44],
+  "expected_asset_kinds": [
+    "key_frame_snapshot",
+    "object_crop",
+    "plate_crop",
+    "clip_window",
+    "timeline_metadata"
+  ],
+  "expected_clip_window": {
+    "start_frame_index": 30,
+    "end_frame_index": 54
+  }
+}

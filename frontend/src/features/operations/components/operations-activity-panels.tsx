@@ -1,0 +1,120 @@
+import Link from "next/link";
+
+import {
+  availabilityClass,
+  availabilityLabel,
+  statusClass,
+} from "@/features/operations/components/dashboard-primitives";
+import type { SpatialOperationsModel } from "@/features/operations/types";
+
+const actionLinkClass =
+  "rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors hover:border-[rgba(23,57,69,0.28)]";
+
+export function OperationsActivityPanels({ model }: { model: SpatialOperationsModel }) {
+  return (
+    <section className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
+      <div className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.78)] p-5 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[rgba(19,32,41,0.56)]">
+              Top Incidents By Location
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">
+              Spatial summaries grounded in current backend readiness
+            </h2>
+          </div>
+          <Link href="/events" className={actionLinkClass}>
+            Open event page
+          </Link>
+        </div>
+
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          {model.incidentSummaries.map((summary) => (
+            <div key={summary.id} className="rounded-[1.5rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(243,237,228,0.72)] p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <span className={`inline-flex rounded-full px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] ${availabilityClass(summary.availability)}`}>
+                    {availabilityLabel(summary.availability)}
+                  </span>
+                  <p className="mt-3 text-lg font-semibold text-[var(--color-ink)]">{summary.title}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[0.68rem] uppercase tracking-[0.16em] text-[rgba(19,32,41,0.54)]">Incidents</p>
+                  <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">
+                    {summary.incidentCount ?? "--"}
+                  </p>
+                </div>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-[rgba(19,32,41,0.72)]">{summary.note}</p>
+              {summary.trendLabel ? (
+                <p className="mt-2 text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.54)]">{summary.trendLabel}</p>
+              ) : null}
+              <div className="mt-4 flex flex-wrap gap-2 text-sm">
+                <Link href={summary.dashboardHref} className={actionLinkClass}>
+                  Show on map
+                </Link>
+                <Link href={summary.eventFeedHref} className={actionLinkClass}>
+                  Event feed
+                </Link>
+                {summary.cameraDetailHref ? (
+                  <Link href={summary.cameraDetailHref} className={actionLinkClass}>
+                    Camera detail
+                  </Link>
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.78)] p-5 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">
+        <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[rgba(19,32,41,0.56)]">
+          Camera Fleet
+        </p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">Current network inventory</h2>
+        <div className="mt-5 space-y-3">
+          {model.cameras.length > 0 ? model.cameras.map((camera) => {
+            const isSelected = camera.id === model.selectedCamera?.id;
+            return (
+              <div
+                key={camera.id}
+                className={`rounded-[1.5rem] border bg-[rgba(243,237,228,0.72)] p-4 ${isSelected ? "border-[rgba(244,149,72,0.44)] shadow-[0_0_0_3px_rgba(244,149,72,0.12)]" : "border-[rgba(23,57,69,0.12)]"}`}
+              >
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <p className="font-semibold text-[var(--color-ink)]">{camera.name}</p>
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${statusClass(camera.status)}`}>
+                        {camera.status}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm text-[rgba(19,32,41,0.72)]">{camera.locationName}</p>
+                  </div>
+                  <div className="grid gap-1 text-sm text-[rgba(19,32,41,0.68)] sm:text-right">
+                    <span>{camera.coordinates ? `${camera.coordinates.latitude.toFixed(4)}, ${camera.coordinates.longitude.toFixed(4)}` : "No coordinates"}</span>
+                    <span>{camera.streamCount} stream{camera.streamCount === 1 ? "" : "s"}</span>
+                  </div>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2 text-sm">
+                  <Link href={camera.dashboardHref} className={actionLinkClass}>
+                    Show on map
+                  </Link>
+                  <Link href={camera.detailHref} className={actionLinkClass}>
+                    Camera detail
+                  </Link>
+                  <Link href={camera.eventFeedHref} className={actionLinkClass}>
+                    Event feed
+                  </Link>
+                </div>
+              </div>
+            );
+          }) : (
+            <div className="rounded-[1.5rem] border border-dashed border-[rgba(23,57,69,0.16)] p-6 text-sm text-[rgba(19,32,41,0.72)]">
+              No cameras were returned from the API. The dashboard foundation is ready, but the map layer needs camera records to become useful.
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}

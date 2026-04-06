@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=75.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trafficmind"
+version = "0.1.0"
+description = "Unified traffic computer-vision platform"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.16",
+    "asyncpg>=0.30",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
+    "pydantic>=2.10",
+    "pydantic-settings>=2.7",
+    "sqlalchemy[asyncio]>=2.0",
+    "aiosqlite>=0.20",
+    "httpx>=0.28",
+    "numpy>=2.0",
+    "opencv-python>=4.10",
+    "supervision>=0.27",
+]
+
+[project.optional-dependencies]
+cv = [
+    "ultralytics>=8.4",
+    "torch>=2.11",
+    "torchvision>=0.26",
+    "paddleocr>=3.4",
+    "paddlepaddle>=3.3",
+]
+workflow = [
+    "langgraph>=1.1",
+    "langchain>=0.3",
+    "langchain-openai>=0.3",
+]
+dev = [
+    "alembic>=1.16",
+    "pytest>=8.0",
+    "pytest-asyncio>=0.25",
+    "pytest-cov>=6.0",
+    "httpx>=0.28",
+    "python-dotenv>=1.0",
+    "ruff>=0.11",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["apps*", "services*", "packages*"]
+namespaces = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "integration: marks tests requiring real model files or GPU (deselect with '-m \"not integration\"')",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 99
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.coverage.run]
+source = ["apps", "services"]
+omit = ["*/tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true

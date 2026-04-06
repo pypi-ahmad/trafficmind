@@ -10,6 +10,8 @@ import uuid
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from packages.shared_types.enums import SourceKind  # noqa: F401 — re-exported
+
 
 class JobStatus(StrEnum):
     """Lifecycle states for a stream-processing job."""
@@ -24,13 +26,7 @@ class JobStatus(StrEnum):
     COMPLETED = "completed"
 
 
-class SourceKind(StrEnum):
-    """Type of frame source."""
-
-    RTSP = "rtsp"
-    FILE = "file"
-    UPLOAD = "upload"
-    TEST = "test"
+# SourceKind is canonical in packages.shared_types.enums — imported above.
 
 
 # ── Valid transitions ───────────────────────────────────────────────────────

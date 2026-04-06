@@ -12,12 +12,14 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from packages.shared_types.geometry import BBox, ObjectCategory, Point2D
+from packages.shared_types.geometry import BBox, LineSegment, ObjectCategory, Point2D, PolygonZone
 
 __all__ = [  # re-export shared primitives
     "BBox",
+    "LineSegment",
     "ObjectCategory",
     "Point2D",
+    "PolygonZone",
 ]
 
 
@@ -76,23 +78,8 @@ class MotionVector(BaseModel):
     direction: CardinalDirection = CardinalDirection.STATIONARY
 
 
-class LineSegment(BaseModel):
-    """Line segment used for rule checks like stop-line crossings."""
-
-    model_config = ConfigDict(frozen=True)
-
-    start: Point2D
-    end: Point2D
-    name: str | None = None
-
-
-class PolygonZone(BaseModel):
-    """Polygon zone used for entry/exit checks."""
-
-    model_config = ConfigDict(frozen=True)
-
-    name: str | None = None
-    points: list[Point2D] = Field(min_length=3)
+# LineSegment and PolygonZone are canonical in packages.shared_types.geometry
+# and re-exported above for backward compatibility.
 
 
 class LineCrossingCheck(BaseModel):

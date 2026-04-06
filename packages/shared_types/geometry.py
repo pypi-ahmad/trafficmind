@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from enum import StrEnum
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ObjectCategory(StrEnum):
@@ -69,3 +69,37 @@ class Point2D(BaseModel):
 
     def as_tuple(self) -> tuple[float, float]:
         return (self.x, self.y)
+
+
+# ---------------------------------------------------------------------------
+# Composite geometry primitives
+# ---------------------------------------------------------------------------
+
+
+class LineSegment(BaseModel):
+    """Two-point line segment for stop-line crossings, counting lines, etc.
+
+    Previously defined independently in ``services.tracking.schemas`` and
+    (as ``LineGeometry``) in ``services.rules.schemas``.  The optional
+    ``name`` field is preserved so that tracking and flow consumers can
+    label geometry without a separate wrapper.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    start: Point2D
+    end: Point2D
+    name: str | None = None
+
+
+class PolygonZone(BaseModel):
+    """Closed polygon zone for entry/exit checks, lane geometry, etc.
+
+    Previously defined independently in ``services.tracking.schemas`` and
+    (as ``PolygonGeometry``) in ``services.rules.schemas``.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    name: str | None = None
+    points: list[Point2D] = Field(min_length=3)

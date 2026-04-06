@@ -18,10 +18,9 @@ from apps.api.app.db.enums import (
     ViolationSeverity,
     ViolationStatus,
     ViolationType,
-    WorkflowStatus,
-    WorkflowType,
     ZoneType,
 )
+from packages.shared_types.enums import WorkflowStatus, WorkflowType
 
 
 class WorkflowName(StrEnum):

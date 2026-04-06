@@ -11,7 +11,8 @@ from fastapi.encoders import jsonable_encoder
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.types import Command
 
-from apps.api.app.db.enums import ViolationStatus, WorkflowStatus, WorkflowType
+from apps.api.app.db.enums import ViolationStatus
+from packages.shared_types.enums import WorkflowStatus, WorkflowType
 from apps.workflow.app.core.config import Settings
 from apps.workflow.app.workflows.graphs import (
     build_daily_summary_graph,

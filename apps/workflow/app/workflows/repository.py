@@ -13,7 +13,8 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import selectinload
 
-from apps.api.app.db.enums import EvidenceSubjectKind, ViolationStatus, WatchlistAlertStatus, WorkflowStatus, WorkflowType
+from apps.api.app.db.enums import EvidenceSubjectKind, ViolationStatus, WatchlistAlertStatus
+from packages.shared_types.enums import WorkflowStatus, WorkflowType
 from apps.api.app.db.models import Camera, DetectionEvent, EvidenceManifest, PlateRead, ViolationEvent, WatchlistAlert, WorkflowRun, Zone
 from apps.workflow.app.workflows.schemas import (
     CameraDailySummary,

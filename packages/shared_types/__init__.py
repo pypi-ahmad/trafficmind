@@ -10,10 +10,13 @@ from packages.shared_types.enums import (
     ReIdMatchStatus,
     ReIdSubjectType,
     RuleType,
+    SourceKind,
     ViolationLifecycleStage,
     ViolationSeverity,
     ViolationStatus,
     ViolationType,
+    WorkflowStatus,
+    WorkflowType,
     ZoneType,
 )
 from packages.shared_types.events import (
@@ -22,7 +25,7 @@ from packages.shared_types.events import (
     RuleEvaluationResult,
     ViolationRecord,
 )
-from packages.shared_types.geometry import BBox, ObjectCategory, Point2D
+from packages.shared_types.geometry import BBox, LineSegment, ObjectCategory, Point2D, PolygonZone
 from packages.shared_types.scene import (
     SceneContext,
     SceneSignalState,
@@ -36,8 +39,10 @@ from packages.shared_types.scene import (
 __all__ = [
     # geometry
     "BBox",
+    "LineSegment",
     "ObjectCategory",
     "Point2D",
+    "PolygonZone",
     # scene / signals
     "SceneContext",
     "SceneSignalState",
@@ -52,10 +57,13 @@ __all__ = [
     "ReIdMatchStatus",
     "ReIdSubjectType",
     "RuleType",
+    "SourceKind",
     "ViolationLifecycleStage",
     "ViolationSeverity",
     "ViolationStatus",
     "ViolationType",
+    "WorkflowStatus",
+    "WorkflowType",
     "ZoneType",
     # event / violation contracts
     "Explanation",

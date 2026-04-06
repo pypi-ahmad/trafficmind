@@ -44,6 +44,8 @@ async def client() -> AsyncIterator[tuple[AsyncClient, async_sessionmaker]]:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as c:
         yield c, session_factory
 
+    await engine.dispose()
+
 
 async def _seed_camera_stack(session) -> tuple[Camera, CameraStream, Zone]:
     camera = Camera(

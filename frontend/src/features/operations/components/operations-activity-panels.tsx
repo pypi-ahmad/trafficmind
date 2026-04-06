@@ -4,7 +4,6 @@ import {
   availabilityClass,
   availabilityLabel,
   formatTimestamp,
-  severityClass,
   statusClass,
 } from "@/features/operations/components/dashboard-primitives";
 import type { SpatialOperationsModel } from "@/features/operations/types";

@@ -27,13 +27,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams;
   const selectedCameraId = getSingleParam(params.cameraId);
   const selectedJunctionId = getSingleParam(params.junctionId);
-  const hotspotAnalyticsRequest = buildHotspotOverviewRequest({
-    now: new Date(),
-    config: getSpatialAnalyticsConfig(),
-  });
+  const now = new Date();
+  const config = getSpatialAnalyticsConfig();
+  const hotspotAnalyticsRequest = buildHotspotOverviewRequest({ now, config });
 
-  const lookbackMs = getSpatialAnalyticsConfig().lookbackDays * 24 * 60 * 60 * 1000;
-  const occurredAfter = new Date(Date.now() - lookbackMs).toISOString();
+  const lookbackMs = config.lookbackDays * 24 * 60 * 60 * 1000;
+  const occurredAfter = new Date(now.getTime() - lookbackMs).toISOString();
 
   const [camerasResult, eventsResult, violationsResult, hotspotAnalyticsResult, selectedCameraDetail, eventCountsResult, violationCountsResult, eventSummaryTotalsResult, violationSummaryTotalsResult] = await Promise.all([
     fetchCameraList(),

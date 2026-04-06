@@ -5,7 +5,7 @@ import { EvidencePrivacyPolicyPreview } from "@/features/evidence/components/evi
 import { coerceEvidenceAccessRole, EVIDENCE_ACCESS_ROLES, type EvidenceAccessRole } from "@/features/evidence/types";
 import { fetchCameraDetail, fetchEventsFeed, fetchViolationsFeed, fetchEventSummaryTotals, fetchViolationSummaryTotals } from "@/features/operations/api";
 import { buildDashboardHref, buildEventFeedHref, getSingleParam } from "@/features/operations/derive";
-import type { DetectionEventReadApi, DetectionEventStatus, ViolationEventReadApi, ViolationSeverity, ViolationStatus, ViolationTypeName } from "@/features/operations/types";
+import type { DetectionEventReadApi, DetectionEventStatus, ViolationEventReadApi, ViolationStatus, ViolationTypeName } from "@/features/operations/types";
 
 export const dynamic = "force-dynamic";
 
@@ -41,9 +41,10 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
   const eventStatus = coerce(getSingleParam(params.eventStatus), EVENT_STATUSES);
   const timePreset = coerce(getSingleParam(params.timePreset), TIME_PRESETS.map((p) => p.key) as TimePresetKey[]);
   const occurredBefore = getSingleParam(params.occurredBefore);
+  const now = new Date();
   // Derive occurredAfter from the stable preset key, falling back to explicit param
   const occurredAfter = timePreset
-    ? new Date(Date.now() - TIME_PRESETS.find((p) => p.key === timePreset)!.hours * 3_600_000).toISOString()
+    ? new Date(now.getTime() - TIME_PRESETS.find((p) => p.key === timePreset)!.hours * 3_600_000).toISOString()
     : getSingleParam(params.occurredAfter);
   const eventsPage = Math.max(1, Number(getSingleParam(params.eventsPage)) || 1);
   const violationsPage = Math.max(1, Number(getSingleParam(params.violationsPage)) || 1);

@@ -1,0 +1,144 @@
+{
+  "detection_cases": [
+    {
+      "name": "mixed_vehicle_person_detection",
+      "iou_threshold": 0.5,
+      "expected": [
+        {
+          "label": "vehicle",
+          "bbox": {"x1": 10, "y1": 10, "x2": 110, "y2": 110}
+        },
+        {
+          "label": "person",
+          "bbox": {"x1": 150, "y1": 20, "x2": 190, "y2": 120}
+        }
+      ],
+      "predicted": [
+        {
+          "label": "vehicle",
+          "confidence": 0.94,
+          "bbox": {"x1": 12, "y1": 12, "x2": 108, "y2": 108}
+        },
+        {
+          "label": "person",
+          "confidence": 0.88,
+          "bbox": {"x1": 151, "y1": 22, "x2": 191, "y2": 118}
+        },
+        {
+          "label": "vehicle",
+          "confidence": 0.61,
+          "bbox": {"x1": 220, "y1": 40, "x2": 280, "y2": 110}
+        }
+      ]
+    },
+    {
+      "name": "crowded_scene_vehicles_only",
+      "iou_threshold": 0.5,
+      "expected": [
+        {"label": "vehicle", "bbox": {"x1": 0, "y1": 0, "x2": 80, "y2": 60}},
+        {"label": "vehicle", "bbox": {"x1": 100, "y1": 0, "x2": 180, "y2": 60}},
+        {"label": "vehicle", "bbox": {"x1": 200, "y1": 0, "x2": 280, "y2": 60}},
+        {"label": "vehicle", "bbox": {"x1": 300, "y1": 0, "x2": 380, "y2": 60}}
+      ],
+      "predicted": [
+        {"label": "vehicle", "confidence": 0.92, "bbox": {"x1": 2, "y1": 2, "x2": 78, "y2": 58}},
+        {"label": "vehicle", "confidence": 0.85, "bbox": {"x1": 102, "y1": 1, "x2": 179, "y2": 59}},
+        {"label": "vehicle", "confidence": 0.78, "bbox": {"x1": 201, "y1": 1, "x2": 278, "y2": 59}}
+      ]
+    },
+    {
+      "name": "empty_frame_no_objects",
+      "iou_threshold": 0.5,
+      "expected": [],
+      "predicted": []
+    }
+  ],
+  "tracking_cases": [
+    {
+      "name": "single_object_switch_and_gap",
+      "assignments": [
+        {"logical_object_id": "veh-1", "frame_index": 0, "observed_track_id": "t-1"},
+        {"logical_object_id": "veh-1", "frame_index": 1, "observed_track_id": "t-1"},
+        {"logical_object_id": "veh-1", "frame_index": 2, "observed_track_id": null},
+        {"logical_object_id": "veh-1", "frame_index": 3, "observed_track_id": "t-2"}
+      ]
+    },
+    {
+      "name": "two_objects_stable_tracking",
+      "assignments": [
+        {"logical_object_id": "veh-1", "frame_index": 0, "observed_track_id": "t-1"},
+        {"logical_object_id": "veh-1", "frame_index": 1, "observed_track_id": "t-1"},
+        {"logical_object_id": "veh-2", "frame_index": 0, "observed_track_id": "t-2"},
+        {"logical_object_id": "veh-2", "frame_index": 1, "observed_track_id": "t-2"}
+      ]
+    }
+  ],
+  "ocr_cases": [
+    {
+      "name": "mixed_plate_quality",
+      "samples": [
+        {
+          "expected_normalized_text": "ABC1234",
+          "predicted_normalized_text": "ABC1234",
+          "confidence": 0.95
+        },
+        {
+          "expected_normalized_text": "XYZ9876",
+          "predicted_normalized_text": "XYZ987G",
+          "confidence": 0.7
+        }
+      ]
+    },
+    {
+      "name": "arabic_and_special_plates",
+      "samples": [
+        {
+          "expected_normalized_text": "3210",
+          "predicted_normalized_text": "3210",
+          "confidence": 0.88
+        },
+        {
+          "expected_normalized_text": "AB1234",
+          "predicted_normalized_text": "A81234",
+          "confidence": 0.65
+        }
+      ]
+    }
+  ],
+  "rule_cases": [
+    {
+      "name": "red_light_candidate_then_wrong_confirmation",
+      "expected_events": [
+        {"frame_index": 0, "stage": "pre_violation", "rule_type": "red_light", "track_id": "veh-1"},
+        {"frame_index": 1, "stage": "confirmed", "rule_type": "red_light", "track_id": "veh-1"}
+      ],
+      "actual_events": [
+        {"frame_index": 0, "stage": "pre_violation", "rule_type": "red_light", "track_id": "veh-1"},
+        {"frame_index": 1, "stage": "confirmed", "rule_type": "stop_line_crossing", "track_id": "veh-1"}
+      ]
+    },
+    {
+      "name": "perfect_pedestrian_on_red_sequence",
+      "expected_events": [
+        {"frame_index": 0, "stage": "pre_violation", "rule_type": "pedestrian_on_red", "track_id": "ped-1"},
+        {"frame_index": 2, "stage": "confirmed", "rule_type": "pedestrian_on_red", "track_id": "ped-1"}
+      ],
+      "actual_events": [
+        {"frame_index": 0, "stage": "pre_violation", "rule_type": "pedestrian_on_red", "track_id": "ped-1"},
+        {"frame_index": 2, "stage": "confirmed", "rule_type": "pedestrian_on_red", "track_id": "ped-1"}
+      ]
+    }
+  ],
+  "signal_cases": [
+    {
+      "name": "hsv_classification_accuracy",
+      "samples": [
+        {"expected_color": "red", "predicted_color": "red", "head_id": "h-1", "confidence": 0.95},
+        {"expected_color": "green", "predicted_color": "green", "head_id": "h-1", "confidence": 0.92},
+        {"expected_color": "yellow", "predicted_color": "yellow", "head_id": "h-2", "confidence": 0.88},
+        {"expected_color": "red", "predicted_color": "yellow", "head_id": "h-1", "confidence": 0.55},
+        {"expected_color": "green", "predicted_color": "unknown", "head_id": "h-3", "confidence": 0.30}
+      ]
+    }
+  ]
+}

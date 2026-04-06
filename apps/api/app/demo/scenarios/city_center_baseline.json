@@ -1,0 +1,461 @@
+{
+  "scenario_name": "city_center_baseline",
+  "label": "Synthetic city-center demo dataset",
+  "description": "Internally consistent local demo data for camera management, observability, review workflows, case export, and screenshots.",
+  "data_origin": "demo_seed",
+  "cameras": [
+    {
+      "id": "10000000-0000-4000-8000-000000000001",
+      "camera_code": "DEMO-CAM-001",
+      "name": "Demo King Fahd Northbound",
+      "location_name": "King Fahd Rd & Tahlia St",
+      "approach": "northbound",
+      "timezone": "Asia/Riyadh",
+      "status": "active",
+      "latitude": 24.6914,
+      "longitude": 46.6854,
+      "notes": "Northbound approach monitoring stop line and crosswalk zones. Dual-stream configuration.",
+      "streams": [
+        {
+          "id": "20000000-0000-4000-8000-000000000001",
+          "name": "primary",
+          "stream_kind": "primary",
+          "source_type": "test",
+          "source_uri": "demo://city_center_baseline/cameras/DEMO-CAM-001/primary",
+          "status": "live",
+          "is_enabled": true,
+          "fps_hint": 18.0,
+          "resolution_width": 1920,
+          "resolution_height": 1080,
+          "last_heartbeat_seconds_ago": 8
+        },
+        {
+          "id": "20000000-0000-4000-8000-000000000002",
+          "name": "substream",
+          "stream_kind": "substream",
+          "source_type": "test",
+          "source_uri": "demo://city_center_baseline/cameras/DEMO-CAM-001/substream",
+          "status": "disabled",
+          "is_enabled": false,
+          "fps_hint": 8.0,
+          "resolution_width": 960,
+          "resolution_height": 540
+        }
+      ],
+      "zones": [
+        {
+          "id": "30000000-0000-4000-8000-000000000001",
+          "name": "northbound-stop-line",
+          "zone_type": "stop_line",
+          "status": "active",
+          "geometry": {"type": "LineString", "coordinates": [[0.15, 0.77], [0.85, 0.77]]},
+          "rules_config": {"rules": [{"rule_type": "red_light"}], "lane_id": "NB-1"}
+        },
+        {
+          "id": "30000000-0000-4000-8000-000000000002",
+          "name": "northbound-crosswalk",
+          "zone_type": "crosswalk",
+          "status": "active",
+          "geometry": {"type": "Polygon", "coordinates": [[[0.25, 0.79], [0.75, 0.79], [0.75, 0.88], [0.25, 0.88], [0.25, 0.79]]]},
+          "rules_config": {"rules": [{"rule_type": "pedestrian_on_red"}]}
+        },
+        {
+          "id": "30000000-0000-4000-8000-000000000003",
+          "name": "northbound-lane-1",
+          "zone_type": "lane",
+          "status": "active",
+          "geometry": {"type": "Polygon", "coordinates": [[[0.12, 0.50], [0.44, 0.50], [0.50, 0.95], [0.10, 0.95], [0.12, 0.50]]]},
+          "rules_config": {"lane_id": "NB-1", "queue_monitoring": true}
+        }
+      ]
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000002",
+      "camera_code": "DEMO-CAM-002",
+      "name": "Demo Cargo Gate East",
+      "location_name": "Airport Rd & Cargo Gate",
+      "approach": "eastbound",
+      "timezone": "Asia/Riyadh",
+      "status": "active",
+      "latitude": 24.9598,
+      "longitude": 46.6982,
+      "notes": "Eastbound cargo gate lane. Monitoring dwell time and stalled vehicles.",
+      "streams": [
+        {
+          "id": "20000000-0000-4000-8000-000000000003",
+          "name": "primary",
+          "stream_kind": "primary",
+          "source_type": "test",
+          "source_uri": "demo://city_center_baseline/cameras/DEMO-CAM-002/primary",
+          "status": "error",
+          "is_enabled": true,
+          "fps_hint": 15.0,
+          "resolution_width": 1920,
+          "resolution_height": 1080,
+          "last_heartbeat_seconds_ago": 12,
+          "last_error": "Decoder timeout: frame decode pipeline stalled for 4.2s at frame 8120"
+        }
+      ],
+      "zones": [
+        {
+          "id": "30000000-0000-4000-8000-000000000004",
+          "name": "cargo-bay-lane",
+          "zone_type": "lane",
+          "status": "active",
+          "geometry": {"type": "Polygon", "coordinates": [[[0.18, 0.48], [0.58, 0.48], [0.66, 0.96], [0.14, 0.96], [0.18, 0.48]]]},
+          "rules_config": {"lane_id": "CG-2", "dwell_watch_seconds": 180}
+        }
+      ]
+    },
+    {
+      "id": "10000000-0000-4000-8000-000000000003",
+      "camera_code": "DEMO-CAM-003",
+      "name": "Demo Tunnel Exit South",
+      "location_name": "Ring Rd & Tunnel Exit",
+      "approach": "southbound",
+      "timezone": "Asia/Riyadh",
+      "status": "active",
+      "latitude": 24.7337,
+      "longitude": 46.6475,
+      "notes": "Southbound tunnel exit. Monitoring stop-line compliance post-tunnel.",
+      "streams": [
+        {
+          "id": "20000000-0000-4000-8000-000000000004",
+          "name": "primary",
+          "stream_kind": "primary",
+          "source_type": "test",
+          "source_uri": "demo://city_center_baseline/cameras/DEMO-CAM-003/primary",
+          "status": "offline",
+          "is_enabled": true,
+          "fps_hint": 12.0,
+          "resolution_width": 1280,
+          "resolution_height": 720,
+          "last_error": "Connection lost: no frames received for 312s, last heartbeat timed out"
+        }
+      ],
+      "zones": [
+        {
+          "id": "30000000-0000-4000-8000-000000000005",
+          "name": "tunnel-exit-stop-line",
+          "zone_type": "stop_line",
+          "status": "active",
+          "geometry": {"type": "LineString", "coordinates": [[0.10, 0.73], [0.88, 0.73]]},
+          "rules_config": {"rules": [{"rule_type": "stop_line_crossing"}], "lane_id": "SB-1"}
+        }
+      ]
+    }
+  ],
+  "detection_events": [
+    {
+      "id": "40000000-0000-4000-8000-000000000001",
+      "camera_id": "10000000-0000-4000-8000-000000000001",
+      "stream_id": "20000000-0000-4000-8000-000000000001",
+      "zone_id": "30000000-0000-4000-8000-000000000001",
+      "event_type": "line_crossing",
+      "status": "enriched",
+      "occurred_minutes_ago": 14,
+      "frame_index": 12450,
+      "track_id": "trk-demo-rl-101",
+      "object_class": "car",
+      "confidence": 0.98,
+      "bbox": {"x1": 220, "y1": 240, "x2": 460, "y2": 520},
+      "event_payload": {"speed_kmh": 62, "signal_state": "red", "lane_id": "NB-1"},
+      "image_uri": "demo://assets/city_center_baseline/cam001/red-light-keyframe.jpg",
+      "video_uri": "demo://assets/city_center_baseline/cam001/red-light-clip.mp4"
+    },
+    {
+      "id": "40000000-0000-4000-8000-000000000002",
+      "camera_id": "10000000-0000-4000-8000-000000000001",
+      "stream_id": "20000000-0000-4000-8000-000000000001",
+      "zone_id": "30000000-0000-4000-8000-000000000003",
+      "event_type": "zone_entry",
+      "status": "enriched",
+      "occurred_minutes_ago": 7,
+      "frame_index": 13820,
+      "track_id": "trk-demo-plate-201",
+      "object_class": "car",
+      "confidence": 0.95,
+      "bbox": {"x1": 280, "y1": 260, "x2": 500, "y2": 500},
+      "event_payload": {"lane_id": "NB-1", "travel_direction": "northbound"},
+      "image_uri": "demo://assets/city_center_baseline/cam001/vehicle-observed.jpg"
+    },
+    {
+      "id": "40000000-0000-4000-8000-000000000003",
+      "camera_id": "10000000-0000-4000-8000-000000000002",
+      "stream_id": "20000000-0000-4000-8000-000000000003",
+      "zone_id": "30000000-0000-4000-8000-000000000004",
+      "event_type": "detection",
+      "status": "enriched",
+      "occurred_minutes_ago": 18,
+      "frame_index": 8120,
+      "track_id": "trk-demo-stall-301",
+      "object_class": "truck",
+      "confidence": 0.97,
+      "bbox": {"x1": 180, "y1": 220, "x2": 560, "y2": 540},
+      "event_payload": {"speed_kmh": 3, "dwell_seconds": 240, "lane_id": "CG-2"},
+      "image_uri": "demo://assets/city_center_baseline/cam002/stalled-vehicle.jpg"
+    },
+    {
+      "id": "40000000-0000-4000-8000-000000000004",
+      "camera_id": "10000000-0000-4000-8000-000000000003",
+      "stream_id": "20000000-0000-4000-8000-000000000004",
+      "zone_id": "30000000-0000-4000-8000-000000000005",
+      "event_type": "line_crossing",
+      "status": "enriched",
+      "occurred_minutes_ago": 95,
+      "frame_index": 2310,
+      "track_id": "trk-demo-stop-401",
+      "object_class": "car",
+      "confidence": 0.94,
+      "bbox": {"x1": 190, "y1": 250, "x2": 430, "y2": 500},
+      "event_payload": {"lane_id": "SB-1", "signal_state": "yellow"},
+      "image_uri": "demo://assets/city_center_baseline/cam003/tunnel-exit.jpg"
+    }
+  ],
+  "plate_reads": [
+    {
+      "id": "50000000-0000-4000-8000-000000000001",
+      "camera_id": "10000000-0000-4000-8000-000000000001",
+      "stream_id": "20000000-0000-4000-8000-000000000001",
+      "detection_event_id": "40000000-0000-4000-8000-000000000001",
+      "status": "matched",
+      "occurred_minutes_ago": 14,
+      "plate_text": "RHD 4831",
+      "normalized_plate_text": "RHD4831",
+      "confidence": 0.94,
+      "country_code": "SA",
+      "region_code": "RUH",
+      "bbox": {"x1": 285, "y1": 410, "x2": 360, "y2": 448},
+      "crop_image_uri": "demo://assets/city_center_baseline/cam001/plate-rhd4831.jpg",
+      "source_frame_uri": "demo://assets/city_center_baseline/cam001/source-rhd4831.jpg",
+      "ocr_metadata": {"engine": "trafficmind-ocr-v2", "plate_type": "private"}
+    },
+    {
+      "id": "50000000-0000-4000-8000-000000000002",
+      "camera_id": "10000000-0000-4000-8000-000000000001",
+      "stream_id": "20000000-0000-4000-8000-000000000001",
+      "detection_event_id": "40000000-0000-4000-8000-000000000002",
+      "status": "observed",
+      "occurred_minutes_ago": 7,
+      "plate_text": "TLY 2204",
+      "normalized_plate_text": "TLY2204",
+      "confidence": 0.91,
+      "country_code": "SA",
+      "region_code": "RUH",
+      "bbox": {"x1": 318, "y1": 405, "x2": 390, "y2": 441},
+      "crop_image_uri": "demo://assets/city_center_baseline/cam001/plate-tly2204.jpg",
+      "source_frame_uri": "demo://assets/city_center_baseline/cam001/source-tly2204.jpg",
+      "ocr_metadata": {"engine": "trafficmind-ocr-v2", "plate_type": "private"}
+    },
+    {
+      "id": "50000000-0000-4000-8000-000000000003",
+      "camera_id": "10000000-0000-4000-8000-000000000003",
+      "stream_id": "20000000-0000-4000-8000-000000000004",
+      "detection_event_id": "40000000-0000-4000-8000-000000000004",
+      "status": "observed",
+      "occurred_minutes_ago": 95,
+      "plate_text": "KSA 3321",
+      "normalized_plate_text": "KSA3321",
+      "confidence": 0.89,
+      "country_code": "SA",
+      "region_code": "RUH",
+      "bbox": {"x1": 260, "y1": 400, "x2": 332, "y2": 438},
+      "crop_image_uri": "demo://assets/city_center_baseline/cam003/plate-ksa3321.jpg",
+      "source_frame_uri": "demo://assets/city_center_baseline/cam003/source-ksa3321.jpg",
+      "ocr_metadata": {"engine": "trafficmind-ocr-v2", "plate_type": "private"}
+    }
+  ],
+  "violations": [
+    {
+      "id": "60000000-0000-4000-8000-000000000001",
+      "camera_id": "10000000-0000-4000-8000-000000000001",
+      "stream_id": "20000000-0000-4000-8000-000000000001",
+      "zone_id": "30000000-0000-4000-8000-000000000001",
+      "detection_event_id": "40000000-0000-4000-8000-000000000001",
+      "plate_read_id": "50000000-0000-4000-8000-000000000001",
+      "violation_type": "red_light",
+      "severity": "high",
+      "status": "confirmed",
+      "occurred_minutes_ago": 14,
+      "summary": "Vehicle crossed the stop line 1.1s after the signal turned red.",
+      "evidence_image_uri": "demo://assets/city_center_baseline/cam001/red-light-review-keyframe.jpg",
+      "evidence_video_uri": "demo://assets/city_center_baseline/cam001/red-light-review-clip.mp4",
+      "assigned_to": "reviewer.maya",
+      "reviewed_by": "reviewer.maya",
+      "reviewed_minutes_ago": 9,
+      "review_note": "Confirmed: clear stop-line crossing visible in keyframe, signal state verified red at 1.1s.",
+      "rule_metadata": {
+        "rule_id": "rl-demo-001",
+        "signal_state": "red",
+        "dwell_ms": 1100,
+        "lane_id": "NB-1",
+        "explanation": "Vehicle crossed the configured stop line after red confirmation."
+      }
+    },
+    {
+      "id": "60000000-0000-4000-8000-000000000002",
+      "camera_id": "10000000-0000-4000-8000-000000000002",
+      "stream_id": "20000000-0000-4000-8000-000000000003",
+      "zone_id": "30000000-0000-4000-8000-000000000004",
+      "detection_event_id": "40000000-0000-4000-8000-000000000003",
+      "violation_type": "stalled_vehicle",
+      "severity": "medium",
+      "status": "under_review",
+      "occurred_minutes_ago": 18,
+      "summary": "Truck remained in the cargo lane for four minutes with repeated stop-and-go movement.",
+      "evidence_image_uri": "demo://assets/city_center_baseline/cam002/stalled-review-keyframe.jpg",
+      "assigned_to": "reviewer.omar",
+      "rule_metadata": {
+        "rule_id": "sv-demo-002",
+        "dwell_seconds": 240,
+        "lane_id": "CG-2",
+        "explanation": "Persistent low-speed dwell triggered the stalled-vehicle candidate."
+      }
+    },
+    {
+      "id": "60000000-0000-4000-8000-000000000003",
+      "camera_id": "10000000-0000-4000-8000-000000000003",
+      "stream_id": "20000000-0000-4000-8000-000000000004",
+      "zone_id": "30000000-0000-4000-8000-000000000005",
+      "detection_event_id": "40000000-0000-4000-8000-000000000004",
+      "plate_read_id": "50000000-0000-4000-8000-000000000003",
+      "violation_type": "stop_line",
+      "severity": "low",
+      "status": "dismissed",
+      "occurred_minutes_ago": 95,
+      "summary": "Initial stop-line alert dismissed after review showed the vehicle halted before the line.",
+      "evidence_image_uri": "demo://assets/city_center_baseline/cam003/stop-line-review-keyframe.jpg",
+      "assigned_to": "reviewer.sara",
+      "reviewed_by": "reviewer.sara",
+      "reviewed_minutes_ago": 82,
+      "review_note": "Dismissed: front bumper overlap with stop line is a perspective artifact, vehicle fully stopped.",
+      "rule_metadata": {
+        "rule_id": "sl-demo-003",
+        "signal_state": "yellow",
+        "lane_id": "SB-1",
+        "explanation": "Candidate stop-line crossing dismissed during review due to conservative thresholding."
+      }
+    }
+  ],
+  "evidence_manifests": [
+    {
+      "id": "70000000-0000-4000-8000-000000000001",
+      "camera_id": "10000000-0000-4000-8000-000000000001",
+      "stream_id": "20000000-0000-4000-8000-000000000001",
+      "zone_id": "30000000-0000-4000-8000-000000000001",
+      "detection_event_id": "40000000-0000-4000-8000-000000000001",
+      "violation_event_id": "60000000-0000-4000-8000-000000000001",
+      "plate_read_id": "50000000-0000-4000-8000-000000000001",
+      "subject_kind": "violation_event",
+      "subject_id": "60000000-0000-4000-8000-000000000001",
+      "manifest_key": "demo:city_center_baseline:red-light:001",
+      "build_revision": 1,
+      "occurred_minutes_ago": 14,
+      "event_frame_index": 12450,
+      "storage_namespace": "demo-evidence",
+      "manifest_uri": "demo://assets/city_center_baseline/cam001/red-light-manifest.json",
+      "manifest_data": {
+        "frames": [
+          "demo://assets/city_center_baseline/cam001/red-light-frame-12442.jpg",
+          "demo://assets/city_center_baseline/cam001/red-light-frame-12450.jpg"
+        ],
+        "clips": ["demo://assets/city_center_baseline/cam001/red-light-review-clip.mp4"],
+        "plates": ["demo://assets/city_center_baseline/cam001/plate-rhd4831.jpg"]
+      }
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000002",
+      "camera_id": "10000000-0000-4000-8000-000000000003",
+      "stream_id": "20000000-0000-4000-8000-000000000004",
+      "zone_id": "30000000-0000-4000-8000-000000000005",
+      "detection_event_id": "40000000-0000-4000-8000-000000000004",
+      "violation_event_id": "60000000-0000-4000-8000-000000000003",
+      "plate_read_id": "50000000-0000-4000-8000-000000000003",
+      "subject_kind": "violation_event",
+      "subject_id": "60000000-0000-4000-8000-000000000003",
+      "manifest_key": "demo:city_center_baseline:stop-line:003",
+      "build_revision": 1,
+      "occurred_minutes_ago": 95,
+      "event_frame_index": 2310,
+      "storage_namespace": "demo-evidence",
+      "manifest_uri": "demo://assets/city_center_baseline/cam003/stop-line-manifest.json",
+      "manifest_data": {
+        "frames": [
+          "demo://assets/city_center_baseline/cam003/stop-line-frame-2302.jpg",
+          "demo://assets/city_center_baseline/cam003/stop-line-frame-2310.jpg"
+        ],
+        "clips": [],
+        "plates": ["demo://assets/city_center_baseline/cam003/plate-ksa3321.jpg"]
+      }
+    },
+    {
+      "id": "70000000-0000-4000-8000-000000000003",
+      "camera_id": "10000000-0000-4000-8000-000000000002",
+      "stream_id": "20000000-0000-4000-8000-000000000003",
+      "zone_id": "30000000-0000-4000-8000-000000000004",
+      "detection_event_id": "40000000-0000-4000-8000-000000000003",
+      "violation_event_id": "60000000-0000-4000-8000-000000000002",
+      "subject_kind": "violation_event",
+      "subject_id": "60000000-0000-4000-8000-000000000002",
+      "manifest_key": "demo:city_center_baseline:stalled-vehicle:002",
+      "build_revision": 1,
+      "occurred_minutes_ago": 18,
+      "event_frame_index": 8120,
+      "storage_namespace": "demo-evidence",
+      "manifest_uri": "demo://assets/city_center_baseline/cam002/stalled-vehicle-manifest.json",
+      "manifest_data": {
+        "frames": [
+          "demo://assets/city_center_baseline/cam002/stalled-vehicle-frame-8112.jpg",
+          "demo://assets/city_center_baseline/cam002/stalled-vehicle-frame-8120.jpg"
+        ],
+        "clips": ["demo://assets/city_center_baseline/cam002/stalled-vehicle-clip.mp4"],
+        "plates": []
+      }
+    }
+  ],
+  "workflows": [
+    {
+      "id": "80000000-0000-4000-8000-000000000001",
+      "camera_id": "10000000-0000-4000-8000-000000000001",
+      "detection_event_id": "40000000-0000-4000-8000-000000000001",
+      "violation_event_id": "60000000-0000-4000-8000-000000000001",
+      "workflow_type": "review",
+      "status": "succeeded",
+      "priority": 2,
+      "requested_by": "demo.seed",
+      "created_minutes_ago": 13,
+      "started_minutes_ago": 13,
+      "completed_minutes_ago": 12,
+      "input_payload": {"review_queue": "priority-red-light"},
+      "result_payload": {"decision": "confirmed", "confidence": 0.98, "note": "Review complete: violation confirmed with high confidence."}
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000002",
+      "camera_id": "10000000-0000-4000-8000-000000000002",
+      "detection_event_id": "40000000-0000-4000-8000-000000000003",
+      "violation_event_id": "60000000-0000-4000-8000-000000000002",
+      "workflow_type": "triage",
+      "status": "running",
+      "priority": 3,
+      "requested_by": "demo.seed",
+      "created_minutes_ago": 17,
+      "started_minutes_ago": 16,
+      "input_payload": {"triage_reason": "possible_stalled_vehicle"}
+    },
+    {
+      "id": "80000000-0000-4000-8000-000000000003",
+      "camera_id": "10000000-0000-4000-8000-000000000003",
+      "detection_event_id": "40000000-0000-4000-8000-000000000004",
+      "violation_event_id": "60000000-0000-4000-8000-000000000003",
+      "workflow_type": "review",
+      "status": "succeeded",
+      "priority": 4,
+      "requested_by": "demo.seed",
+      "created_minutes_ago": 90,
+      "started_minutes_ago": 89,
+      "completed_minutes_ago": 86,
+      "input_payload": {"review_queue": "false-positive-check"},
+      "result_payload": {"decision": "dismissed", "confidence": 0.87, "note": "Review complete: false positive dismissed, perspective distortion identified."}
+    }
+  ]
+}

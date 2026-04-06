@@ -1,0 +1,18 @@
+{
+  "normalization_cases": [
+    {"raw_text": "ＡＢＣ１２３４", "expected": "ABC1234"},
+    {"raw_text": "٣٢١٠", "expected": "3210"},
+    {"raw_text": "ab-12.34", "expected": "AB1234"}
+  ],
+  "search_records": [
+    {"plate_text": "ABC 1234", "country_code": "SA", "region_code": "RIY", "track_id": "track-1"},
+    {"plate_text": "ABD 1234", "country_code": "SA", "region_code": "RIY", "track_id": "track-2"},
+    {"plate_text": "XYZ 9999", "country_code": "AE", "region_code": "DXB"}
+  ],
+  "search_queries": [
+    {"name": "exact normalized search", "params": {"plate_text": "ABC1234"}, "expected_total": 1},
+    {"name": "partial raw-text search", "params": {"plate_text": "AB", "normalized": false, "partial": true}, "expected_total": 2},
+    {"name": "region filter", "params": {"region_code": "RIY"}, "expected_total": 2},
+    {"name": "track filter", "params": {"track_id": "track-1"}, "expected_total": 1}
+  ]
+}

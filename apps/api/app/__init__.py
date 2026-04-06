@@ -1,0 +1,1 @@
+"""TrafficMind API application package."""

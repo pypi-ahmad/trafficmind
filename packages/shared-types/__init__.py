@@ -1,0 +1,1 @@
+"""TrafficMind shared type contracts."""

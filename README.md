@@ -18,7 +18,7 @@
 [![Tests](https://img.shields.io/badge/Tests-794_passed-brightgreen?style=flat-square&logo=pytest&logoColor=white)](#-testing)
 [![Models](https://img.shields.io/badge/ORM_Models-23-blue?style=flat-square)](#-data-layer)
 [![Migrations](https://img.shields.io/badge/Migrations-13-blue?style=flat-square)](#-data-layer)
-[![Rules](https://img.shields.io/badge/Rule_Types-8-orange?style=flat-square)](#-rules-engine)
+[![Rules](https://img.shields.io/badge/Rule_Types-11-orange?style=flat-square)](#-rules-engine)
 [![Workflows](https://img.shields.io/badge/Workflows-7-purple?style=flat-square)](#-cold-path-workflows)
 
 ---
@@ -84,7 +84,7 @@ Urban traffic enforcement and monitoring require processing high-volume video fe
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" width="16"/> | **PostgreSQL** / SQLite · production / local dev |
 | 🔄 | **Alembic** · 13 migration revisions |
 | 🦜 | **LangGraph** · 7 cold-path workflow graphs |
-| 📦 | **Pydantic v2** · 30+ shared StrEnum types |
+| 📦 | **Pydantic v2** · 90+ shared StrEnum types |
 
 </td>
 <td width="50%">
@@ -178,7 +178,7 @@ trafficmind/
 │   ├── tracking/            # Tracking (Tracker ABC → ByteTrack, IoU, Centroid backends)
 │   ├── ocr/                 # Plate OCR (OcrEngine ABC → PaddleOCR backend)
 │   ├── signals/             # Traffic-light classification (HSV + temporal smoothing)
-│   ├── rules/               # Deterministic rule engine (8 rule types)
+│   ├── rules/               # Deterministic rule engine (11 rule types)
 │   ├── motion/              # Speed estimation, direction labeling
 │   ├── flow/                # Lane occupancy, queue detection, congestion
 │   ├── streams/             # Stream ingestion, worker lifecycle, frame pipeline
@@ -224,7 +224,7 @@ The hot-path perception pipeline composes pluggable backends into a single deter
 | 📍 Multi-Object Tracking | `services/tracking/` | ByteTrack · IoU · Centroid | ✅ 3 backends |
 | 🔤 License Plate OCR | `services/ocr/` | PaddleOCR + normalization | ✅ Implemented |
 | 🚦 Traffic-Light State | `services/signals/` | HSV voting + temporal smoothing | ✅ Implemented |
-| 📏 Rule Evaluation | `services/rules/` | 8 deterministic rule types | ✅ Implemented |
+| 📏 Rule Evaluation | `services/rules/` | 11 deterministic rule types | ✅ Implemented |
 | 🏎 Speed Estimation | `services/motion/` | Calibration-aware, 3 accuracy tiers | ✅ Implemented |
 | 🚗 Dwell Analysis | `services/dwell/` | Illegal parking, bus-stop, stalled | ✅ Implemented |
 | 📊 Lane Analytics | `services/flow/` | Occupancy, queues, congestion | ✅ Implemented |
@@ -300,7 +300,7 @@ The Next.js 16 operations dashboard provides a map-first view of the camera netw
 
 ## 📏 Rules Engine
 
-8 deterministic rule types evaluated against tracked objects and zone geometry:
+11 deterministic rule types evaluated against tracked objects and zone geometry:
 
 | Rule Type | Temporal Confirmation | Evidence |
 |---|---|---|
@@ -308,10 +308,13 @@ The Next.js 16 operations dashboard provides a map-first view of the camera netw
 | 🚶 Pedestrian on red | ✅ Multi-frame required | Trajectory evidence |
 | 🛑 Stop-line crossing | ✅ Multi-frame required | Approach + violation frames |
 | ↩️ Wrong-way travel | — | Direction vector evidence |
-| 🏎 Speeding | — | Speed estimation evidence |
-| 🚫 Illegal turn | — | Trajectory evidence |
-| ⏱ Dwell time | Duration-based | Timestamped occupancy |
 | ➖ Line crossing | — | Crossing geometry |
+| 🚧 Zone entry | — | Zone boundary breach |
+| ⏱ Zone dwell time | Duration-based | Timestamped occupancy |
+| 🅿️ Illegal parking | Duration-based | Timestamped occupancy |
+| 🚫 No stopping | Duration-based | Timestamped occupancy |
+| 🚌 Bus stop occupation | Duration-based | Timestamped occupancy |
+| 🚗 Stalled vehicle | Duration-based | Timestamped occupancy |
 
 > **Flagship rules** (red-light, pedestrian-on-red, stop-line) hold pre-violation candidates until sufficient post-event evidence accumulates. Unknown or stale signal state does not generate candidates.
 
@@ -323,7 +326,7 @@ The Next.js 16 operations dashboard provides a map-first view of the camera netw
 |---|---|
 | 📊 ORM Models | 23 SQLAlchemy models |
 | 🔄 Migrations | 13 Alembic revisions |
-| 📦 Enum Types | 30+ StrEnum types |
+| 📦 Enum Types | 90+ StrEnum types |
 | 🔗 Shared Contracts | `packages/shared_types/` — BBox, ObjectCategory, enums, events |
 
 ---

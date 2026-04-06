@@ -34,18 +34,19 @@ def upgrade() -> None:
 
     op.add_column("cameras", sa.Column("junction_id", sa.Uuid(), nullable=True))
     op.create_index("ix_cameras_junction_id", "cameras", ["junction_id"], unique=False)
-    op.create_foreign_key(
-        op.f("fk_cameras_junction_id_junctions"),
-        "cameras",
-        "junctions",
-        ["junction_id"],
-        ["id"],
-        ondelete="SET NULL",
-    )
+    with op.batch_alter_table("cameras") as batch_op:
+        batch_op.create_foreign_key(
+            op.f("fk_cameras_junction_id_junctions"),
+            "junctions",
+            ["junction_id"],
+            ["id"],
+            ondelete="SET NULL",
+        )
 
 
 def downgrade() -> None:
-    op.drop_constraint(op.f("fk_cameras_junction_id_junctions"), "cameras", type_="foreignkey")
+    with op.batch_alter_table("cameras") as batch_op:
+        batch_op.drop_constraint(op.f("fk_cameras_junction_id_junctions"), type_="foreignkey")
     op.drop_index("ix_cameras_junction_id", table_name="cameras")
     op.drop_column("cameras", "junction_id")
     op.drop_index("ix_junctions_name", table_name="junctions")

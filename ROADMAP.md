@@ -17,7 +17,7 @@
 - Detection service in `services/vision/` with YOLO26 backend
 - Multi-object tracking in `services/tracking/` with ByteTrack backend
 - OCR pipeline in `services/ocr/` with PaddleOCR backend and plate normalization
-- Deterministic rule engine in `services/rules/` with 8 rule types and temporal confirmation
+- Deterministic rule engine in `services/rules/` with 11 rule types and temporal confirmation
 - Traffic-light signal perception in `services/signals/` with HSV classification and state tracking
 
 ## Phase 3 — Event and Review Platform ✅

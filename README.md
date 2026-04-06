@@ -15,7 +15,7 @@
 
 **Live video ingestion · Real-time detection & tracking · Plate OCR · Deterministic rule evaluation · Operator workflows · Spatial analytics · Operational alerting**
 
-[![Tests](https://img.shields.io/badge/Tests-791_passed-brightgreen?style=flat-square&logo=pytest&logoColor=white)](#-testing)
+[![Tests](https://img.shields.io/badge/Tests-794_passed-brightgreen?style=flat-square&logo=pytest&logoColor=white)](#-testing)
 [![Models](https://img.shields.io/badge/ORM_Models-23-blue?style=flat-square)](#-data-layer)
 [![Migrations](https://img.shields.io/badge/Migrations-13-blue?style=flat-square)](#-data-layer)
 [![Rules](https://img.shields.io/badge/Rule_Types-8-orange?style=flat-square)](#-rules-engine)
@@ -122,7 +122,7 @@ Urban traffic enforcement and monitoring require processing high-volume video fe
 | | Technology |
 |---|---|
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" width="16"/> | **Python 3.13** · modern runtime |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytest/pytest-original.svg" width="16"/> | **pytest** · 791 tests passing |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytest/pytest-original.svg" width="16"/> | **pytest** · 794 tests passing |
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="16"/> | **GitHub Actions** · lint / test / build CI |
 | 🐳 | **Docker** · containerization (planned) |
 | 📋 | **uv** · dependency resolution & lock files |
@@ -204,7 +204,7 @@ trafficmind/
 │
 ├── 🗃  alembic/             # 13 database migration revisions
 ├── 📚 docs/                 # Extended documentation
-├── 🧪 tests/               # 791 tests across 15+ test modules
+├── 🧪 tests/               # 794 tests across 15+ test modules
 └── 🤖 models/              # ML model weights (gitignored)
 ```
 
@@ -365,7 +365,7 @@ cp .env.example .env
 alembic upgrade head
 
 # 7️⃣  Start all services
-uvicorn apps.api.app.main:app --reload                  # ⚡ API       → localhost:8000
+uvicorn apps.api.app.main:app --reload --port 8000      # ⚡ API       → localhost:8000
 uvicorn apps.workflow.app.main:app --reload --port 8010  # 🦜 Workflow  → localhost:8010
 cd frontend && npm install && npm run dev                # 🖥  Frontend → localhost:3000
 ```
@@ -401,7 +401,7 @@ python -m services.evaluation tests/fixtures/evaluation/benchmark_suite.json
 ## 🧪 Testing
 
 ```bash
-# Full suite (791 tests)
+# Full suite (794 tests)
 python -m pytest tests/ -q
 
 # Specific module

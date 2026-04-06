@@ -480,6 +480,8 @@ async def alert_client() -> AsyncIterator[tuple[AsyncClient, async_sessionmaker]
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as c:
         yield c, session_factory
 
+    await engine.dispose()
+
 
 @pytest.mark.asyncio
 async def test_dispatch_delivers_planned_attempts_and_updates_state(

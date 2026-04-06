@@ -32,6 +32,8 @@ async def client() -> AsyncIterator[AsyncClient]:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as ac:
         yield ac
 
+    await engine.dispose()
+
 
 @pytest.mark.asyncio
 async def test_junction_crud_lifecycle(client: AsyncClient) -> None:

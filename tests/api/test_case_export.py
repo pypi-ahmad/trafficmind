@@ -58,6 +58,8 @@ async def client() -> AsyncIterator[tuple[AsyncClient, async_sessionmaker]]:
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as c:
         yield c, session_factory
 
+    await engine.dispose()
+
 
 @pytest.fixture
 async def seeded_violation(

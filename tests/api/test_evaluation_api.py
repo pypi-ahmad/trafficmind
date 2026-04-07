@@ -54,7 +54,7 @@ async def test_evaluation_summary_loads_stored_artifacts_when_present(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     artifact_dir = tmp_path / "evaluation-artifacts"
-    fixture_path = Path("e:/Github/trafficmind/tests/fixtures/evaluation/benchmark_suite.json")
+    fixture_path = Path(__file__).parent.parent / "fixtures" / "evaluation" / "benchmark_suite.json"
     artifact = build_fixture_report_artifact(
         fixture_path,
         artifact_label="nightly-sanities",

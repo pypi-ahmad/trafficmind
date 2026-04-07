@@ -15,25 +15,12 @@ from typing import Any
 
 from services.dwell.analyzer import analyze_dwell
 from services.dwell.schemas import DwellOutcome, DwellScenario, DwellThresholds
-from services.tracking.schemas import (
-    CardinalDirection,
-    LineSegment,
-    Point2D,
-    PolygonZone,
-    TrackedObject,
-    ZoneTransitionType,
-)
-from services.tracking.utils import (
-    check_line_crossing,
-    detect_zone_transition,
-    point_in_polygon,
-)
 from services.rules.schemas import (
     BusStopOccupationRuleConfig,
     Explanation,
     IllegalParkingRuleConfig,
-    LineGeometry,
     LineCrossingRuleConfig,
+    LineGeometry,
     NoStoppingRuleConfig,
     PedestrianOnRedRuleConfig,
     PolygonGeometry,
@@ -49,8 +36,20 @@ from services.rules.schemas import (
     ZoneDwellTimeRuleConfig,
     ZoneEntryRuleConfig,
 )
+from services.tracking.schemas import (
+    CardinalDirection,
+    LineSegment,
+    Point2D,
+    PolygonZone,
+    TrackedObject,
+    ZoneTransitionType,
+)
+from services.tracking.utils import (
+    check_line_crossing,
+    detect_zone_transition,
+    point_in_polygon,
+)
 from services.vision.schemas import ObjectCategory
-
 
 # ---------------------------------------------------------------------------
 # Shared helpers

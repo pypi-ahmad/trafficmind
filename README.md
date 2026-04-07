@@ -374,7 +374,7 @@ The **Next.js 16** operations dashboard provides a map-first view of the camera 
 | 📊 Hotspot and spatial analytics | ✅ | Backed by persisted hotspot analytics when available |
 | 📈 Evaluation benchmark summaries | ✅ | Detection · tracking · OCR · rule · signal metrics |
 | ⚠️ Violation review UI | ✅ | Confirm / dismiss with operator name and review note |
-| 🔔 Operational alerts | ✅ | Filter by status · severity · source (read-only) |
+| 🔔 Operational alerts | ✅ | Filter by status · severity · source · Acknowledge and Resolve actions |
 | 📦 Case export listing | ✅ | Filter by status · subject type (read-only) |
 | ⚙️ Settings and access policy | ✅ | Active policy and role display |
 | ❓ Operator help & glossary | ✅ | Navigation guide · glossary · severity levels · common tasks |
@@ -653,7 +653,7 @@ For complete operational documentation — setup, configuration, page-by-page fe
 | Area | Constraint |
 |---|---|
 | **Authentication** | No login or session management in the frontend. Access control is enforced at the API layer via `access_role` parameters. |
-| **Alert actions** | The backend supports acknowledge, resolve, suppress, and escalate operations on alerts. The frontend alerts page is read-only. |
+| **Alert actions** | Acknowledge and Resolve actions are available in the frontend. Suppress and escalate are backend-only; no UI for those operations currently. |
 | **Export creation** | The backend supports creating case export bundles. The frontend reports page lists existing exports only. |
 | **Bulk operations** | Violation review is per-item only. No batch confirm/dismiss interface. |
 | **Workflow checkpointing** | In-memory only. Workflow state is lost on service restart. |

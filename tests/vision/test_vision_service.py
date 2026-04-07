@@ -17,13 +17,12 @@ import pytest
 from services.vision.config import VisionSettings
 from services.vision.interface import Detector, DetectorRegistry
 from services.vision.schemas import (
-    BBox,
     COCO_CATEGORY_MAP,
+    BBox,
     Detection,
     DetectionResult,
     ObjectCategory,
 )
-
 
 # ── Schema tests ────────────────────────────────────────────────────────────
 

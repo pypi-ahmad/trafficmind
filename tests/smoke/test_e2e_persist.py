@@ -36,12 +36,11 @@ from packages.shared_types.scene import (
     TrafficLightState,
 )
 from services.ocr.interface import OcrEngine
-from services.ocr.schemas import OcrContext, OcrResult, PlateOcrResult
+from services.ocr.schemas import OcrResult
 from services.rules.schemas import (
     LineCrossingRuleConfig,
     LineGeometry,
     RedLightRuleConfig,
-    RuleType,
     StopLineCrossingRuleConfig,
     ZoneConfig,
 )

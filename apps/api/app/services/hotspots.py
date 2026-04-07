@@ -9,7 +9,14 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.api.app.db.enums import ZoneType
-from apps.api.app.db.models import Camera, DetectionEvent, PlateRead, ViolationEvent, WatchlistAlert, Zone
+from apps.api.app.db.models import (
+    Camera,
+    DetectionEvent,
+    PlateRead,
+    ViolationEvent,
+    WatchlistAlert,
+    Zone,
+)
 from apps.api.app.schemas.analytics import HotspotAnalyticsRequest
 from services.hotspot import aggregate_hotspots
 from services.hotspot.schemas import EventRecord, HotspotResult, HotspotSourceKind

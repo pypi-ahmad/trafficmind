@@ -9,7 +9,6 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from services.vision.schemas import ObjectCategory
 
-
 # ---------------------------------------------------------------------------
 # Dwell scenario taxonomy
 # ---------------------------------------------------------------------------

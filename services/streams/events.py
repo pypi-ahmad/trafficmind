@@ -2,18 +2,17 @@
 
 from __future__ import annotations
 
+import uuid
 from collections import Counter
 from datetime import datetime
 from enum import StrEnum
 from typing import Any
 
-import uuid
-
 from pydantic import BaseModel, ConfigDict, Field
 
-from services.tracking.schemas import Point2D, TrackLifecycleStatus, TrackedObject, TrackingResult
-from services.vision.schemas import BBox, DetectionResult
 from services.signals.schemas import SignalSceneSnapshot
+from services.tracking.schemas import Point2D, TrackedObject, TrackingResult, TrackLifecycleStatus
+from services.vision.schemas import BBox, DetectionResult
 
 
 class EventPersistenceHint(StrEnum):

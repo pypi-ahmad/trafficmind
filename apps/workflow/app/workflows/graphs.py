@@ -8,6 +8,7 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.types import interrupt
 
 from apps.workflow.app.workflows.multimodal_review import build_multimodal_review_grounding
+from apps.workflow.app.workflows.operator_assist import plan_operator_assist_request
 from apps.workflow.app.workflows.providers import WorkflowReasoningProvider
 from apps.workflow.app.workflows.repository import WorkflowRepository
 from apps.workflow.app.workflows.schemas import (
@@ -17,7 +18,6 @@ from apps.workflow.app.workflows.schemas import (
     ReviewDisposition,
     WorkflowTraceEntry,
 )
-from apps.workflow.app.workflows.operator_assist import plan_operator_assist_request
 from apps.workflow.app.workflows.state import (
     DailySummaryState,
     HotspotReportState,

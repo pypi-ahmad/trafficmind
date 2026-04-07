@@ -10,7 +10,6 @@ from sqlalchemy import (
     JSON,
     Boolean,
     DateTime,
-    Enum as SAEnum,
     Float,
     ForeignKey,
     Index,
@@ -20,6 +19,9 @@ from sqlalchemy import (
     UniqueConstraint,
     text,
     true,
+)
+from sqlalchemy import (
+    Enum as SAEnum,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -46,10 +48,10 @@ from apps.api.app.db.enums import (
     SourceType,
     StreamKind,
     StreamStatus,
-    WatchlistAlertStatus,
     ViolationSeverity,
     ViolationStatus,
     ViolationType,
+    WatchlistAlertStatus,
     WatchlistEntryStatus,
     WatchlistReason,
     WorkflowStatus,

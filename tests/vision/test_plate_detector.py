@@ -14,7 +14,6 @@ from datetime import datetime, timezone
 
 import cv2
 import numpy as np
-import pytest
 
 from services.vision.config import VisionSettings
 from services.vision.interface import Detector, DetectorRegistry

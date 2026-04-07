@@ -6,7 +6,13 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from services.hotspot.schemas import HotspotQuery, HotspotRankingMetric, HotspotResult, RecurringIssue, TrendComparison
+from services.hotspot.schemas import (
+    HotspotQuery,
+    HotspotRankingMetric,
+    HotspotResult,
+    RecurringIssue,
+    TrendComparison,
+)
 
 
 class HotspotAnalyticsRequest(HotspotQuery):

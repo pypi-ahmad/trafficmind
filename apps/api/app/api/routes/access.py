@@ -4,8 +4,16 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Query
 
-from apps.api.app.schemas.access import AccessPolicyRead, AccessRequirementRead, AccessRolePermissionRead
-from services.access_control.policy import AccessPermission, get_access_policy_definition, resolve_access_context
+from apps.api.app.schemas.access import (
+    AccessPolicyRead,
+    AccessRequirementRead,
+    AccessRolePermissionRead,
+)
+from services.access_control.policy import (
+    AccessPermission,
+    get_access_policy_definition,
+    resolve_access_context,
+)
 from services.evidence.schemas import EvidenceAccessRole
 
 router = APIRouter(prefix="/access", tags=["access"])

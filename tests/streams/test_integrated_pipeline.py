@@ -9,10 +9,8 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime, timedelta
-from typing import Any
 
 import numpy as np
-import pytest
 
 from services.ocr.interface import OcrEngine
 from services.ocr.schemas import OcrContext, OcrResult, PlateOcrResult
@@ -33,7 +31,6 @@ from services.tracking.schemas import (
 )
 from services.vision.interface import Detector
 from services.vision.schemas import BBox, Detection, DetectionResult, ObjectCategory
-
 
 # ---------------------------------------------------------------------------
 # Shared helpers

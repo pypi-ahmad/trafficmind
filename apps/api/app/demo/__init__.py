@@ -8,8 +8,8 @@ __all__ = ["DemoSeedResult", "list_demo_scenarios", "seed_demo_scenario"]
 
 
 def __getattr__(name: str) -> Any:
-	if name in __all__:
-		from apps.api.app.demo import seed as _seed
+    if name in __all__:
+        from apps.api.app.demo import seed as _seed
 
-		return getattr(_seed, name)
-	raise AttributeError(name)
+        return getattr(_seed, name)
+    raise AttributeError(name)

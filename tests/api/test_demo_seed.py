@@ -7,7 +7,6 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import func, select
 
-from apps.api.app.demo.seed import seed_demo_scenario
 from apps.api.app.db.models import (
     Camera,
     CameraStream,
@@ -19,6 +18,7 @@ from apps.api.app.db.models import (
     Zone,
 )
 from apps.api.app.db.session import get_db_session
+from apps.api.app.demo.seed import seed_demo_scenario
 from apps.api.app.main import create_app
 from tests.fixtures.sample_data import load_json_fixture, make_sqlite_session_factory
 

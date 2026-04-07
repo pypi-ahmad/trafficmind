@@ -94,7 +94,7 @@ def main() -> None:
 
     # Demonstrate track-level utilities and analytics helpers
     print("\n--- Track-level summary ---")
-    final = result  # noqa: F821 — last frame from loop
+    final = result
     for track in final.tracks:
         lc = check_track_line_crossing(track, line)
         zt_list = check_track_zone_transitions(track, zone)

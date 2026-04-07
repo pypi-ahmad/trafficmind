@@ -5,8 +5,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-import pytest
-
+from apps.api.app.db.enums import EvidenceSubjectKind
 from services.evidence.privacy import (
     is_original_access_authorized,
     mask_plate_text,
@@ -30,8 +29,6 @@ from services.evidence.schemas import (
     EvidenceSubjectRef,
     EvidenceTimeline,
 )
-
-from apps.api.app.db.enums import EvidenceSubjectKind
 
 # ---------------------------------------------------------------------------
 # Fixtures

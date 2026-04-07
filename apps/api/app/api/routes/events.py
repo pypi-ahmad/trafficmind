@@ -17,13 +17,13 @@ from apps.api.app.schemas.domain import (
     EventSummaryTotals,
 )
 from services.access_control.policy import AccessPermission
+from services.events.search import search_detection_events
 from services.evidence.schemas import EvidenceAccessRole, EvidenceAssetView, EvidenceManifestRead
 from services.evidence.service import (
     EvidenceSubjectNotFoundError,
     build_detection_evidence_manifest,
     get_detection_evidence_manifest,
 )
-from services.events.search import search_detection_events
 
 router = APIRouter(prefix="/events", tags=["events"])
 

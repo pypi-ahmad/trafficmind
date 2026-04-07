@@ -12,8 +12,9 @@ import logging
 import math
 import time
 from collections import deque
+from collections.abc import Callable
 from datetime import datetime, timezone
-from typing import Any, Callable
+from typing import Any
 
 from services.signals.schemas import SignalHeadConfig
 from services.streams.config import StreamSettings

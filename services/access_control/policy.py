@@ -8,8 +8,9 @@ permissions, then combine those permissions with resource-specific policy checks
 from __future__ import annotations
 
 import logging
+from collections.abc import Iterable
 from enum import StrEnum
-from typing import Any, Iterable
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 

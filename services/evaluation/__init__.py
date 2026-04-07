@@ -17,9 +17,9 @@ from services.evaluation.metrics import (
     evaluate_tracking_case,
 )
 from services.evaluation.schemas import (
+    BenchmarkArtifactMetadata,
     BenchmarkFixtureSuite,
     BenchmarkReportArtifact,
-    BenchmarkArtifactMetadata,
     BenchmarkSuiteReport,
     DetectionBenchmarkCase,
     DetectionBenchmarkReport,

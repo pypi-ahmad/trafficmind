@@ -4,7 +4,23 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from apps.api.app.api.routes import access, alerts, analytics, cameras, events, exports, health, jobs, junctions, model_registry, observability, plates, signals, violations, watchlist
+from apps.api.app.api.routes import (
+    access,
+    alerts,
+    analytics,
+    cameras,
+    events,
+    exports,
+    health,
+    jobs,
+    junctions,
+    model_registry,
+    observability,
+    plates,
+    signals,
+    violations,
+    watchlist,
+)
 
 v1_router = APIRouter()
 

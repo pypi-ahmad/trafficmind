@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import math
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -22,11 +22,7 @@ from services.reid.backends import (
 )
 from services.reid.config import ReIdSettings
 from services.reid.interface import (
-    CandidateMatcher,
-    EmbeddingExtractor,
     EmbeddingExtractorRegistry,
-    MatchConfirmer,
-    SimilarityIndex,
 )
 from services.reid.linking import canonical_pair_key, plan_entity_link
 from services.reid.schemas import (
@@ -586,7 +582,6 @@ class TestReIdPipeline:
     def test_distractor_not_confirmed(self):
         """The distractor vehicle (opposite embedding) should not yield a HIGH match."""
         fixture = _load_fixture()
-        cfg = _settings()
 
         idx = InMemorySimilarityIndex()
         for s_data in fixture["sightings"] + fixture["distractors"]:

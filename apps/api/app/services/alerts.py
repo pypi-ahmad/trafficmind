@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-import uuid
 from typing import Any
 
 from sqlalchemy import func, select
@@ -27,7 +27,11 @@ from apps.api.app.db.models import (
     AlertRoutingTarget,
     OperationalAlert,
 )
-from apps.api.app.schemas.alerts import AlertPolicyCreate, AlertRoutingTargetCreate, AlertSignalCreate
+from apps.api.app.schemas.alerts import (
+    AlertPolicyCreate,
+    AlertRoutingTargetCreate,
+    AlertSignalCreate,
+)
 from apps.api.app.services.errors import ConflictError, NotFoundError, ServiceValidationError
 
 

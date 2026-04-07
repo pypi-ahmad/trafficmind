@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 import uuid
+from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any
 
@@ -27,7 +27,11 @@ from apps.api.app.db.models import (
     ViolationEvent,
     WorkflowRun,
 )
-from apps.api.app.schemas.exports import CaseExportCreateRequest, CaseExportDetailRead, CaseExportSummaryRead
+from apps.api.app.schemas.exports import (
+    CaseExportCreateRequest,
+    CaseExportDetailRead,
+    CaseExportSummaryRead,
+)
 from apps.api.app.services.errors import NotFoundError
 from services.access_control.policy import (
     AccessContext,
@@ -36,7 +40,11 @@ from services.access_control.policy import (
     require_permissions,
     resolve_access_context,
 )
-from services.evidence.privacy import mask_plate_text, resolve_access_resolution, sanitize_manifest_for_access
+from services.evidence.privacy import (
+    mask_plate_text,
+    resolve_access_resolution,
+    sanitize_manifest_for_access,
+)
 from services.evidence.schemas import (
     EvidenceAccessResolution,
     EvidenceAccessRole,

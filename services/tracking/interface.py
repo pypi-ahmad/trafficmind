@@ -9,9 +9,9 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 
 from services.tracking.schemas import (
-    TrackLifecycleStatus,
     TrackedObject,
     TrackingResult,
+    TrackLifecycleStatus,
     TrajectoryPoint,
 )
 from services.tracking.utils import centroid_from_bbox, estimate_direction

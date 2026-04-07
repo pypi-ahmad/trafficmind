@@ -31,7 +31,6 @@ from services.evaluation.schemas import (
 )
 from services.vision.schemas import BBox
 
-
 # ── _safe_rate ──────────────────────────────────────────────────────────────
 
 class TestSafeRate:

@@ -11,7 +11,7 @@ export default function NotFound() {
           404
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-[rgba(19,32,41,0.74)]">
-          The page you're looking for doesn't exist or may have been moved.
+          The page you&apos;re looking for doesn&apos;t exist or may have been moved.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link

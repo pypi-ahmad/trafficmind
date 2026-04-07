@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterable
 
 from services.evaluation.metrics import evaluate_fixture_suite
 from services.evaluation.schemas import (
@@ -28,7 +28,7 @@ def _dedupe_strings(values: Iterable[str]) -> list[str]:
 
 
 def _artifact_key(*, source_kind: EvaluationArtifactSourceKind, seed: str) -> str:
-    digest = hashlib.sha1(f"{source_kind.value}:{seed}".encode("utf-8")).hexdigest()[:12]
+    digest = hashlib.sha1(f"{source_kind.value}:{seed}".encode()).hexdigest()[:12]
     return f"{source_kind.value}:{digest}"
 
 

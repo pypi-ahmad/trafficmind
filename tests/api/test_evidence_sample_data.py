@@ -5,8 +5,11 @@ from datetime import datetime, timezone
 import pytest
 
 from services.evidence.service import build_violation_evidence_manifest
-
-from tests.fixtures.sample_data import load_json_fixture, make_sqlite_session_factory, seed_evidence_incident
+from tests.fixtures.sample_data import (
+    load_json_fixture,
+    make_sqlite_session_factory,
+    seed_evidence_incident,
+)
 
 
 @pytest.mark.asyncio

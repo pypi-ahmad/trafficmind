@@ -18,7 +18,6 @@ from apps.api.app.schemas.domain import (
     WatchlistEntryUpdate,
 )
 from services.access_control.policy import AccessPermission
-from services.evidence.schemas import EvidenceAccessRole
 from services.anpr.watchlist import (
     check_watchlist,
     create_watchlist_entry,
@@ -27,6 +26,7 @@ from services.anpr.watchlist import (
     list_watchlist_entries,
     update_watchlist_entry,
 )
+from services.evidence.schemas import EvidenceAccessRole
 from services.ocr.normalizer import normalize_plate_text
 
 router = APIRouter(prefix="/watchlist", tags=["watchlist"])

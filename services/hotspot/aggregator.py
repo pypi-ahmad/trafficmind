@@ -16,8 +16,8 @@ from services.hotspot.schemas import (
     EventRecord,
     HotspotBucket,
     HotspotQuery,
-    HotspotRankingMetric,
     HotspotRanking,
+    HotspotRankingMetric,
     HotspotResult,
     RecurringIssue,
     TimeGranularity,
@@ -25,7 +25,6 @@ from services.hotspot.schemas import (
     TrendComparison,
     TrendDelta,
 )
-
 
 # ---------------------------------------------------------------------------
 # Public API

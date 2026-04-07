@@ -186,8 +186,8 @@ def _segments_intersect(
     o3 = _orientation(q1, q2, p1)
     o4 = _orientation(q1, q2, p2)
 
-    if (o1 > epsilon and o2 < -epsilon or o1 < -epsilon and o2 > epsilon) and (
-        o3 > epsilon and o4 < -epsilon or o3 < -epsilon and o4 > epsilon
+    if ((o1 > epsilon and o2 < -epsilon) or (o1 < -epsilon and o2 > epsilon)) and (
+        (o3 > epsilon and o4 < -epsilon) or (o3 < -epsilon and o4 > epsilon)
     ):
         return True
 

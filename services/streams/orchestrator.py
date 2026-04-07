@@ -9,10 +9,9 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import uuid
 from datetime import datetime, timezone
 from typing import Any
-
-import uuid
 
 from services.streams.config import StreamSettings, get_stream_settings
 from services.streams.schemas import (
@@ -185,11 +184,11 @@ class StreamOrchestrator:
         if task is not None and not task.done():
             try:
                 await asyncio.wait_for(asyncio.shield(task), timeout=10.0)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 task.cancel()
                 try:
                     await asyncio.wait_for(task, timeout=1.0)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     logger.warning("Job %s cancellation still pending after forced stop", job_id)
                 except asyncio.CancelledError:
                     pass

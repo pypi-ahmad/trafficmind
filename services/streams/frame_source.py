@@ -115,7 +115,7 @@ class OpenCvSource(FrameSource):
         cap = cv2.VideoCapture(self._uri)
         if not cap.isOpened():
             msg = f"Cannot open video source: {self._uri}"
-            raise IOError(msg)
+            raise OSError(msg)
         self._capture = cap
         logger.info(
             "Opened %s source: %s  resolution=%dx%d  fps=%.1f",

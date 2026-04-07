@@ -13,8 +13,6 @@ from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from packages.shared_types.geometry import Point2D  # noqa: F401 — re-exported for convenience
-
 
 class SignalPhase(StrEnum):
     """Which traffic participant the signal head controls."""

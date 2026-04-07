@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 
 import { performAlertAction, ALERT_ACTION_INITIAL } from "@/app/alerts/actions";
-import type { AlertActionKind, AlertActionState } from "@/app/alerts/actions";
+import type { AlertActionKind } from "@/app/alerts/actions";
 
 const STORAGE_KEY = "trafficmind:reviewer-name";
 
@@ -16,16 +16,11 @@ export function AlertActions({ alertId, currentStatus }: { alertId: string; curr
   const [expanded, setExpanded] = useState(false);
   const [selectedAction, setSelectedAction] = useState<AlertActionKind | null>(null);
   const [state, formAction, pending] = useActionState(performAlertAction, ALERT_ACTION_INITIAL);
-  const [savedName, setSavedName] = useState("");
+  const [savedName, setSavedName] = useState(() => {
+    if (typeof window === "undefined") return "";
+    try { return localStorage.getItem(STORAGE_KEY) ?? ""; } catch { return ""; }
+  });
   const actorRef = useRef<HTMLInputElement>(null);
-
-  /* Load persisted reviewer name on mount */
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setSavedName(stored);
-    } catch { /* localStorage unavailable */ }
-  }, []);
 
   /* Persist reviewer name on successful action */
   useEffect(() => {

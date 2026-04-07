@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function GlobalError({
   error,
   reset,
@@ -31,12 +33,12 @@ export default function GlobalError({
           >
             Try again
           </button>
-          <a
+          <Link
             href="/"
             className="rounded-full border border-[rgba(23,57,69,0.14)] px-5 py-2.5 text-sm font-medium text-[var(--color-ink)] transition-colors hover:border-[rgba(23,57,69,0.28)]"
           >
             Return to Dashboard
-          </a>
+          </Link>
         </div>
       </section>
     </main>

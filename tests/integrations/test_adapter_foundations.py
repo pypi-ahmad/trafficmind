@@ -39,13 +39,13 @@ from services.integrations import (
     build_object_storage_write_request_from_export,
     build_reporting_batch_from_workflow_run,
 )
+from services.rules.schemas import TrafficLightState
 from services.signals.integration import (
     ControllerSignalBatch,
     ControllerSignalEvent,
     ExternalSignalFeedKind,
     SignalIntegrationService,
 )
-from services.rules.schemas import TrafficLightState
 from services.signals.schemas import SignalPhase
 
 

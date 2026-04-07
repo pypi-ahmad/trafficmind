@@ -19,7 +19,12 @@ from services.motion.schemas import (
     TimeBasis,
     Vector2D,
 )
-from services.tracking.schemas import CardinalDirection, MotionVector, TrajectoryPoint, TrackedObject
+from services.tracking.schemas import (
+    CardinalDirection,
+    MotionVector,
+    TrackedObject,
+    TrajectoryPoint,
+)
 from services.tracking.utils import estimate_direction
 
 

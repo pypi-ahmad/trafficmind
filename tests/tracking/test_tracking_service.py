@@ -12,8 +12,8 @@ from services.tracking.schemas import (
     MotionVector,
     Point2D,
     PolygonZone,
-    TrackLifecycleStatus,
     TrackedObject,
+    TrackLifecycleStatus,
     TrajectoryPoint,
     ZoneTransitionType,
 )

@@ -5,8 +5,6 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timedelta, timezone
 
-import pytest
-
 from services.health.assessor import HealthAssessor, build_metrics_snapshot
 from services.health.schemas import (
     AlertSeverity,
@@ -14,8 +12,14 @@ from services.health.schemas import (
     HealthStateBasis,
     HealthThresholds,
 )
-from services.streams.schemas import JobMetrics, JobSpec, JobState, JobStatus, PipelineFlags, SourceKind
-
+from services.streams.schemas import (
+    JobMetrics,
+    JobSpec,
+    JobState,
+    JobStatus,
+    PipelineFlags,
+    SourceKind,
+)
 
 # ── Helpers ─────────────────────────────────────────────────────────────────
 

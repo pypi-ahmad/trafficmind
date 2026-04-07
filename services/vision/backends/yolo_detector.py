@@ -18,8 +18,8 @@ from ultralytics import YOLO
 from services.vision.config import VisionSettings
 from services.vision.interface import Detector
 from services.vision.schemas import (
-    BBox,
     COCO_CATEGORY_MAP,
+    BBox,
     Detection,
     DetectionResult,
     ObjectCategory,

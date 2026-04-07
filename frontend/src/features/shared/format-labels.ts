@@ -85,15 +85,6 @@ export function cameraStatusLabel(value: string): string {
   return overrides[value] ?? titleCase(value);
 }
 
-/** Human-friendly labels for stream source type. */
-export function streamSourceLabel(value: string): string {
-  const upper = value.toUpperCase();
-  if (["rtsp", "rtmp", "hls", "http", "usb"].includes(value.toLowerCase())) {
-    return upper;
-  }
-  return titleCase(value);
-}
-
 /** Human-friendly labels for stream kind. */
 export function streamKindLabel(value: string): string {
   return titleCase(value);
@@ -124,11 +115,6 @@ export function severityLabel(value: string): string {
     stable: "Stable",
   };
   return overrides[value] ?? titleCase(value);
-}
-
-/** Human-friendly labels for access permissions. */
-export function accessPermissionLabel(value: string): string {
-  return titleCase(value);
 }
 
 /** Human-friendly labels for evidence access roles. */

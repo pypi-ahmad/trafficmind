@@ -9,9 +9,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import case, func, select
+from sqlalchemy import func, select
 
-from apps.api.app.db.enums import ViolationSeverity
 from apps.api.app.db.models import Camera, DetectionEvent, ViolationEvent
 
 if TYPE_CHECKING:

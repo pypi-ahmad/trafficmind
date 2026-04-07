@@ -24,7 +24,6 @@ import numpy as np
 
 from services.reid.schemas import (
     AppearanceDescriptor,
-    CrossCameraEntity,
     MatchDecision,
     ReIdCandidate,
     Sighting,

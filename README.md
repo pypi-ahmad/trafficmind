@@ -35,7 +35,7 @@
 <!-- Navigation -->
 <a href="#-quick-start"><img src="https://img.shields.io/badge/%F0%9F%9A%80_Quick_Start-Guide-2ea44f?style=flat-square" alt="Quick Start"/></a>&nbsp;
 <a href="#-architecture"><img src="https://img.shields.io/badge/%F0%9F%8F%97_Architecture-Overview-blue?style=flat-square" alt="Architecture"/></a>&nbsp;
-<a href="#-testing"><img src="https://img.shields.io/badge/%F0%9F%A7%AA_Tests-813_passed-brightgreen?style=flat-square&logo=pytest&logoColor=white" alt="Tests"/></a>&nbsp;
+<a href="#-testing"><img src="https://img.shields.io/badge/%F0%9F%A7%AA_Testing-Suite-brightgreen?style=flat-square&logo=pytest&logoColor=white" alt="Tests"/></a>&nbsp;
 <a href="#-documentation"><img src="https://img.shields.io/badge/%F0%9F%93%9A_Docs-17_guides-mediumpurple?style=flat-square" alt="Docs"/></a>
 
 <!-- Metric Badges -->
@@ -45,9 +45,9 @@
 <img src="https://img.shields.io/badge/Test_Files-50-brightgreen?style=flat-square" alt="Test Files"/>
 <img src="https://img.shields.io/badge/Rule_Types-11-orange?style=flat-square" alt="Rules"/>
 <img src="https://img.shields.io/badge/Workflows-7-8957e5?style=flat-square" alt="Workflows"/>
-<img src="https://img.shields.io/badge/API_Routes-15+-0969da?style=flat-square" alt="Routes"/>
+<img src="https://img.shields.io/badge/API_Routes-16-0969da?style=flat-square" alt="Routes"/>
 <img src="https://img.shields.io/badge/Services-21-e8590c?style=flat-square" alt="Services"/>
-<img src="https://img.shields.io/badge/Shared_Types-42-9333ea?style=flat-square" alt="Shared Types"/>
+<img src="https://img.shields.io/badge/Shared_Types-31-9333ea?style=flat-square" alt="Shared Types"/>
 
 ---
 
@@ -77,7 +77,8 @@
 - [Testing](#-testing)
 - [Demo Mode](#-demo-mode)
 - [Documentation](#-documentation)
-- [Roadmap](#-roadmap)
+- [Usage Guide](#-usage-guide)
+- [Limitations](#-limitations)
 - [License](#-license)
 
 </details>
@@ -152,7 +153,7 @@ The system is split into two clearly separated runtime paths:
 | <img src="https://img.shields.io/badge/-SQLite-003B57?style=flat&logo=sqlite&logoColor=white" height="14"/> | **SQLite** | Local dev / CI |
 | 🔄 | **Alembic** | 13 migration revisions |
 | 🦜 | **LangGraph** | 7 cold-path workflow graphs |
-| 📦 | **Pydantic v2** | 42 shared type contracts |
+| 📦 | **Pydantic v2** | 31 shared type contracts |
 
 </td>
 <td width="50%">
@@ -191,9 +192,9 @@ The system is split into two clearly separated runtime paths:
 | | Technology | Details |
 |:---:|---|---|
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" width="18"/> | **Python 3.13** | Modern runtime |
-| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytest/pytest-original.svg" width="18"/> | **pytest** | 813 tests · 50 test files |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytest/pytest-original.svg" width="18"/> | **pytest** | 50 test files · 80% coverage floor |
 | <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" width="18"/> | **GitHub Actions** | Lint · test · build CI |
-| 🐳 | **Docker** | Containerization (planned) |
+| 🐳 | **Docker** | Containerization (reserved, not yet shipped) |
 | 📋 | **uv** | Dependency resolution & locks |
 | 🔍 | **Ruff** | Linting & formatting |
 
@@ -276,7 +277,7 @@ trafficmind/
 │
 ├── 🗃  alembic/               13 database migration revisions
 ├── 📚 docs/                  17 documentation guides
-├── 🧪 tests/                 813 tests · 50 test files · 15+ modules
+├── 🧪 tests/                 50 test files · 15+ modules
 └── 🤖 models/                ML model weights (gitignored)
 ```
 
@@ -314,7 +315,7 @@ The hot-path perception pipeline composes pluggable backends into a single deter
 
 ## ⚡ Backend API
 
-**15 endpoint groups** powering the full traffic operations lifecycle:
+**16 endpoint groups** powering the full traffic operations lifecycle:
 
 | | Endpoint Group | Routes | Description |
 |:---:|---|---|---|
@@ -331,7 +332,8 @@ The hot-path perception pipeline composes pluggable backends into a single deter
 | 🔔 | **Alerts** | `/alerts` | Routing · escalation · delivery dispatch |
 | 📦 | **Case Export** | `/exports` | JSON bundles · markdown · zip-manifest |
 | 🤖 | **Model Registry** | `/model-registry` | Runtime bundle tracking · provenance |
-| 🔐 | **Access Policy** | `/access/policy` | Role-to-permission matrix |
+| � | **Signals** | `/signals` | Traffic signal integration · controller events |
+| �🔐 | **Access Policy** | `/access/policy` | Role-to-permission matrix |
 | 💚 | **Health** | `/health/ready` | Startup & readiness probes |
 | 🏭 | **Jobs** | `/jobs` | Stream job management |
 
@@ -351,6 +353,8 @@ Seven LangGraph-powered workflow graphs operating exclusively over stored record
 | 6 | 🔥 **Hotspot Report** | Spatial concentration analysis | ✅ |
 | 7 | 💬 **Operator Assist** | Retrieval-first natural language investigation | ✅ |
 
+Additionally, `POST /runs/{run_id}/resume` resumes a paused workflow run (used for human-in-the-loop gates).
+
 > 🧠 The workflow service uses a deterministic heuristic provider. The provider boundary is explicit — model-backed providers can be swapped in without modifying graph definitions.
 
 ---
@@ -368,9 +372,12 @@ The **Next.js 16** operations dashboard provides a map-first view of the camera 
 | 📊 Summary totals and breakdowns | ✅ | By-status · by-severity · by-type aggregations |
 | 🔗 Junction-level camera grouping | ✅ | Derived from location names · multi-camera intersections |
 | 📊 Hotspot and spatial analytics | ✅ | Backed by persisted hotspot analytics when available |
-| 📈 Evaluation benchmark summaries | ✅ | Detection · tracking · OCR · rule · workflow metrics |
-| ⚠️ Violation review UI | 🔜 | Planned |
-| 📊 Analytics charts | 🚧 | In progress |
+| 📈 Evaluation benchmark summaries | ✅ | Detection · tracking · OCR · rule · signal metrics |
+| ⚠️ Violation review UI | ✅ | Confirm / dismiss with operator name and review note |
+| 🔔 Operational alerts | ✅ | Filter by status · severity · source (read-only) |
+| 📦 Case export listing | ✅ | Filter by status · subject type (read-only) |
+| ⚙️ Settings and access policy | ✅ | Active policy and role display |
+| ❓ Operator help & glossary | ✅ | Navigation guide · glossary · severity levels · common tasks |
 
 ---
 
@@ -417,7 +424,7 @@ Cross-boundary type contracts live in `packages/shared_types/` — the single so
 
 | 📊 ORM Models | 🔄 Migrations | 📦 Shared Enums | 🏠 Local Enums | 🔗 Type Contracts |
 |:---:|:---:|:---:|:---:|:---:|
-| **23** models | **13** revisions | **13** cross-cutting | **20** domain-scoped | **42** in `shared_types` |
+| **23** models | **13** revisions | **13** cross-cutting | **20** domain-scoped | **31** in `shared_types` |
 
 </div>
 
@@ -430,7 +437,7 @@ Cross-boundary type contracts live in `packages/shared_types/` — the single so
 | Requirement | Version | Notes |
 |:---:|:---:|---|
 | 🐍 Python | 3.12+ (3.13 recommended) | Core runtime |
-| 📦 Node.js | 18+ | Frontend build |
+| 📦 Node.js | 22+ | Frontend build |
 | 🎮 CUDA GPU | Optional | Not required for the documented smoke path |
 
 Run these commands in order from the repo root:
@@ -454,7 +461,7 @@ pip install -e ".[cv]"
 
 # 5️⃣  Install frontend dependencies
 cd frontend
-npm install
+npm ci
 cd ..
 
 # 6️⃣  Render local env files for Python services and Next.js
@@ -464,7 +471,7 @@ python infra/scripts/render_env.py --profile local --output .env --frontend-outp
 alembic upgrade head
 
 # 8️⃣  Seed the demo dataset used by the live smoke path
-python -m apps.api.app.demo.seed
+python -m apps.api.app.demo.seed --create-schema
 ```
 
 Start the services in three terminals:
@@ -502,7 +509,7 @@ Expected result:
 python infra/scripts/run_checks.py --suite golden-path
 
 # Demo seeding with walkthrough report
-python -m apps.api.app.demo.seed --report-path report.json
+python -m apps.api.app.demo.seed --scenario city_center_baseline --report-path report.json
 
 # Test the worker pipeline (no GPU required)
 python -m services.streams --source-kind test --max-frames 60
@@ -519,8 +526,8 @@ python -m services.evaluation tests/fixtures/evaluation/benchmark_suite.json
 
 <div align="center">
 
-[![Tests](https://img.shields.io/badge/Tests-813_passed-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](#)
-[![Test Files](https://img.shields.io/badge/Test_Files-50-blue?style=for-the-badge)](#)
+[![Tests](https://img.shields.io/badge/Test_Files-50-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](#)
+[![Coverage](https://img.shields.io/badge/Coverage_Floor-80%25-blue?style=for-the-badge)](#)
 [![Modules](https://img.shields.io/badge/Module_Coverage-15+-orange?style=for-the-badge)](#)
 
 </div>
@@ -605,24 +612,56 @@ Demo mode seeds the local database with realistic synthetic data for development
 | 🔒 | [PRIVACY.md](docs/PRIVACY.md) | Privacy masking · redaction · access control |
 | 🔤 | [anpr.md](docs/anpr.md) | Plate search · normalization · watchlist matching |
 | 📊 | [evaluation.md](docs/evaluation.md) | Evaluation artifacts · benchmark interpretation |
+| 🚦 | [SIGNAL_INTEGRATION.md](docs/SIGNAL_INTEGRATION.md) | Traffic signal state integration |
+| 📹 | [WORKER_PIPELINE.md](docs/WORKER_PIPELINE.md) | Stream worker pipeline architecture |
+| 📓 | [notebooks.md](docs/notebooks.md) | Colab MCP setup and local fallback |
 
 ---
 
-## 🗺 Roadmap
+## 📖 Usage Guide
 
-| Phase | Status | Progress |
-|---|:---:|:---:|
-| 🏗  Repository structure & architecture | ✅ Complete | ![100%](https://img.shields.io/badge/-100%25-brightgreen?style=flat-square) |
-| ⚡  API & workflow foundations | ✅ Complete | ![100%](https://img.shields.io/badge/-100%25-brightgreen?style=flat-square) |
-| 🧠  Deterministic vision services | ✅ Complete | ![100%](https://img.shields.io/badge/-100%25-brightgreen?style=flat-square) |
-| 📋  Event & review platform | ✅ Complete | ![100%](https://img.shields.io/badge/-100%25-brightgreen?style=flat-square) |
-| 🔌  Enterprise integration adapters | ✅ Complete | ![100%](https://img.shields.io/badge/-100%25-brightgreen?style=flat-square) |
-| 🔗  Explicit junction entity | ✅ Complete | ![100%](https://img.shields.io/badge/-100%25-brightgreen?style=flat-square) |
-| 🎯  Pluggable backend validation | ✅ Complete | ![100%](https://img.shields.io/badge/-100%25-brightgreen?style=flat-square) |
-| 📦  Shared-types consolidation | ✅ Complete | ![100%](https://img.shields.io/badge/-100%25-brightgreen?style=flat-square) |
-| 🖥  Web product (dashboard, review UI) | 🚧 In progress | ![70%](https://img.shields.io/badge/-70%25-yellow?style=flat-square) |
-| 🚀  Production hardening (CI/CD, containers) | 🚧 In progress | ![50%](https://img.shields.io/badge/-50%25-yellow?style=flat-square) |
-| 🤖  Model maturity (plate detector, signal model) | 📝 Planned | ![15%](https://img.shields.io/badge/-15%25-lightgrey?style=flat-square) |
+For complete operational documentation — setup, configuration, page-by-page feature coverage, API reference, and troubleshooting — see **[USAGE.md](USAGE.md)**.
+
+<details>
+<summary><strong>Sections in USAGE.md</strong></summary>
+
+| Section | Description |
+|---|---|
+| [Who This Is For](USAGE.md#who-this-is-for) | Intended audiences |
+| [Before You Start](USAGE.md#before-you-start) | Service overview and port map |
+| [Prerequisites](USAGE.md#prerequisites) | Python, Node.js, and optional GPU requirements |
+| [Environment Configuration](USAGE.md#environment-configuration) | `.env` generation, frontend env, database setup |
+| [Starting the Application](USAGE.md#starting-the-application) | Install, migrate, start all three services |
+| [System Architecture at a Glance](USAGE.md#system-architecture-at-a-glance) | Hot path / cold path separation |
+| [Frontend — Operator Interface](USAGE.md#frontend--operator-interface) | Dashboard, Cases, Alerts, Camera Detail, Evaluation, Reports, Settings, Help |
+| [Backend — API Reference](USAGE.md#backend--api-reference) | Core resources, infrastructure endpoints, violation review |
+| [Workflow Service](USAGE.md#workflow-service) | 8 workflow endpoints, provider and checkpoint backends |
+| [Database Migrations](USAGE.md#database-migrations) | Alembic commands and migration inventory |
+| [Utility Scripts](USAGE.md#utility-scripts) | `render_env`, `doctor`, `run_checks`, `local_smoke` |
+| [Running Tests](USAGE.md#running-tests) | pytest commands and coverage |
+| [Environment Variables Reference](USAGE.md#environment-variables-reference) | Full env-var table by category |
+| [Map Providers](USAGE.md#map-providers) | `coordinate-grid` and `maplibre` configuration |
+| [Error States and Troubleshooting](USAGE.md#error-states-and-troubleshooting) | Common issues and resolution steps |
+| [Limitations](USAGE.md#limitations) | Known constraints and caveats |
+
+</details>
+
+---
+
+## ⚠️ Limitations
+
+| Area | Constraint |
+|---|---|
+| **Authentication** | No login or session management in the frontend. Access control is enforced at the API layer via `access_role` parameters. |
+| **Alert actions** | The backend supports acknowledge, resolve, suppress, and escalate operations on alerts. The frontend alerts page is read-only. |
+| **Export creation** | The backend supports creating case export bundles. The frontend reports page lists existing exports only. |
+| **Bulk operations** | Violation review is per-item only. No batch confirm/dismiss interface. |
+| **Workflow checkpointing** | In-memory only. Workflow state is lost on service restart. |
+| **Containerization** | No Dockerfiles shipped. `infra/docker/` is reserved for future use. |
+| **Redis** | `REDIS_URL` is defined in environment templates but Redis integration is not active. |
+| **Database** | SQLite for local development/CI only. Production deployments require PostgreSQL. |
+
+> 📖 See [LIMITATIONS.md](docs/LIMITATIONS.md) for a more detailed discussion of known constraints and extension points.
 
 ---
 

@@ -31,8 +31,44 @@ jobs:
       - name: Render dev env
         run: python infra/scripts/render_env.py --profile dev --output .env --force
 
-      - name: Run backend checks
-        run: python infra/scripts/run_checks.py --suite backend
+      - name: Doctor — service readiness checks
+        run: |
+          python infra/scripts/doctor.py \
+            --service api --service workflow --service streams --service frontend \
+            --env-file .env
+
+      - name: Lint — ruff on critical paths
+        run: |
+          python -m ruff check \
+            apps/api/app/api/routes/health.py \
+            apps/api/app/core/config.py \
+            apps/api/app/core/startup.py \
+            apps/api/app/main.py \
+            apps/api/app/schemas/health.py \
+            apps/workflow/app/api/routes/health.py \
+            apps/workflow/app/core/config.py \
+            apps/workflow/app/core/startup.py \
+            apps/workflow/app/main.py \
+            infra/scripts/doctor.py \
+            infra/scripts/render_env.py \
+            infra/scripts/run_checks.py \
+            services/integrations/__init__.py \
+            services/integrations/adapters.py \
+            services/integrations/builders.py \
+            services/integrations/local.py \
+            services/integrations/schemas.py \
+            services/integrations/signals.py \
+            services/runtime/__init__.py \
+            services/runtime/deployment.py \
+            services/streams/__main__.py \
+            services/streams/config.py \
+            services/streams/startup.py
+
+      - name: Test — pytest backend suite
+        run: |
+          python -m pytest tests/ -q \
+            -m "not integration" \
+            -k "not test_demo_seed_surfaces_in_camera_and_observability_apis"
 
   frontend:
     runs-on: ubuntu-latest

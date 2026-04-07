@@ -7,6 +7,7 @@ import {
   severityClass,
   statusClass,
 } from "@/features/operations/components/dashboard-primitives";
+import { cameraStatusLabel, severityLabel } from "@/features/shared/format-labels";
 import type { HotspotSummary, SpatialOperationsModel } from "@/features/operations/types";
 
 const actionLinkClass =
@@ -19,11 +20,11 @@ function HotspotActions({ hotspot }: { hotspot: HotspotSummary }) {
         Show on map
       </Link>
       <Link href={hotspot.eventFeedHref} className={actionLinkClass}>
-        Event feed
+        View incidents
       </Link>
       {hotspot.cameraDetailHref ? (
         <Link href={hotspot.cameraDetailHref} className={actionLinkClass}>
-          Camera detail
+          Camera details
         </Link>
       ) : null}
     </div>
@@ -51,7 +52,7 @@ export function OperationsSidebar({ model }: { model: SpatialOperationsModel }) 
           </div>
           {selectedCamera ? (
             <span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${statusClass(selectedCamera.status)}`}>
-              {selectedCamera.status}
+              {cameraStatusLabel(selectedCamera.status)}
             </span>
           ) : selectedIncidentSummary ? (
             <span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${availabilityClass(selectedIncidentSummary.availability)}`}>
@@ -75,8 +76,8 @@ export function OperationsSidebar({ model }: { model: SpatialOperationsModel }) 
                 <p className="text-xs uppercase tracking-[0.18em] text-[rgba(19,32,41,0.5)]">Coordinates</p>
                 <p className="mt-2 text-sm text-[rgba(19,32,41,0.84)]">
                   {selectedCamera.coordinates
-                    ? `${selectedCamera.coordinates.latitude.toFixed(5)}, ${selectedCamera.coordinates.longitude.toFixed(5)}`
-                    : "Missing latitude / longitude"}
+                    ? `${selectedCamera.coordinates.latitude.toFixed(3)}, ${selectedCamera.coordinates.longitude.toFixed(3)}`
+                    : "Not mapped"}
                 </p>
               </div>
               <div>
@@ -87,9 +88,9 @@ export function OperationsSidebar({ model }: { model: SpatialOperationsModel }) 
 
             {selectedIncidentSummary ? (
               <div className="rounded-[1.4rem] bg-[rgba(243,237,228,0.86)] p-4">
-                <p className="text-xs uppercase tracking-[0.18em] text-[rgba(19,32,41,0.5)]">Selected location activity</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-[rgba(19,32,41,0.5)]">Recent activity</p>
                 <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">
-                  {selectedIncidentSummary.incidentCount ?? "Scaffolded"}
+                  {selectedIncidentSummary.incidentCount ?? "—"}
                 </p>
                 <p className="mt-2 text-sm leading-6 text-[rgba(19,32,41,0.72)]">{selectedIncidentSummary.note}</p>
               </div>
@@ -97,7 +98,7 @@ export function OperationsSidebar({ model }: { model: SpatialOperationsModel }) 
 
             {selectedCameraDetail ? (
               <div className="rounded-[1.4rem] bg-[rgba(243,237,228,0.86)] p-4">
-                <p className="text-xs uppercase tracking-[0.18em] text-[rgba(19,32,41,0.5)]">Camera detail payload</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-[rgba(19,32,41,0.5)]">Camera Details</p>
                 <div className="mt-3 grid gap-4 sm:grid-cols-3">
                   <div>
                     <p className="text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">{selectedCameraDetail.streams.length}</p>
@@ -116,23 +117,23 @@ export function OperationsSidebar({ model }: { model: SpatialOperationsModel }) 
             ) : null}
 
             <div className="rounded-[1.4rem] bg-[rgba(243,237,228,0.86)] p-4 text-sm text-[rgba(19,32,41,0.74)]">
-              <p className="text-xs uppercase tracking-[0.18em] text-[rgba(19,32,41,0.5)]">Parent junction</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-[rgba(19,32,41,0.5)]">Intersection</p>
               <p className="mt-2 leading-6">
                 {selectedJunction
-                  ? `${selectedJunction.name} is currently grouped from shared ${selectedJunction.groupingSource} values so the dashboard can support future explicit intersection records without changing the UI contract.`
-                  : "This camera is not yet linked to a resolved junction group."}
+                  ? `${selectedJunction.name} — ${selectedJunction.cameraCount} camera${selectedJunction.cameraCount === 1 ? "" : "s"} grouped by shared location.`
+                  : "This camera is not yet linked to an intersection group."}
               </p>
             </div>
 
             <div className="flex flex-wrap gap-3">
               <Link href={selectedCamera.detailHref} className={actionLinkClass}>
-                Camera detail page
+                Camera details
               </Link>
               <Link href={selectedCamera.eventFeedHref} className={actionLinkClass}>
-                Event feed filters
+                View incidents
               </Link>
               <Link href={selectedJunction?.dashboardHref ?? selectedCamera.dashboardHref} className={actionLinkClass}>
-                View parent junction
+                View intersection
               </Link>
             </div>
           </div>
@@ -152,15 +153,15 @@ export function OperationsSidebar({ model }: { model: SpatialOperationsModel }) 
                 <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">{selectedJunction.activeCameraCount}</p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-[rgba(19,32,41,0.5)]">Recent location incidents</p>
-                <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">{selectedIncidentSummary?.incidentCount ?? "Scaffolded"}</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-[rgba(19,32,41,0.5)]">Recent incidents</p>
+                <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">{selectedIncidentSummary?.incidentCount ?? "—"}</p>
               </div>
             </div>
 
             <div className="rounded-[1.4rem] bg-[rgba(243,237,228,0.86)] p-4">
               <p className="text-xs uppercase tracking-[0.18em] text-[rgba(19,32,41,0.5)]">Intersection grouping</p>
               <p className="mt-2 text-sm leading-6 text-[rgba(19,32,41,0.74)]">
-                This grouping is currently derived from the shared <strong>{selectedJunction.groupingSource}</strong> field. It is honest enough for operations now and leaves room for an explicit junction entity later.
+                Cameras at this location are grouped by their shared <strong>{selectedJunction.groupingSource === "junction_entity" ? "intersection" : "location name"}</strong>.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {selectedJunction.cameras.map((camera) => (
@@ -180,7 +181,7 @@ export function OperationsSidebar({ model }: { model: SpatialOperationsModel }) 
                       <div className="flex items-start justify-between gap-3">
                         <p className="font-semibold text-[var(--color-ink)]">{hotspot.title}</p>
                         <span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${severityClass(hotspot.severity)}`}>
-                          {hotspot.severity}
+                          {severityLabel(hotspot.severity)}
                         </span>
                       </div>
                       <p className="mt-2 text-sm leading-6 text-[rgba(19,32,41,0.72)]">{hotspot.description}</p>
@@ -192,15 +193,15 @@ export function OperationsSidebar({ model }: { model: SpatialOperationsModel }) 
 
             <div className="flex flex-wrap gap-3">
               <Link href={selectedJunction.dashboardHref} className={actionLinkClass}>
-                Keep junction selected
+                Show on map
               </Link>
               <Link href={selectedJunction.eventFeedHref} className={actionLinkClass}>
-                Filter event feed by junction
+                View incidents
               </Link>
             </div>
           </div>
         ) : (
-          <p className="mt-4 text-sm text-[rgba(19,32,41,0.72)]">Select a camera or junction to inspect the spatial context, related hotspots, and navigation links.</p>
+          <p className="mt-4 text-sm text-[rgba(19,32,41,0.72)]">Select a camera or intersection on the map to see details, recent incidents, and related hotspots.</p>
         )}
       </div>
 
@@ -221,7 +222,7 @@ export function OperationsSidebar({ model }: { model: SpatialOperationsModel }) 
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="font-semibold text-[var(--color-ink)]">{hotspot.title}</p>
                     <span className="rounded-full bg-[rgba(19,32,41,0.08)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[rgba(19,32,41,0.72)]">
-                      {hotspot.source === "hotspot_analytics" ? "live analytics" : "camera metadata"}
+                      {hotspot.source === "hotspot_analytics" ? "Monitored" : "Camera Health"}
                     </span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-[rgba(19,32,41,0.72)]">{hotspot.description}</p>
@@ -230,7 +231,7 @@ export function OperationsSidebar({ model }: { model: SpatialOperationsModel }) 
                   ) : null}
                 </div>
                 <span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${severityClass(hotspot.severity)}`}>
-                  {hotspot.severity}
+                  {severityLabel(hotspot.severity)}
                 </span>
               </div>
               <div className="mt-4 flex items-center justify-between text-sm">

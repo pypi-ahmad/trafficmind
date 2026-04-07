@@ -5,7 +5,10 @@ import type {
   EvaluationFilterOption,
   EvaluationTaskType,
 } from "@/features/evaluation/types";
+import { EvidencePrivacyPolicyPreview } from "@/features/evidence/components/evidence-privacy-status";
+import { EVIDENCE_ACCESS_ROLES, type EvidenceAccessRole, type AccessPolicyRead } from "@/features/evidence/types";
 import { formatTimestamp, StatCard } from "@/features/operations/components/dashboard-primitives";
+import { titleCase, accessRoleLabel } from "@/features/shared/format-labels";
 
 const actionLinkClass =
   "rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors hover:border-[rgba(23,57,69,0.28)]";
@@ -13,11 +16,11 @@ const actionLinkClass =
 function sourceKindLabel(value: string): string {
   switch (value) {
     case "fixture_suite":
-      return "fixture suite";
+      return "Benchmark Test";
     case "stored_report":
-      return "stored artifact";
+      return "Stored Artifact";
     default:
-      return value.replace(/_/g, " ");
+      return titleCase(value);
   }
 }
 
@@ -90,7 +93,17 @@ function EmptySection({ title, detail }: { title: string; detail: string }) {
   );
 }
 
-export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel }) {
+export function EvaluationDashboard({
+  model,
+  accessPolicy,
+  accessRole,
+  accessPolicyError,
+}: {
+  model: EvaluationDashboardModel;
+  accessPolicy: AccessPolicyRead | null;
+  accessRole: EvidenceAccessRole;
+  accessPolicyError?: string | null;
+}) {
   const hasActiveFilters = Boolean(
     model.selectedFilters.taskType ||
       model.selectedFilters.scenario ||
@@ -103,26 +116,18 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-[1520px] flex-col gap-6 px-4 py-8 sm:px-6 lg:px-10">
-      <div className="flex flex-wrap items-center gap-3 text-sm">
-        <Link href="/" className={actionLinkClass}>
-          Back to operations dashboard
-        </Link>
-        <Link href="/events" className={actionLinkClass}>
-          Event feed foundation
-        </Link>
-      </div>
 
       <section className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[linear-gradient(135deg,rgba(243,236,225,0.96),rgba(230,242,244,0.92))] p-8 shadow-[0_24px_60px_rgba(18,32,41,0.08)]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-4xl">
             <p className="text-[0.75rem] font-semibold uppercase tracking-[0.26em] text-[rgba(19,32,41,0.56)]">
-              Evaluation And Sanity Checks
+              Evaluation
             </p>
             <h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-[var(--color-ink)] sm:text-5xl">
-              Honest benchmark reporting for debugging trust, not leaderboard theater.
+              Model Evaluation Results
             </h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-[rgba(19,32,41,0.76)] sm:text-lg">
-              This view surfaces measured fixture-suite metrics and any stored local evaluation artifacts without pretending they are production-wide benchmarks. Where manual review or workflow notes do not exist, the page says so directly.
+              Review detection, tracking, and OCR performance from benchmark tests and stored evaluation reports. Results shown here are from controlled test sets, not production data.
             </p>
           </div>
 
@@ -130,17 +135,17 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
             <div className="rounded-[1.5rem] bg-[rgba(255,255,255,0.76)] px-4 py-3 text-sm text-[var(--color-ink)]">
               <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[rgba(19,32,41,0.52)]">Data generated</p>
               <p className="mt-2 font-semibold">{formatTimestamp(model.generatedAt)}</p>
-              <p className="mt-1 text-[rgba(19,32,41,0.72)]">Local filesystem-backed evaluation summary</p>
+              <p className="mt-1 text-[rgba(19,32,41,0.72)]">Most recent evaluation summary</p>
             </div>
             <div className="rounded-[1.5rem] bg-[rgba(255,255,255,0.76)] px-4 py-3 text-sm text-[var(--color-ink)]">
               <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[rgba(19,32,41,0.52)]">Measured sources</p>
               <p className="mt-2 font-semibold">{model.stats.sourceCount}</p>
-              <p className="mt-1 text-[rgba(19,32,41,0.72)]">Fixture suites and stored artifacts only</p>
+              <p className="mt-1 text-[rgba(19,32,41,0.72)]">Benchmark tests and stored reports</p>
             </div>
             <div className="rounded-[1.5rem] bg-[rgba(255,255,255,0.76)] px-4 py-3 text-sm text-[var(--color-ink)]">
               <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[rgba(19,32,41,0.52)]">Manual notes</p>
               <p className="mt-2 font-semibold">{model.stats.manualSummaryCount}</p>
-              <p className="mt-1 text-[rgba(19,32,41,0.72)]">Only shown when an artifact explicitly records them</p>
+              <p className="mt-1 text-[rgba(19,32,41,0.72)]">Shown when artifacts include manual notes</p>
             </div>
           </div>
         </div>
@@ -150,22 +155,17 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
         <StatCard
           label="Measured Rows"
           value={`${model.stats.measuredScenarioCount}`}
-          note="Counts visible per-task result rows after filters; this is not a count of distinct production scenarios."
+          note="Result rows visible after applying current filters."
         />
         <StatCard
           label="Stored Artifacts"
           value={`${model.stats.storedSourceCount}`}
-          note="Persisted report files discovered in the configured evaluation artifact directory."
+          note="Report files discovered in the evaluation directory."
         />
         <StatCard
           label="Tagged Versions"
           value={`${model.stats.taggedVersionCount}`}
-          note="Distinct model or config version tags attached to the currently visible artifact set, when artifacts provide them."
-        />
-        <StatCard
-          label="Placeholder Sections"
-          value={`${model.placeholders.length}`}
-          note="Honest not-yet-available sections that remain implementation-backed rather than fabricated."
+          note="Distinct model or config version tags in the current artifact set."
         />
       </section>
 
@@ -178,7 +178,7 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
                   Filters
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">
-                  Focus the view without hiding data provenance
+                  Filter Results
                 </h2>
               </div>
               {hasActiveFilters ? (
@@ -246,7 +246,7 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
                   Apply filters
                 </button>
                 <p className="self-center text-sm text-[rgba(19,32,41,0.64)]">
-                  Scenario names come from measured case rows only. Empty version or camera filters mean the current artifact set does not include those tags yet.
+                  Filters apply to measured result rows. Empty version or camera filters mean no tags are present in the current artifacts.
                 </p>
               </div>
             </form>
@@ -255,7 +255,7 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
           {!model.ok ? (
             <EmptySection
               title="Evaluation data could not be loaded"
-              detail={model.error ?? "The backend evaluation summary route could not be reached."}
+              detail={model.error ?? "The evaluation data could not be loaded right now. Please try again later."}
             />
           ) : (
             <>
@@ -263,10 +263,10 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-[rgba(19,32,41,0.56)]">
-                      Real Measured Metrics
+                      Benchmark Results
                     </p>
                     <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">
-                      Fixture-backed sanity checks and stored report results
+                      Measured Results
                     </h2>
                   </div>
                   <span className="rounded-full bg-[rgba(56,183,118,0.14)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-ok-ink)]">
@@ -277,13 +277,13 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
                 <div className="mt-5 grid gap-5 xl:grid-cols-2">
                   <div className="rounded-[1.5rem] bg-[rgba(243,237,228,0.74)] p-5">
                     <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">Detection sanity</h3>
+                      <h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">Detection Accuracy</h3>
                       <span className="rounded-full bg-[rgba(19,32,41,0.08)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[rgba(19,32,41,0.72)]">
                         {model.detectionItems.length} scenarios
                       </span>
                     </div>
                     {model.detectionItems.length === 0 ? (
-                      <p className="mt-4 text-sm leading-6 text-[rgba(19,32,41,0.72)]">No detection scenarios match the current filters.</p>
+                      <p className="mt-4 text-sm leading-6 text-[rgba(19,32,41,0.72)]">No detection scenarios match the current filters.{hasActiveFilters ? <> <Link href="/evaluation" className="underline underline-offset-2 hover:text-[var(--color-ink)]">Clear filters</Link></> : null}</p>
                     ) : (
                       <div className="mt-4 space-y-4">
                         {model.detectionItems.map((item) => (
@@ -312,13 +312,13 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
 
                   <div className="rounded-[1.5rem] bg-[rgba(243,237,228,0.74)] p-5">
                     <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">Tracking assignment checks</h3>
+                      <h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">Tracking Continuity</h3>
                       <span className="rounded-full bg-[rgba(19,32,41,0.08)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[rgba(19,32,41,0.72)]">
                         {model.trackingItems.length} scenarios
                       </span>
                     </div>
                     {model.trackingItems.length === 0 ? (
-                      <p className="mt-4 text-sm leading-6 text-[rgba(19,32,41,0.72)]">No tracking scenarios match the current filters.</p>
+                      <p className="mt-4 text-sm leading-6 text-[rgba(19,32,41,0.72)]">No tracking scenarios match the current filters.{hasActiveFilters ? <> <Link href="/evaluation" className="underline underline-offset-2 hover:text-[var(--color-ink)]">Clear filters</Link></> : null}</p>
                     ) : (
                       <div className="mt-4 space-y-4">
                         {model.trackingItems.map((item) => (
@@ -353,13 +353,13 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
 
                   <div className="rounded-[1.5rem] bg-[rgba(243,237,228,0.74)] p-5">
                     <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">OCR quality samples</h3>
+                      <h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">OCR Accuracy</h3>
                       <span className="rounded-full bg-[rgba(19,32,41,0.08)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[rgba(19,32,41,0.72)]">
                         {model.ocrItems.length} scenarios
                       </span>
                     </div>
                     {model.ocrItems.length === 0 ? (
-                      <p className="mt-4 text-sm leading-6 text-[rgba(19,32,41,0.72)]">No OCR scenarios match the current filters.</p>
+                      <p className="mt-4 text-sm leading-6 text-[rgba(19,32,41,0.72)]">No OCR scenarios match the current filters.{hasActiveFilters ? <> <Link href="/evaluation" className="underline underline-offset-2 hover:text-[var(--color-ink)]">Clear filters</Link></> : null}</p>
                     ) : (
                       <div className="mt-4 space-y-4">
                         {model.ocrItems.map((item) => (
@@ -409,13 +409,13 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
 
                   <div className="rounded-[1.5rem] bg-[rgba(243,237,228,0.74)] p-5">
                     <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">Rule validation scenarios</h3>
+                      <h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">Rule Validation</h3>
                       <span className="rounded-full bg-[rgba(19,32,41,0.08)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[rgba(19,32,41,0.72)]">
                         {model.ruleItems.length} scenarios
                       </span>
                     </div>
                     {model.ruleItems.length === 0 ? (
-                      <p className="mt-4 text-sm leading-6 text-[rgba(19,32,41,0.72)]">No rule scenarios match the current filters.</p>
+                      <p className="mt-4 text-sm leading-6 text-[rgba(19,32,41,0.72)]">No rule scenarios match the current filters.{hasActiveFilters ? <> <Link href="/evaluation" className="underline underline-offset-2 hover:text-[var(--color-ink)]">Clear filters</Link></> : null}</p>
                     ) : (
                       <div className="mt-4 space-y-4">
                         {model.ruleItems.map((item) => (
@@ -449,7 +449,7 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
 
                   <div className="rounded-[1.5rem] bg-[rgba(243,237,228,0.74)] p-5 xl:col-span-2">
                     <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">Signal classification checks</h3>
+                      <h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">Signal Classification</h3>
                       <span className="rounded-full bg-[rgba(19,32,41,0.08)] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[rgba(19,32,41,0.72)]">
                         {model.signalItems.length} scenarios
                       </span>
@@ -494,10 +494,10 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-[rgba(19,32,41,0.56)]">
-                      Manual Review And Workflow Notes
+                      Review Notes
                     </p>
                     <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">
-                      Human context stays separate from measured metrics
+                      Manual Review and Workflow Notes
                     </h2>
                   </div>
                   <span className="rounded-full bg-[rgba(226,176,71,0.18)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-warning-ink)]">
@@ -506,7 +506,7 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
                 </div>
                 {model.manualReviewSummaries.length === 0 ? (
                   <p className="mt-5 text-sm leading-6 text-[rgba(19,32,41,0.72)]">
-                    No stored artifact in the current result set includes manual review or workflow notes. The default fixture suite is measured-only.
+                    No stored report in the current result set includes manual review or workflow notes. The default benchmark test is measured-only.
                   </p>
                 ) : (
                   <div className="mt-5 grid gap-4 lg:grid-cols-2">
@@ -527,33 +527,21 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
                 )}
               </section>
 
-              <section className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.82)] p-6 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-[rgba(19,32,41,0.56)]">
-                      Not Yet Available
-                    </p>
-                    <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">
-                      Explicit gaps instead of synthetic benchmark theater
-                    </h2>
-                  </div>
-                  <span className="rounded-full bg-[rgba(240,90,79,0.14)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-danger)]">
-                    placeholders
-                  </span>
-                </div>
-                {model.placeholders.length === 0 ? (
-                  <EmptySection
-                    title="No placeholder sections are active"
-                    detail="The current artifact set already provides the metadata and notes this view expects, so there are no missing-section warnings to surface right now."
-                  />
-                ) : (
-                  <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              {model.placeholders.length > 0 ? (
+                <section className="rounded-[2rem] border border-dashed border-[rgba(23,57,69,0.14)] bg-[rgba(255,255,255,0.72)] p-6">
+                  <p className="text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-[rgba(19,32,41,0.44)]">
+                    Additional Categories
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-[rgba(19,32,41,0.62)]">
+                    Some evaluation categories do not have results in the current data set.
+                  </p>
+                  <div className="mt-4 grid gap-4 lg:grid-cols-2">
                     {model.placeholders.map((placeholder) => (
                       <EmptySection key={placeholder.key} title={placeholder.title} detail={placeholder.detail} />
                     ))}
                   </div>
-                )}
-              </section>
+                </section>
+              ) : null}
             </>
           )}
         </div>
@@ -561,7 +549,7 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
         <aside className="flex flex-col gap-5">
           <section className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.82)] p-5 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">
             <p className="text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-[rgba(19,32,41,0.56)]">Source inventory</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">What this page is actually reading</h2>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">Evaluation Sources</h2>
             <div className="mt-5 space-y-4">
               {model.sources.length === 0 ? (
                 <p className="text-sm leading-6 text-[rgba(19,32,41,0.72)]">No evaluation sources are available for the current filter set.</p>
@@ -621,6 +609,39 @@ export function EvaluationDashboard({ model }: { model: EvaluationDashboardModel
           </section>
         </aside>
       </section>
+
+      {/* ── Evidence access preview (admin) ─────────────── */}
+      <section className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.82)] p-6 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">
+        <p className="text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-[rgba(19,32,41,0.56)]">Access Management</p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">Evidence Access Permissions</h2>
+        <p className="mt-3 text-sm leading-6 text-[rgba(19,32,41,0.74)]">
+          Select a role to preview what evidence and actions it can access. This is a read-only preview — actual permissions are enforced by the server.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {EVIDENCE_ACCESS_ROLES.map((role) => {
+            const isActive = role === accessRole;
+            return (
+              <Link
+                key={role}
+                href={`/evaluation?accessRole=${role}`}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-[var(--color-ink)] text-[var(--color-paper)]"
+                    : "border border-[rgba(23,57,69,0.14)] text-[var(--color-ink)] hover:border-[rgba(23,57,69,0.28)]"
+                }`}
+              >
+                {accessRoleLabel(role)}
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <EvidencePrivacyPolicyPreview
+        policy={accessPolicy}
+        selectedRole={accessRole}
+        error={accessPolicyError}
+      />
     </main>
   );
 }

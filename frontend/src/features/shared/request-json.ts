@@ -2,6 +2,7 @@ import "server-only";
 
 import { getApiBaseUrl } from "@/features/operations/config";
 import type { ApiResult } from "@/features/operations/types";
+import { userFriendlyError } from "@/features/shared/format-labels";
 
 export async function requestJson<T>(path: string, init?: RequestInit): Promise<ApiResult<T>> {
   try {
@@ -19,7 +20,7 @@ export async function requestJson<T>(path: string, init?: RequestInit): Promise<
     const payload = (await response.json().catch(() => null)) as T | { detail?: string } | null;
 
     if (!response.ok) {
-      const detail =
+      const rawDetail =
         payload && typeof payload === "object" && "detail" in payload && typeof payload.detail === "string"
           ? payload.detail
           : `${response.status} ${response.statusText}`;
@@ -27,7 +28,7 @@ export async function requestJson<T>(path: string, init?: RequestInit): Promise<
         ok: false,
         status: response.status,
         data: null,
-        error: detail,
+        error: userFriendlyError(rawDetail),
       };
     }
 
@@ -38,11 +39,12 @@ export async function requestJson<T>(path: string, init?: RequestInit): Promise<
       error: null,
     };
   } catch (error) {
+    const rawMessage = error instanceof Error ? error.message : "Unknown network error";
     return {
       ok: false,
       status: null,
       data: null,
-      error: error instanceof Error ? error.message : "Unknown network error",
+      error: userFriendlyError(rawMessage),
     };
   }
 }

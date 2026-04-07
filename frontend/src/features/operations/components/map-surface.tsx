@@ -54,7 +54,7 @@ function CoordinateSurface({
       <div className="flex min-h-[28rem] flex-col items-center justify-center rounded-[2rem] border border-dashed border-[rgba(23,57,69,0.18)] bg-[rgba(255,255,255,0.72)] px-8 text-center text-sm text-[rgba(19,32,41,0.72)]">
         <p className="text-base font-semibold text-[var(--color-ink)]">No mapped cameras yet</p>
         <p className="mt-3 max-w-md">
-          Camera coordinates already exist in the backend schema, but this environment has no camera rows with latitude and longitude populated.
+          No cameras have map coordinates yet. Add coordinates to your cameras to see them on the map.
         </p>
       </div>
     );
@@ -87,8 +87,8 @@ function CoordinateSurface({
       <div className="relative min-h-[28rem] overflow-hidden rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[linear-gradient(135deg,rgba(21,51,63,0.92),rgba(14,34,43,0.98))]">
         <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.15)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.15)_1px,transparent_1px)] [background-size:4.5rem_4.5rem]" />
         <div className="absolute inset-x-0 top-0 flex items-center justify-between px-6 py-5 text-[0.7rem] uppercase tracking-[0.28em] text-[rgba(246,240,229,0.62)]">
-          <span>Coordinate Grid</span>
-          <span>Lat / Long Fallback</span>
+          <span>Camera Locations</span>
+          <span>Grid View</span>
         </div>
         {mappedMarkers
           .filter((marker) => marker.kind === "junction")
@@ -170,8 +170,8 @@ export function MapSurface({ provider, cameras, markers }: MapSurfaceProps) {
     return (
       <div className="overflow-hidden rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.74)]">
         <div className="flex items-center justify-between border-b border-[rgba(23,57,69,0.12)] px-5 py-4 text-xs uppercase tracking-[0.24em] text-[rgba(19,32,41,0.58)]">
-          <span>Basemap</span>
-          <span>MapLibre</span>
+          <span>Map</span>
+          <span>Interactive</span>
         </div>
         <MapLibreSurface markers={mappedMarkers} styleUrl={provider.styleUrl} />
       </div>

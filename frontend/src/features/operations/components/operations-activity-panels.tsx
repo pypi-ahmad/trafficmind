@@ -6,6 +6,7 @@ import {
   formatTimestamp,
   statusClass,
 } from "@/features/operations/components/dashboard-primitives";
+import { violationTypeLabel, eventTypeLabel, titleCase, cameraStatusLabel, severityLabel } from "@/features/shared/format-labels";
 import type { SpatialOperationsModel } from "@/features/operations/types";
 
 const actionLinkClass =
@@ -18,14 +19,14 @@ export function OperationsActivityPanels({ model }: { model: SpatialOperationsMo
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[rgba(19,32,41,0.56)]">
-              Top Incidents By Location
+              Incidents
             </p>
             <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">
-              Spatial summaries grounded in current backend readiness
+              Top Incidents by Location
             </h2>
           </div>
-          <Link href="/events" className={actionLinkClass}>
-            Open event page
+          <Link href="/cases" className={actionLinkClass}>
+            View all incidents
           </Link>
         </div>
 
@@ -55,11 +56,11 @@ export function OperationsActivityPanels({ model }: { model: SpatialOperationsMo
                   Show on map
                 </Link>
                 <Link href={summary.eventFeedHref} className={actionLinkClass}>
-                  Event feed
+                  View incidents
                 </Link>
                 {summary.cameraDetailHref ? (
                   <Link href={summary.cameraDetailHref} className={actionLinkClass}>
-                    Camera detail
+                    Camera details
                   </Link>
                 ) : null}
               </div>
@@ -70,9 +71,9 @@ export function OperationsActivityPanels({ model }: { model: SpatialOperationsMo
 
       <div className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.78)] p-5 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">
         <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[rgba(19,32,41,0.56)]">
-          Camera Fleet
+          Cameras
         </p>
-        <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">Current network inventory</h2>
+        <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">Camera Fleet</h2>
         <div className="mt-5 space-y-3">
           {model.cameras.length > 0 ? model.cameras.map((camera) => {
             const isSelected = camera.id === model.selectedCamera?.id;
@@ -86,13 +87,13 @@ export function OperationsActivityPanels({ model }: { model: SpatialOperationsMo
                     <div className="flex flex-wrap items-center gap-3">
                       <p className="font-semibold text-[var(--color-ink)]">{camera.name}</p>
                       <span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${statusClass(camera.status)}`}>
-                        {camera.status}
+                        {cameraStatusLabel(camera.status)}
                       </span>
                     </div>
                     <p className="mt-2 text-sm text-[rgba(19,32,41,0.72)]">{camera.locationName}</p>
                   </div>
                   <div className="grid gap-1 text-sm text-[rgba(19,32,41,0.68)] sm:text-right">
-                    <span>{camera.coordinates ? `${camera.coordinates.latitude.toFixed(4)}, ${camera.coordinates.longitude.toFixed(4)}` : "No coordinates"}</span>
+                    <span>{camera.coordinates ? `${camera.coordinates.latitude.toFixed(3)}, ${camera.coordinates.longitude.toFixed(3)}` : "No coordinates"}</span>
                     <span>{camera.streamCount} stream{camera.streamCount === 1 ? "" : "s"}</span>
                   </div>
                 </div>
@@ -101,17 +102,17 @@ export function OperationsActivityPanels({ model }: { model: SpatialOperationsMo
                     Show on map
                   </Link>
                   <Link href={camera.detailHref} className={actionLinkClass}>
-                    Camera detail
+                    Camera details
                   </Link>
                   <Link href={camera.eventFeedHref} className={actionLinkClass}>
-                    Event feed
+                    View incidents
                   </Link>
                 </div>
               </div>
             );
           }) : (
             <div className="rounded-[1.5rem] border border-dashed border-[rgba(23,57,69,0.16)] p-6 text-sm text-[rgba(19,32,41,0.72)]">
-              No cameras were returned from the API. The dashboard foundation is ready, but the map layer needs camera records to become useful.
+              No cameras are registered yet. Cameras are added and configured by a system administrator.
             </div>
           )}
         </div>
@@ -133,23 +134,23 @@ function RecentViolationsFeed({ model }: { model: SpatialOperationsModel }) {
             Recent Violations
           </p>
           <p className="mt-1 text-sm text-[rgba(19,32,41,0.68)]">
-            {model.recentViolations.length} most recent from the backend
+            {model.recentViolations.length} most recent violations
           </p>
         </div>
-        <Link href="/events" className={actionLinkClass}>
-          Full feed
+        <Link href="/cases" className={actionLinkClass}>
+          View all
         </Link>
       </div>
       <div className="mt-4 divide-y divide-[rgba(23,57,69,0.08)]">
         {model.recentViolations.slice(0, 5).map((v) => (
           <div key={v.id} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
             <span className={`mt-0.5 inline-block rounded-full px-2.5 py-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] ${v.severity === "critical" ? "bg-[rgba(240,90,79,0.14)] text-[var(--color-danger)]" : v.severity === "high" ? "bg-[rgba(240,90,79,0.10)] text-[var(--color-danger)]" : v.severity === "medium" ? "bg-[rgba(226,176,71,0.16)] text-[var(--color-warning-ink)]" : "bg-[rgba(56,183,118,0.14)] text-[var(--color-ok-ink)]"}`}>
-              {v.severity}
+              {severityLabel(v.severity)}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-[var(--color-ink)]">{v.violation_type.replace(/_/g, " ")}</p>
+              <p className="truncate text-sm font-semibold text-[var(--color-ink)]">{violationTypeLabel(v.violation_type)}</p>
               <p className="mt-0.5 text-xs text-[rgba(19,32,41,0.6)]">
-                {formatTimestamp(v.occurred_at)} · {v.status}
+                {formatTimestamp(v.occurred_at)} · {titleCase(v.status)}
               </p>
             </div>
           </div>
@@ -169,29 +170,28 @@ function RecentEventsFeed({ model }: { model: SpatialOperationsModel }) {
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[rgba(19,32,41,0.56)]">
-            Recent Detection Events
+            Recent Camera Detections
           </p>
           <p className="mt-1 text-sm text-[rgba(19,32,41,0.68)]">
-            {model.recentEvents.length} most recent from the backend
+            {model.recentEvents.length} most recent detections
           </p>
         </div>
-        <Link href="/events" className={actionLinkClass}>
-          Full feed
+        <Link href="/cases" className={actionLinkClass}>
+          View all
         </Link>
       </div>
       <div className="mt-4 divide-y divide-[rgba(23,57,69,0.08)]">
         {model.recentEvents.slice(0, 5).map((e) => (
           <div key={e.id} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
             <span className="mt-0.5 inline-block rounded-full bg-[rgba(56,183,118,0.14)] px-2.5 py-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--color-ok-ink)]">
-              {e.object_class}
+              {titleCase(e.object_class)}
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-[var(--color-ink)]">
-                {e.event_type.replace(/_/g, " ")}
-                {e.track_id ? ` · ${e.track_id}` : ""}
+                {eventTypeLabel(e.event_type)}
               </p>
               <p className="mt-0.5 text-xs text-[rgba(19,32,41,0.6)]">
-                {formatTimestamp(e.occurred_at)} · {(e.confidence * 100).toFixed(0)}% confidence
+                {formatTimestamp(e.occurred_at)}
               </p>
             </div>
           </div>
@@ -203,7 +203,14 @@ function RecentEventsFeed({ model }: { model: SpatialOperationsModel }) {
 
 export function OperationsRecentFeedPanels({ model }: { model: SpatialOperationsModel }) {
   if (model.recentViolations.length === 0 && model.recentEvents.length === 0) {
-    return null;
+    return (
+      <section className="rounded-[2rem] border border-dashed border-[rgba(23,57,69,0.16)] bg-[rgba(246,240,229,0.72)] p-6 text-center">
+        <p className="text-sm font-semibold text-[var(--color-ink)]">No recent activity</p>
+        <p className="mt-2 text-sm leading-6 text-[rgba(19,32,41,0.72)]">
+          Violations and detections will appear here as cameras report events.
+        </p>
+      </section>
+    );
   }
 
   return (

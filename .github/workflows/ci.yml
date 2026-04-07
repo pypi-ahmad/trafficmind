@@ -66,9 +66,12 @@ jobs:
 
       - name: Test — pytest backend suite
         run: |
-          python -m pytest tests/ -q \
+          python -m pytest tests/ -q --tb=short \
             -m "not integration" \
-            -k "not test_demo_seed_surfaces_in_camera_and_observability_apis"
+            -k "not test_demo_seed_surfaces_in_camera_and_observability_apis" \
+            2>&1 | while IFS= read -r line; do echo "::warning::$line"; done
+          exit "${PIPESTATUS[0]}"
+        shell: bash
 
   frontend:
     runs-on: ubuntu-latest

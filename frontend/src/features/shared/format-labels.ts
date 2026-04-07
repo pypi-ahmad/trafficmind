@@ -42,8 +42,8 @@ export function violationStatusLabel(value: string): string {
 export function eventStatusLabel(value: string): string {
   const overrides: Record<string, string> = {
     new: "New",
-    enriched: "Enriched",
-    suppressed: "Suppressed",
+    enriched: "Processed",
+    suppressed: "Filtered Out",
   };
   return overrides[value] ?? titleCase(value);
 }
@@ -93,7 +93,7 @@ export function streamKindLabel(value: string): string {
 /** Human-friendly labels for zone type. */
 export function zoneTypeLabel(value: string): string {
   const overrides: Record<string, string> = {
-    polygon: "Polygon",
+    polygon: "Area",
     line: "Line",
     stop_line: "Stop Line",
     crosswalk: "Crosswalk",

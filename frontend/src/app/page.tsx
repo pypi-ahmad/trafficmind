@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import {
   fetchCameraDetail,
   fetchCameraList,
@@ -10,6 +12,8 @@ import {
   fetchViolationSummaryTotals,
 } from "@/features/operations/api";
 import { getMapProviderConfig, getSpatialAnalyticsConfig } from "@/features/operations/config";
+
+export const metadata: Metadata = { title: "Dashboard | TrafficMind" };
 import { OperationsDashboard } from "@/features/operations/components/operations-dashboard";
 import {
   buildHotspotOverviewRequest,

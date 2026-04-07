@@ -16,6 +16,7 @@ export function formatTimestamp(value: string | null | undefined): string {
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    timeZoneName: "short",
   }).format(date);
 }
 

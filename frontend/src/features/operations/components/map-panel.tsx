@@ -62,7 +62,7 @@ export function MapPanel({ model }: { model: SpatialOperationsModel }) {
         </div>
         <div className="rounded-[1.5rem] bg-[rgba(255,255,255,0.74)] px-4 py-3 text-sm text-[var(--color-ink)]">
           <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[rgba(19,32,41,0.54)]">Map Provider</p>
-          <p className="mt-2 font-semibold">{model.provider.provider}</p>
+          <p className="mt-2 font-semibold">{model.provider.displayName}</p>
           <p className="mt-1 text-[rgba(19,32,41,0.72)]">{model.provider.note}</p>
         </div>
         <div className="rounded-[1.5rem] bg-[rgba(255,255,255,0.74)] px-4 py-3 text-sm text-[var(--color-ink)]">

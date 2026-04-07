@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -14,6 +15,13 @@ type CameraDetailPageProps = {
   }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
+
+export async function generateMetadata({ params }: CameraDetailPageProps): Promise<Metadata> {
+  const { cameraId } = await params;
+  const result = await fetchCameraDetail(cameraId);
+  const name = result.ok && result.data ? result.data.name : "Camera Detail";
+  return { title: `${name} | TrafficMind` };
+}
 
 function getSingleValue(value: string | string[] | undefined): string | null {
   if (Array.isArray(value)) {
@@ -35,6 +43,15 @@ export default async function CameraDetailPage({ params, searchParams }: CameraD
   if (!result.ok || !result.data) {
     return (
       <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6">
+        <nav aria-label="Breadcrumb">
+          <ol className="flex items-center gap-1.5 text-xs text-[rgba(19,32,41,0.56)]">
+            <li>
+              <Link href="/cameras" className="transition-colors hover:text-[var(--color-ink)]">Cameras</Link>
+            </li>
+            <li aria-hidden="true">/</li>
+            <li className="font-medium text-[var(--color-ink)]">{cameraId}</li>
+          </ol>
+        </nav>
         <section className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.82)] p-8 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">
           <p className="text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-[rgba(19,32,41,0.56)]">Camera detail unavailable</p>
           <h1 className="mt-3 text-4xl font-semibold tracking-[-0.06em] text-[var(--color-ink)]">Camera detail could not be loaded</h1>
@@ -42,11 +59,11 @@ export default async function CameraDetailPage({ params, searchParams }: CameraD
             {result.error ?? "Camera details could not be loaded right now. Please try again later."}
           </p>
           <div className="mt-6 flex flex-wrap gap-3 text-sm">
-            <a href="" className="rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 font-medium text-[var(--color-ink)] transition-colors hover:border-[rgba(23,57,69,0.28)]">
-              Reload page
-            </a>
-            <Link href="/" className="rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 font-medium text-[var(--color-ink)] transition-colors hover:border-[rgba(23,57,69,0.28)]">
-              Return to dashboard
+            <Link href={`/cameras/${cameraId}`} className="rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 font-medium text-[var(--color-ink)] transition-colors hover:border-[rgba(23,57,69,0.28)]">
+              Try again
+            </Link>
+            <Link href="/cameras" className="rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 font-medium text-[var(--color-ink)] transition-colors hover:border-[rgba(23,57,69,0.28)]">
+              Back to cameras
             </Link>
           </div>
         </section>
@@ -58,6 +75,15 @@ export default async function CameraDetailPage({ params, searchParams }: CameraD
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
+      <nav aria-label="Breadcrumb">
+        <ol className="flex items-center gap-1.5 text-xs text-[rgba(19,32,41,0.56)]">
+          <li>
+            <Link href="/cameras" className="transition-colors hover:text-[var(--color-ink)]">Cameras</Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li className="font-medium text-[var(--color-ink)]">{camera.name}</li>
+        </ol>
+      </nav>
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <Link href={buildEventFeedHref({ cameraId: camera.id, junctionId: junctionId ?? undefined })} className="rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 font-medium text-[var(--color-ink)] transition-colors hover:border-[rgba(23,57,69,0.28)]">
           View incidents

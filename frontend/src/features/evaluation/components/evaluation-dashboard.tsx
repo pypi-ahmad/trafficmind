@@ -93,6 +93,67 @@ function EmptySection({ title, detail }: { title: string; detail: string }) {
   );
 }
 
+/** Metric label with an inline tooltip icon. */
+function MetricLabel({ label, tip }: { label: string; tip: string }) {
+  return (
+    <p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">
+      {label}{" "}
+      <span title={tip} className="cursor-help text-[rgba(19,32,41,0.36)] normal-case tracking-normal">ⓘ</span>
+    </p>
+  );
+}
+
+/** Plain-English verdict for a 0–1 score. Conservative wording. */
+function verdict(value: number | null | undefined, thresholds: { strong: number; adequate: number }): string {
+  if (value === null || value === undefined) return "Not enough data to assess.";
+  if (value >= thresholds.strong) return "strong";
+  if (value >= thresholds.adequate) return "adequate";
+  return "needs attention";
+}
+
+function detectionVerdict(precision: number | null | undefined, recall: number | null | undefined, iou: number | null | undefined): string {
+  if (precision == null && recall == null) return "Insufficient data to assess detection quality.";
+  const parts: string[] = [];
+  if (precision != null) parts.push(`Precision is ${verdict(precision, { strong: 0.9, adequate: 0.75 })}`);
+  if (recall != null) parts.push(`recall is ${verdict(recall, { strong: 0.85, adequate: 0.7 })}`);
+  if (iou != null) parts.push(`overlap quality is ${verdict(iou, { strong: 0.7, adequate: 0.5 })}`);
+  return parts.join(", ") + ". Based on benchmark test data.";
+}
+
+function trackingVerdict(coverage: number | null | undefined, continuity: number | null | undefined, switches: number): string {
+  if (coverage == null && continuity == null) return "Insufficient data to assess tracking quality.";
+  const parts: string[] = [];
+  if (coverage != null) parts.push(`Coverage is ${verdict(coverage, { strong: 0.9, adequate: 0.75 })}`);
+  if (continuity != null) parts.push(`continuity is ${verdict(continuity, { strong: 0.9, adequate: 0.75 })}`);
+  parts.push(switches === 0 ? "with no identity switches" : switches <= 3 ? `with ${switches} identity switch${switches > 1 ? "es" : ""}` : `with ${switches} identity switches — review recommended`);
+  return parts.join(", ") + ". Based on benchmark test data.";
+}
+
+function ocrVerdict(exactMatch: number | null | undefined, charAccuracy: number | null | undefined): string {
+  if (exactMatch == null && charAccuracy == null) return "Insufficient data to assess OCR quality.";
+  const parts: string[] = [];
+  if (exactMatch != null) parts.push(`Exact plate matching is ${verdict(exactMatch, { strong: 0.9, adequate: 0.75 })}`);
+  if (charAccuracy != null) parts.push(`character-level accuracy is ${verdict(charAccuracy, { strong: 0.95, adequate: 0.85 })}`);
+  return parts.join(", ") + ". Based on benchmark test data.";
+}
+
+function ruleVerdict(passRate: number | null | undefined, missing: number, unexpected: number): string {
+  if (passRate == null) return "Insufficient data to assess rule accuracy.";
+  const parts: string[] = [];
+  parts.push(`Expected-event matching is ${verdict(passRate, { strong: 0.95, adequate: 0.8 })}`);
+  if (missing > 0) parts.push(`${missing} expected outcome${missing > 1 ? "s were" : " was"} not detected`);
+  if (unexpected > 0) parts.push(`${unexpected} unexpected outcome${unexpected > 1 ? "s were" : " was"} observed`);
+  return parts.join(", ") + ". Based on benchmark test data.";
+}
+
+function signalVerdict(accuracy: number | null | undefined, confusionCount: number): string {
+  if (accuracy == null) return "Insufficient data to assess signal classification.";
+  const parts: string[] = [];
+  parts.push(`Classification accuracy is ${verdict(accuracy, { strong: 0.95, adequate: 0.85 })}`);
+  if (confusionCount > 0) parts.push(`with ${confusionCount} confusion pair${confusionCount > 1 ? "s" : ""} to review`);
+  return parts.join(", ") + ". Based on benchmark test data.";
+}
+
 export function EvaluationDashboard({
   model,
   accessPolicy,
@@ -296,10 +357,13 @@ export function EvaluationDashboard({
                               <p className="text-sm text-[rgba(19,32,41,0.6)]">Observed {formatTimestamp(item.observedAt ?? item.generatedAt)}</p>
                             </div>
                             <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Detection precision</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.precision)}</p></div>
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Detection recall</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.recall)}</p></div>
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Matched IoU</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatDecimal(item.meanIou)}</p></div>
+                              <div><MetricLabel label="Detection precision" tip="Percentage of the system's detections that were correct — higher means fewer false alarms." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.precision)}</p></div>
+                              <div><MetricLabel label="Detection recall" tip="Percentage of real objects the system successfully detected — higher means fewer missed objects." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.recall)}</p></div>
+                              <div><MetricLabel label="Matched IoU" tip="Overlap quality between the system's detection box and the actual object — closer to 1.0 is better." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatDecimal(item.meanIou)}</p></div>
                             </div>
+                            <p className="mt-3 text-sm italic leading-6 text-[rgba(19,32,41,0.60)]">
+                              {detectionVerdict(item.precision, item.recall, item.meanIou)}
+                            </p>
                             <p className="mt-3 text-sm leading-6 text-[rgba(19,32,41,0.72)]">
                               Predicted {item.predictedCount} annotations against {item.expectedCount} expected annotations, with {item.matchedCount} matched, {item.falsePositiveCount} false positives, and {item.falseNegativeCount} false negatives.
                               {item.iouThreshold !== null ? ` IoU threshold: ${item.iouThreshold.toFixed(2)}.` : ""}
@@ -331,10 +395,13 @@ export function EvaluationDashboard({
                               <p className="text-sm text-[rgba(19,32,41,0.6)]">Observed {formatTimestamp(item.observedAt ?? item.generatedAt)}</p>
                             </div>
                             <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Assignment coverage</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.coverageRate)}</p></div>
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">ID switches</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{item.idSwitchCount}</p></div>
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Continuity score</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.continuityScore)}</p></div>
+                              <div><MetricLabel label="Assignment coverage" tip="Percentage of expected object observations that were successfully assigned to a track — higher means more complete tracking." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.coverageRate)}</p></div>
+                              <div><MetricLabel label="ID switches" tip="Number of times a tracked object was mistakenly assigned a new identity — fewer is better, zero is ideal." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{item.idSwitchCount}</p></div>
+                              <div><MetricLabel label="Continuity score" tip="How consistently the system maintains a single identity for each object over time — closer to 100% is better." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.continuityScore)}</p></div>
                             </div>
+                            <p className="mt-3 text-sm italic leading-6 text-[rgba(19,32,41,0.60)]">
+                              {trackingVerdict(item.coverageRate, item.continuityScore, item.idSwitchCount)}
+                            </p>
                             <p className="mt-3 text-sm leading-6 text-[rgba(19,32,41,0.72)]">
                               {item.observedObservations} observed assignments across {item.expectedObservations} expected observations for {item.objectCount} logical objects. {item.fragmentedObjectCount} object(s) were fragmented across multiple track IDs.
                             </p>
@@ -372,10 +439,13 @@ export function EvaluationDashboard({
                               <p className="text-sm text-[rgba(19,32,41,0.6)]">Observed {formatTimestamp(item.observedAt ?? item.generatedAt)}</p>
                             </div>
                             <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Exact plate match</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.exactMatchRate)}</p></div>
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Avg char accuracy</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.averageCharAccuracy)}</p></div>
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Mean confidence</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatDecimal(item.averageConfidence)}</p></div>
+                              <div><MetricLabel label="Exact plate match" tip="Percentage of license plates where every character was read correctly — the strictest accuracy measure." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.exactMatchRate)}</p></div>
+                              <div><MetricLabel label="Avg char accuracy" tip="Average percentage of characters read correctly per plate — a partial-credit measure when plates aren't fully correct." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.averageCharAccuracy)}</p></div>
+                              <div><MetricLabel label="Mean confidence" tip="Average confidence score the system assigns to its plate readings — higher means the system is more certain." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatDecimal(item.averageConfidence)}</p></div>
                             </div>
+                            <p className="mt-3 text-sm italic leading-6 text-[rgba(19,32,41,0.60)]">
+                              {ocrVerdict(item.exactMatchRate, item.averageCharAccuracy)}
+                            </p>
                             <p className="mt-3 text-sm leading-6 text-[rgba(19,32,41,0.72)]">
                               {item.exactMatchCount} exact normalized text matches across {item.sampleCount} OCR sample(s).
                             </p>
@@ -428,10 +498,13 @@ export function EvaluationDashboard({
                               <p className="text-sm text-[rgba(19,32,41,0.6)]">Observed {formatTimestamp(item.observedAt ?? item.generatedAt)}</p>
                             </div>
                             <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Expected-event match</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.passRate)}</p></div>
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Missing expected</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{item.missingCount}</p></div>
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Unexpected actual</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{item.unexpectedCount}</p></div>
+                              <div><MetricLabel label="Expected-event match" tip="Percentage of expected rule outcomes that the system correctly produced — closer to 100% means rules trigger reliably." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.passRate)}</p></div>
+                              <div><MetricLabel label="Missing expected" tip="Number of expected outcomes that the system failed to produce — ideally zero." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{item.missingCount}</p></div>
+                              <div><MetricLabel label="Unexpected actual" tip="Number of outcomes the system produced that were not expected — ideally zero." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{item.unexpectedCount}</p></div>
                             </div>
+                            <p className="mt-3 text-sm italic leading-6 text-[rgba(19,32,41,0.60)]">
+                              {ruleVerdict(item.passRate, item.missingCount, item.unexpectedCount)}
+                            </p>
                             <p className="mt-3 text-sm leading-6 text-[rgba(19,32,41,0.72)]">
                               Matched {item.matchedCount} of {item.expectedCount} expected rule outcomes. The evaluator observed {item.actualCount} actual outcome(s) in this scenario.
                             </p>
@@ -468,10 +541,13 @@ export function EvaluationDashboard({
                               <p className="text-sm text-[rgba(19,32,41,0.6)]">Observed {formatTimestamp(item.observedAt ?? item.generatedAt)}</p>
                             </div>
                             <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Sample accuracy</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.accuracy)}</p></div>
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Correct labels</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{item.correctCount}/{item.sampleCount}</p></div>
-                              <div><p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.52)]">Confusion entries</p><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{item.confusionPairs.length}</p></div>
+                              <div><MetricLabel label="Sample accuracy" tip="Percentage of test samples where the system correctly identified the signal state (e.g., red, green, amber)." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{formatPercent(item.accuracy)}</p></div>
+                              <div><MetricLabel label="Correct labels" tip="Number of correctly classified samples out of the total — shown as correct/total." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{item.correctCount}/{item.sampleCount}</p></div>
+                              <div><MetricLabel label="Confusion entries" tip="Number of signal-state pairs the system confused with each other — e.g., mistaking amber for red. Fewer is better." /><p className="mt-1 text-lg font-semibold text-[var(--color-ink)]">{item.confusionPairs.length}</p></div>
                             </div>
+                            <p className="mt-3 text-sm italic leading-6 text-[rgba(19,32,41,0.60)]">
+                              {signalVerdict(item.accuracy, item.confusionPairs.length)}
+                            </p>
                             {Object.keys(item.perClassAccuracy).length > 0 ? (
                               <p className="mt-3 text-sm leading-6 text-[rgba(19,32,41,0.72)]">
                                 Per-class accuracy: {Object.entries(item.perClassAccuracy)

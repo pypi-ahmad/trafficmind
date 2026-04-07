@@ -28,6 +28,20 @@ export function OperationsDashboard({ model, dataAsOf }: { model: SpatialOperati
         ? "Connected — no incidents recorded yet."
         : "Incident feeds are not yet connected.";
 
+  const feedsConnected =
+    model.feeds.events.availability === "live" && model.feeds.violations.availability === "live";
+  const allServicesOk = feedsConnected && model.spatialAnalytics.availability === "live";
+  const systemStatusLabel = allServicesOk
+    ? "All services connected"
+    : feedsConnected
+      ? "Feeds connected · Analytics pending"
+      : "Some services pending";
+  const systemStatusDot = allServicesOk
+    ? "bg-[var(--color-ok)]"
+    : feedsConnected
+      ? "bg-[var(--color-warning)]"
+      : "bg-[rgba(19,32,41,0.32)]";
+
   return (
     <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-8 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
       <header className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[linear-gradient(135deg,rgba(244,238,224,0.94),rgba(231,242,244,0.92))] p-6 shadow-[0_24px_60px_rgba(18,32,41,0.08)] lg:p-8">
@@ -50,23 +64,30 @@ export function OperationsDashboard({ model, dataAsOf }: { model: SpatialOperati
             </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-[1.5rem] bg-[rgba(255,255,255,0.74)] px-4 py-3 text-sm text-[var(--color-ink)]">
-              <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[rgba(19,32,41,0.54)]">Map Status</p>
-              <p className="mt-2 font-semibold">{model.provider.provider}</p>
-              <p className="mt-1 text-[rgba(19,32,41,0.72)]">{model.provider.note}</p>
+          <details className="group">
+            <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full bg-[rgba(255,255,255,0.60)] px-4 py-2 text-xs font-medium text-[rgba(19,32,41,0.68)] transition-colors hover:bg-[rgba(255,255,255,0.80)] [&::-webkit-details-marker]:hidden">
+              <span className={`inline-block h-2 w-2 rounded-full ${systemStatusDot}`} />
+              <span>System Status: {systemStatusLabel}</span>
+              <span className="ml-1 text-[rgba(19,32,41,0.36)] transition-transform group-open:rotate-90">▸</span>
+            </summary>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-[1.5rem] bg-[rgba(255,255,255,0.74)] px-4 py-3 text-sm text-[var(--color-ink)]">
+                <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[rgba(19,32,41,0.54)]">Map Status</p>
+                <p className="mt-2 font-semibold">{model.provider.displayName}</p>
+                <p className="mt-1 text-[rgba(19,32,41,0.72)]">{model.provider.note}</p>
+              </div>
+              <div className="rounded-[1.5rem] bg-[rgba(255,255,255,0.74)] px-4 py-3 text-sm text-[var(--color-ink)]">
+                <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[rgba(19,32,41,0.54)]">Analytics Status</p>
+                <p className="mt-2 font-semibold">{availabilityDisplayLabel(model.spatialAnalytics.availability)}</p>
+                <p className="mt-1 text-[rgba(19,32,41,0.72)]">{model.spatialAnalytics.note}</p>
+              </div>
+              <div className="rounded-[1.5rem] bg-[rgba(255,255,255,0.74)] px-4 py-3 text-sm text-[var(--color-ink)]">
+                <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[rgba(19,32,41,0.54)]">Incident Feeds</p>
+                <p className="mt-2 font-semibold">{availabilityDisplayLabel(model.feeds.events.availability)} / {availabilityDisplayLabel(model.feeds.violations.availability)}</p>
+                <p className="mt-1 text-[rgba(19,32,41,0.72)]">{feedSummaryNote}</p>
+              </div>
             </div>
-            <div className="rounded-[1.5rem] bg-[rgba(255,255,255,0.74)] px-4 py-3 text-sm text-[var(--color-ink)]">
-              <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[rgba(19,32,41,0.54)]">Analytics Status</p>
-              <p className="mt-2 font-semibold">{availabilityDisplayLabel(model.spatialAnalytics.availability)}</p>
-              <p className="mt-1 text-[rgba(19,32,41,0.72)]">{model.spatialAnalytics.note}</p>
-            </div>
-            <div className="rounded-[1.5rem] bg-[rgba(255,255,255,0.74)] px-4 py-3 text-sm text-[var(--color-ink)]">
-              <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[rgba(19,32,41,0.54)]">Incident Feeds</p>
-              <p className="mt-2 font-semibold">{availabilityDisplayLabel(model.feeds.events.availability)} / {availabilityDisplayLabel(model.feeds.violations.availability)}</p>
-              <p className="mt-1 text-[rgba(19,32,41,0.72)]">{feedSummaryNote}</p>
-            </div>
-          </div>
+          </details>
         </div>
       </header>
 

@@ -7,6 +7,7 @@ import { buildCaseFeedHref, getSingleParam } from "@/features/operations/derive"
 import { violationTypeLabel, violationStatusLabel, eventStatusLabel, eventTypeLabel, titleCase, severityLabel } from "@/features/shared/format-labels";
 import type { DetectionEventReadApi, DetectionEventStatus, ViolationEventReadApi, ViolationStatus, ViolationTypeName } from "@/features/operations/types";
 
+export const metadata = { title: "Cases | TrafficMind" };
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 20;
@@ -157,14 +158,14 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           {cameraId ? (
-            <Link href={buildFilterHref({ cameraId: null } as Record<string, string | null>).replace("cameraId=", "")} className="rounded-full bg-[rgba(240,90,79,0.10)] px-4 py-2 text-sm font-medium text-[var(--color-danger)] transition-colors hover:bg-[rgba(240,90,79,0.18)]">
+            <Link href={buildFilterHref({ cameraId: null } as Record<string, string | null>).replace("cameraId=", "")} className="rounded-full bg-[rgba(23,57,69,0.08)] px-4 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[rgba(23,57,69,0.14)]">
               Clear camera filter
             </Link>
           ) : null}
           {cameraId ? <span className="rounded-full bg-[rgba(255,255,255,0.72)] px-4 py-2 text-sm font-medium text-[var(--color-ink)]">Camera: {selectedCamera?.name ?? cameraId}</span> : null}
           {junctionId ? <span className="rounded-full bg-[rgba(255,255,255,0.72)] px-4 py-2 text-sm font-medium text-[var(--color-ink)]">Intersection: {junctionId}</span> : null}
           {hasActiveFilters ? (
-            <Link href={buildCaseFeedHref({ cameraId: cameraId ?? undefined, junctionId: junctionId ?? undefined })} className="rounded-full bg-[rgba(240,90,79,0.10)] px-4 py-2 text-sm font-medium text-[var(--color-danger)] transition-colors hover:bg-[rgba(240,90,79,0.18)]">
+            <Link href={buildCaseFeedHref({ cameraId: cameraId ?? undefined, junctionId: junctionId ?? undefined })} className="rounded-full bg-[rgba(23,57,69,0.08)] px-4 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[rgba(23,57,69,0.14)]">
               Clear all filters
             </Link>
           ) : null}
@@ -192,12 +193,37 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
 
           <div>
             <p className="mb-2 text-xs font-medium text-[rgba(19,32,41,0.56)]">Case type</p>
-            <div className="flex flex-wrap gap-2">
-              {VIOLATION_TYPES.map((vt) => (
-                <Link key={vt} href={buildFilterHref({ violationType: violationType === vt ? null : vt })} className={violationType === vt ? activeChipClass : inactiveChipClass}>
-                  {violationTypeLabel(vt)}
-                </Link>
-              ))}
+            <div className="flex flex-wrap items-start gap-x-6 gap-y-3">
+              <div>
+                <p className="mb-1.5 text-[0.65rem] font-medium uppercase tracking-[0.14em] text-[rgba(19,32,41,0.38)]">Signal &amp; Speed</p>
+                <div className="flex flex-wrap gap-2">
+                  {(["red_light", "stop_line", "speeding"] as const).map((vt) => (
+                    <Link key={vt} href={buildFilterHref({ violationType: violationType === vt ? null : vt })} className={violationType === vt ? activeChipClass : inactiveChipClass}>
+                      {violationTypeLabel(vt)}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="mb-1.5 text-[0.65rem] font-medium uppercase tracking-[0.14em] text-[rgba(19,32,41,0.38)]">Movement &amp; Safety</p>
+                <div className="flex flex-wrap gap-2">
+                  {(["illegal_turn", "wrong_way", "pedestrian_conflict"] as const).map((vt) => (
+                    <Link key={vt} href={buildFilterHref({ violationType: violationType === vt ? null : vt })} className={violationType === vt ? activeChipClass : inactiveChipClass}>
+                      {violationTypeLabel(vt)}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="mb-1.5 text-[0.65rem] font-medium uppercase tracking-[0.14em] text-[rgba(19,32,41,0.38)]">Parking &amp; Stopping</p>
+                <div className="flex flex-wrap gap-2">
+                  {(["illegal_parking", "no_stopping", "bus_stop_violation", "stalled_vehicle"] as const).map((vt) => (
+                    <Link key={vt} href={buildFilterHref({ violationType: violationType === vt ? null : vt })} className={violationType === vt ? activeChipClass : inactiveChipClass}>
+                      {violationTypeLabel(vt)}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -293,7 +319,7 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
                     ← Prev
                   </Link>
                 ) : null}
-                <span className="text-xs text-[rgba(19,32,41,0.56)]">{violationsPage} / {violationsTotalPages}</span>
+                <span className="text-xs text-[rgba(19,32,41,0.56)]">{(violationsPage - 1) * PAGE_SIZE + 1}–{Math.min(violationsPage * PAGE_SIZE, violationsTotal)} of {violationsTotal}</span>
                 {violationsPage < violationsTotalPages ? (
                   <Link href={buildFilterHref({ violationsPage: String(violationsPage + 1) })} className="rounded-full border border-[rgba(23,57,69,0.14)] px-3 py-1 text-xs font-medium text-[var(--color-ink)] hover:border-[rgba(23,57,69,0.28)]">
                     Next →
@@ -332,7 +358,7 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
           </p>
           {hasActiveFilters ? (
             <div className="mt-4">
-              <Link href={buildCaseFeedHref({ cameraId: cameraId ?? undefined, junctionId: junctionId ?? undefined })} className="rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 text-sm font-medium text-[var(--color-ink)] hover:border-[rgba(23,57,69,0.28)]">
+              <Link href={buildCaseFeedHref({ cameraId: cameraId ?? undefined, junctionId: junctionId ?? undefined })} className="rounded-full bg-[rgba(23,57,69,0.08)] px-4 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[rgba(23,57,69,0.14)]">
                 Clear all filters
               </Link>
             </div>
@@ -362,7 +388,7 @@ export default async function CasesPage({ searchParams }: CasesPageProps) {
                     ← Prev
                   </Link>
                 ) : null}
-                <span className="text-xs text-[rgba(19,32,41,0.56)]">{eventsPage} / {eventsTotalPages}</span>
+                <span className="text-xs text-[rgba(19,32,41,0.56)]">{(eventsPage - 1) * PAGE_SIZE + 1}–{Math.min(eventsPage * PAGE_SIZE, eventsTotal)} of {eventsTotal}</span>
                 {eventsPage < eventsTotalPages ? (
                   <Link href={buildFilterHref({ eventsPage: String(eventsPage + 1) })} className="rounded-full border border-[rgba(23,57,69,0.14)] px-3 py-1 text-xs font-medium text-[var(--color-ink)] hover:border-[rgba(23,57,69,0.28)]">
                     Next →

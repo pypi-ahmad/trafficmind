@@ -1,11 +1,13 @@
 import Link from "next/link";
 
+import { AlertActions } from "@/app/alerts/alert-actions";
 import { fetchAlerts } from "@/features/alerts/api";
 import type { AlertSeverity, AlertSourceKind, AlertStatus, OperationalAlertSummary } from "@/features/alerts/types";
 import { formatTimestamp } from "@/features/operations/components/dashboard-primitives";
 import { getSingleParam } from "@/features/operations/derive";
 import { severityLabel, titleCase } from "@/features/shared/format-labels";
 
+export const metadata = { title: "Alerts | TrafficMind" };
 export const dynamic = "force-dynamic";
 
 const ALERT_STATUSES: AlertStatus[] = ["new", "acknowledged", "escalated", "resolved", "suppressed"];
@@ -109,7 +111,7 @@ export default async function AlertsPage({ searchParams }: AlertsPageProps) {
         </p>
         {hasActiveFilters ? (
           <div className="mt-6">
-            <Link href="/alerts" className="rounded-full bg-[rgba(240,90,79,0.10)] px-4 py-2 text-sm font-medium text-[var(--color-danger)] transition-colors hover:bg-[rgba(240,90,79,0.18)]">
+            <Link href="/alerts" className="rounded-full bg-[rgba(23,57,69,0.08)] px-4 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[rgba(23,57,69,0.14)]">
               Clear all filters
             </Link>
           </div>
@@ -168,7 +170,7 @@ export default async function AlertsPage({ searchParams }: AlertsPageProps) {
                     ← Prev
                   </Link>
                 ) : null}
-                <span className="text-xs text-[rgba(19,32,41,0.56)]">{page} / {totalPages}</span>
+                <span className="text-xs text-[rgba(19,32,41,0.56)]">{(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)} of {total}</span>
                 {page < totalPages ? (
                   <Link href={buildFilterHref({ page: String(page + 1) })} className="rounded-full border border-[rgba(23,57,69,0.14)] px-3 py-1 text-xs font-medium text-[var(--color-ink)] hover:border-[rgba(23,57,69,0.28)]">
                     Next →
@@ -191,6 +193,9 @@ export default async function AlertsPage({ searchParams }: AlertsPageProps) {
                     {a.occurrence_count > 1 ? ` · ${a.occurrence_count} occurrences` : null}
                     {a.acknowledged_by ? ` · Acked by ${a.acknowledged_by}` : null}
                   </p>
+                  <div className="mt-2">
+                    <AlertActions alertId={a.id} currentStatus={a.status} />
+                  </div>
                 </div>
               </div>
             ))}
@@ -204,7 +209,7 @@ export default async function AlertsPage({ searchParams }: AlertsPageProps) {
           </p>
           {hasActiveFilters ? (
             <div className="mt-4">
-              <Link href="/alerts" className="rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 text-sm font-medium text-[var(--color-ink)] hover:border-[rgba(23,57,69,0.28)]">
+              <Link href="/alerts" className="rounded-full bg-[rgba(23,57,69,0.08)] px-4 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[rgba(23,57,69,0.14)]">
                 Clear all filters
               </Link>
             </div>

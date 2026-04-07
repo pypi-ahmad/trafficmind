@@ -49,7 +49,7 @@ export function getMapProviderConfig(): MapProviderConfig {
       requestedProvider,
       styleUrl,
       token,
-      note: "MapLibre is active with a configured style URL.",
+      note: "Interactive map is active.",
     };
   }
 
@@ -59,7 +59,7 @@ export function getMapProviderConfig(): MapProviderConfig {
       requestedProvider,
       styleUrl: null,
       token,
-      note: "MapLibre was requested, but NEXT_PUBLIC_MAP_STYLE_URL is not configured. Showing the coordinate-grid fallback.",
+      note: "Interactive map is not fully configured yet. Using a simple coordinate view.",
     };
   }
 
@@ -68,7 +68,7 @@ export function getMapProviderConfig(): MapProviderConfig {
     requestedProvider,
     styleUrl: null,
     token,
-    note: "Showing the coordinate-grid fallback until a map style is configured.",
+    note: "Using a simple coordinate view. Configure a map provider for a richer map.",
   };
 }
 

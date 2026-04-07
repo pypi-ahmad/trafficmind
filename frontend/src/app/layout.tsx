@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
+import { AppNav } from "@/features/shared/components/app-nav";
 import "./globals.css";
 
 const displaySans = Space_Grotesk({
@@ -15,7 +16,7 @@ const operationsMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: "TrafficMind Operations",
-  description: "Spatial operations layer for cameras, junctions, and incident review.",
+  description: "Camera operations, incident review, and traffic monitoring.",
 };
 
 export default function RootLayout({
@@ -28,7 +29,10 @@ export default function RootLayout({
       lang="en"
       className={`${displaySans.variable} ${operationsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <AppNav />
+        <div className="flex-1">{children}</div>
+      </body>
     </html>
   );
 }

@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { fetchCameraDetail } from "@/features/operations/api";
+import { formatTimestamp } from "@/features/operations/components/dashboard-primitives";
 import { buildDashboardHref, buildEventFeedHref } from "@/features/operations/derive";
+import { cameraStatusLabel, streamKindLabel, zoneTypeLabel, titleCase } from "@/features/shared/format-labels";
 
 export const dynamic = "force-dynamic";
 
@@ -12,20 +14,6 @@ type CameraDetailPageProps = {
   }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
-
-function formatTimestamp(value: string | null): string {
-  if (!value) {
-    return "Not available";
-  }
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-  return new Intl.DateTimeFormat("en", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(date);
-}
 
 function getSingleValue(value: string | string[] | undefined): string | null {
   if (Array.isArray(value)) {
@@ -47,15 +35,20 @@ export default async function CameraDetailPage({ params, searchParams }: CameraD
   if (!result.ok || !result.data) {
     return (
       <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6">
-        <Link href="/" className="text-sm font-medium text-[var(--color-ink)] underline underline-offset-4">
-          Back to operations view
-        </Link>
         <section className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.82)] p-8 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">
           <p className="text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-[rgba(19,32,41,0.56)]">Camera detail unavailable</p>
           <h1 className="mt-3 text-4xl font-semibold tracking-[-0.06em] text-[var(--color-ink)]">Camera detail could not be loaded</h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[rgba(19,32,41,0.74)]">
-            {result.error ?? "The camera detail endpoint is not reachable from the frontend at the moment."}
+            {result.error ?? "Camera details could not be loaded right now. Please try again later."}
           </p>
+          <div className="mt-6 flex flex-wrap gap-3 text-sm">
+            <a href="" className="rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 font-medium text-[var(--color-ink)] transition-colors hover:border-[rgba(23,57,69,0.28)]">
+              Reload page
+            </a>
+            <Link href="/" className="rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 font-medium text-[var(--color-ink)] transition-colors hover:border-[rgba(23,57,69,0.28)]">
+              Return to dashboard
+            </Link>
+          </div>
         </section>
       </main>
     );
@@ -66,15 +59,12 @@ export default async function CameraDetailPage({ params, searchParams }: CameraD
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6">
       <div className="flex flex-wrap items-center gap-3 text-sm">
-        <Link href={buildDashboardHref({ cameraId: camera.id, junctionId: junctionId ?? undefined })} className="rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 font-medium text-[var(--color-ink)] transition-colors hover:border-[rgba(23,57,69,0.28)]">
-          Back to map selection
-        </Link>
         <Link href={buildEventFeedHref({ cameraId: camera.id, junctionId: junctionId ?? undefined })} className="rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 font-medium text-[var(--color-ink)] transition-colors hover:border-[rgba(23,57,69,0.28)]">
-          Open event feed filters
+          View incidents
         </Link>
         {junctionId ? (
           <Link href={buildDashboardHref({ junctionId })} className="rounded-full border border-[rgba(23,57,69,0.14)] px-4 py-2 font-medium text-[var(--color-ink)] transition-colors hover:border-[rgba(23,57,69,0.28)]">
-            View parent junction
+            View intersection
           </Link>
         ) : null}
       </div>
@@ -86,14 +76,14 @@ export default async function CameraDetailPage({ params, searchParams }: CameraD
         <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-[1.4rem] bg-[rgba(255,255,255,0.72)] p-4">
             <p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.5)]">Status</p>
-            <p className="mt-2 text-xl font-semibold text-[var(--color-ink)]">{camera.status}</p>
+            <p className="mt-2 text-xl font-semibold text-[var(--color-ink)]">{cameraStatusLabel(camera.status)}</p>
           </div>
           <div className="rounded-[1.4rem] bg-[rgba(255,255,255,0.72)] p-4">
             <p className="text-xs uppercase tracking-[0.16em] text-[rgba(19,32,41,0.5)]">Coordinates</p>
             <p className="mt-2 text-xl font-semibold text-[var(--color-ink)]">
               {camera.latitude !== null && camera.longitude !== null
-                ? `${camera.latitude.toFixed(5)}, ${camera.longitude.toFixed(5)}`
-                : "Not geocoded"}
+                ? `${camera.latitude.toFixed(3)}, ${camera.longitude.toFixed(3)}`
+                : "Not mapped"}
             </p>
           </div>
           <div className="rounded-[1.4rem] bg-[rgba(255,255,255,0.72)] p-4">
@@ -109,7 +99,7 @@ export default async function CameraDetailPage({ params, searchParams }: CameraD
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.82)] p-6 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">
-          <p className="text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-[rgba(19,32,41,0.56)]">Metadata</p>
+          <p className="text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-[rgba(19,32,41,0.56)]">Camera Information</p>
           <dl className="mt-5 grid gap-4 text-sm text-[rgba(19,32,41,0.74)]">
             <div>
               <dt className="uppercase tracking-[0.14em] text-[rgba(19,32,41,0.5)]">Camera code</dt>
@@ -124,7 +114,7 @@ export default async function CameraDetailPage({ params, searchParams }: CameraD
               <dd className="mt-2 text-base font-medium text-[var(--color-ink)]">{camera.timezone}</dd>
             </div>
             <div>
-              <dt className="uppercase tracking-[0.14em] text-[rgba(19,32,41,0.5)]">Calibration updated</dt>
+              <dt className="uppercase tracking-[0.14em] text-[rgba(19,32,41,0.5)]">Last updated</dt>
               <dd className="mt-2 text-base font-medium text-[var(--color-ink)]">{formatTimestamp(camera.calibration_updated_at)}</dd>
             </div>
             <div>
@@ -143,26 +133,26 @@ export default async function CameraDetailPage({ params, searchParams }: CameraD
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <p className="font-semibold text-[var(--color-ink)]">{stream.name}</p>
                     <span className="rounded-full bg-[rgba(19,32,41,0.08)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[rgba(19,32,41,0.72)]">
-                      {stream.status}
+                      {titleCase(stream.status)}
                     </span>
                   </div>
-                  <p className="mt-2 text-sm text-[rgba(19,32,41,0.72)]">{stream.source_type} · {stream.stream_kind}</p>
+                  <p className="mt-2 text-sm text-[rgba(19,32,41,0.72)]">{streamKindLabel(stream.stream_kind)}</p>
                 </div>
               )) : (
-                <p className="text-sm text-[rgba(19,32,41,0.72)]">No streams are attached yet.</p>
+                <p className="text-sm text-[rgba(19,32,41,0.72)]">No streams are attached yet. Streams connect this camera to a video source and are configured by an administrator.</p>
               )}
             </div>
           </section>
 
           <section className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.82)] p-6 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">
-            <p className="text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-[rgba(19,32,41,0.56)]">Spatial zones</p>
+            <p className="text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-[rgba(19,32,41,0.56)]">Detection Zones</p>
             <div className="mt-5 flex flex-wrap gap-3">
               {camera.zones.length > 0 ? camera.zones.map((zone) => (
                 <div key={zone.id} className="rounded-full bg-[rgba(243,237,228,0.86)] px-4 py-2 text-sm font-medium text-[var(--color-ink)]">
-                  {zone.name} · {zone.zone_type}
+                  {zone.name} · {zoneTypeLabel(zone.zone_type)}
                 </div>
               )) : (
-                <p className="text-sm text-[rgba(19,32,41,0.72)]">No zones are configured for this camera yet.</p>
+                <p className="text-sm text-[rgba(19,32,41,0.72)]">No detection zones are configured yet. Zones define the areas in the camera frame where events are monitored.</p>
               )}
             </div>
           </section>

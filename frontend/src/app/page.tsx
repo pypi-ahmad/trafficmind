@@ -62,5 +62,5 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     provider: getMapProviderConfig(),
   });
 
-  return <OperationsDashboard model={model} />;
+  return <OperationsDashboard model={model} dataAsOf={now.toISOString()} />;
 }

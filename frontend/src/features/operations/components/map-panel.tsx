@@ -37,14 +37,13 @@ export function MapPanel({ model }: { model: SpatialOperationsModel }) {
             Cameras, grouped junctions, and location signals
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-[rgba(19,32,41,0.72)]">
-            The map uses exact camera coordinates where the backend has them. Junction markers remain derived from shared
-            location names until an explicit intersection model is introduced.
+            Camera pins use exact coordinates when available. Junction markers are grouped by shared location name.
           </p>
         </div>
 
         <div className="flex flex-wrap gap-3">
           <span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${availabilityClass(model.spatialAnalytics.availability)}`}>
-            spatial analytics {availabilityLabel(model.spatialAnalytics.availability)}
+            Analytics {availabilityLabel(model.spatialAnalytics.availability)}
           </span>
           <Link
             href={selectedEventFeedHref}

@@ -71,7 +71,7 @@ export function buildCameraDetailHref(cameraId: string, selection: DashboardSele
   return query ? `/cameras/${cameraId}?${query}` : `/cameras/${cameraId}`;
 }
 
-export function buildEventFeedHref(selection: DashboardSelection = {}): string {
+export function buildCaseFeedHref(selection: DashboardSelection = {}): string {
   const params = new URLSearchParams();
   if (selection.cameraId) {
     params.set("cameraId", selection.cameraId);
@@ -80,7 +80,12 @@ export function buildEventFeedHref(selection: DashboardSelection = {}): string {
     params.set("junctionId", selection.junctionId);
   }
   const query = params.toString();
-  return query ? `/events?${query}` : "/events";
+  return query ? `/cases?${query}` : "/cases";
+}
+
+/** @deprecated Use `buildCaseFeedHref` — kept for backward compatibility. */
+export function buildEventFeedHref(selection: DashboardSelection = {}): string {
+  return buildCaseFeedHref(selection);
 }
 
 function slugify(value: string): string {
@@ -119,8 +124,8 @@ function toEventFeedStatus(
       statusCode: result.status,
       note:
         result.data.total > 0
-          ? `${result.data.total} detection events available from the backend.`
-          : "Events feed is live but no detection events have been recorded yet.",
+          ? `${result.data.total} camera detections available.`
+          : "Connected — no detections recorded yet.",
       totalCount: result.data.total,
     };
   }
@@ -129,7 +134,7 @@ function toEventFeedStatus(
     return {
       availability: "pending_backend",
       statusCode: result.status,
-      note: result.error ?? "Events endpoint is scaffolded but not implemented yet.",
+      note: "Detection data is not available yet. This feature is being set up.",
       totalCount: null,
     };
   }
@@ -137,7 +142,7 @@ function toEventFeedStatus(
   return {
     availability: "unreachable",
     statusCode: result.status,
-    note: result.error ?? "Events endpoint is currently unreachable.",
+      note: "Unable to load detection data right now. Please try again later.",
     totalCount: null,
   };
 }
@@ -151,8 +156,8 @@ function toViolationFeedStatus(
       statusCode: result.status,
       note:
         result.data.total > 0
-          ? `${result.data.total} violation events available from the backend.`
-          : "Violations feed is live but no violation events have been recorded yet.",
+          ? `${result.data.total} violations available.`
+          : "Connected — no violations recorded yet.",
       totalCount: result.data.total,
     };
   }
@@ -161,7 +166,7 @@ function toViolationFeedStatus(
     return {
       availability: "pending_backend",
       statusCode: result.status,
-      note: result.error ?? "Violations endpoint is scaffolded but not implemented yet.",
+      note: "Violation data is not available yet. This feature is being set up.",
       totalCount: null,
     };
   }
@@ -169,7 +174,7 @@ function toViolationFeedStatus(
   return {
     availability: "unreachable",
     statusCode: result.status,
-    note: result.error ?? "Violations endpoint is currently unreachable.",
+      note: "Unable to load violation data right now. Please try again later.",
     totalCount: null,
   };
 }
@@ -183,8 +188,8 @@ function toSpatialAnalyticsStatus(
       availability: "live",
       note:
         result.data.total_events > 0
-          ? "Recent location summaries are coming from persisted violations and watchlist alerts through the hotspot analytics API."
-          : "Hotspot analytics is reachable, but there are no persisted operational incidents in the current time window.",
+          ? "Location summaries based on recent violations and alerts."
+          : "Connected — no incidents recorded in the current time window.",
       source: "hotspot_analytics",
       rankingMetric: result.data.ranking_metric,
       totalEvents: result.data.total_events,
@@ -198,7 +203,7 @@ function toSpatialAnalyticsStatus(
   if (result.status === 404 || result.status === 501) {
     return {
       availability: "pending_backend",
-      note: result.error ?? "Hotspot analytics is scaffolded but not available yet.",
+      note: "Location analytics is not available yet. This feature is being set up.",
       source: "camera_metadata",
       rankingMetric: null,
       totalEvents: 0,
@@ -211,7 +216,7 @@ function toSpatialAnalyticsStatus(
 
   return {
     availability: "unreachable",
-    note: result.error ?? "Hotspot analytics is currently unreachable, so the dashboard is falling back to camera metadata only.",
+      note: "Unable to load location analytics right now. Showing camera status only.",
     source: "camera_metadata",
     rankingMetric: null,
     totalEvents: 0,
@@ -368,7 +373,7 @@ function deriveMetadataHotspots(
     hotspots.push({
       id: `camera-coordinate-${camera.id}`,
       title: `${camera.name} is not geocoded`,
-      description: "This camera cannot appear on a precise basemap until latitude and longitude are saved in the backend.",
+      description: "Add coordinates to this camera so it can appear on the map.",
       severity: "watch",
       metricLabel: "Coordinate status",
       metricValue: "Missing",
@@ -386,7 +391,7 @@ function deriveMetadataHotspots(
     hotspots.push({
       id: "network-stable",
       title: "Camera network looks stable",
-      description: "All current cameras are active and mapped, so this view is ready for richer spatial overlays.",
+      description: "All cameras are active and mapped.",
       severity: "stable",
       metricLabel: "Mapped active cameras",
       metricValue: `${cameras.filter((camera) => camera.status === "active" && camera.coordinates).length}`,
@@ -395,7 +400,7 @@ function deriveMetadataHotspots(
       cameraIds: cameras.map((camera) => camera.id),
       junctionId: null,
       dashboardHref: "/",
-      eventFeedHref: "/events",
+      eventFeedHref: "/cases",
       cameraDetailHref: null,
     });
   }
@@ -546,7 +551,7 @@ export function deriveIncidentSummaries(
         locationType: "junction",
         incidentCount: 0,
         availability: "live",
-        note: "Hotspot analytics is live, but no persisted violations or watchlist alerts were found for this window.",
+        note: "No incidents recorded in the current time window.",
         source: "hotspot_analytics",
         trendLabel: null,
         cameraIds: junction.cameraIds,
@@ -623,8 +628,8 @@ export function deriveIncidentSummaries(
     const totalViolations = violationsStatus.totalCount ?? 0;
     const feedNote =
       totalEvents + totalViolations > 0
-        ? `Live feeds: ${totalEvents} events and ${totalViolations} violations from the backend.`
-        : "Event and violation feeds are live but no incidents have been recorded yet.";
+        ? `${totalEvents} detections and ${totalViolations} violations recorded.`
+        : "Connected — no incidents recorded yet.";
 
     return junctions
       .map((junction) => ({
@@ -649,8 +654,8 @@ export function deriveIncidentSummaries(
 
   const note =
     availability === "pending_backend"
-      ? "Top incident counts are waiting on the /events and /violations APIs. Location cards are scaffolded from current junction grouping only."
-      : "Incident feeds are currently unreachable, so this section is showing placeholders only.";
+      ? "Incident data is being set up. Locations shown are based on current camera groupings."
+      : "Unable to load incident data right now.";
 
   return junctions.slice(0, 5).map((junction) => ({
     id: `incident-${junction.id}`,

@@ -1,3 +1,4 @@
+import { availabilityDisplayLabel } from "@/features/shared/format-labels";
 import type { CameraMapItem, FeedAvailability, HotspotSeverity } from "@/features/operations/types";
 
 export function formatTimestamp(value: string | null | undefined): string {
@@ -76,7 +77,7 @@ export function availabilityClass(availability: FeedAvailability): string {
 }
 
 export function availabilityLabel(availability: FeedAvailability): string {
-  return availability.replace(/_/g, " ");
+  return availabilityDisplayLabel(availability);
 }
 
 export function StatCard({ label, value, note }: { label: string; value: string; note: string }) {

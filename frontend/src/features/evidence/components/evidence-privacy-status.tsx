@@ -6,6 +6,7 @@ import type {
   EvidenceAsset,
   EvidenceManifestRead,
 } from "@/features/evidence/types";
+import { titleCase } from "@/features/shared/format-labels";
 
 /* -------------------------------------------------------------------------- */
 /*  Privacy badge                                                              */
@@ -39,7 +40,7 @@ function AccessResolutionPanel({ access }: { access: EvidenceAccessResolution })
       </div>
       <div className="flex items-center gap-2">
         <span className="font-medium text-gray-600 dark:text-gray-300">Role:</span>
-        <span className="text-gray-800 dark:text-gray-200">{access.requested_role}</span>
+        <span className="text-gray-800 dark:text-gray-200">{titleCase(access.requested_role)}</span>
       </div>
       <div className="flex items-center gap-2">
         <span className="font-medium text-gray-600 dark:text-gray-300">Original access:</span>
@@ -71,7 +72,7 @@ function RedactionTargetPills({ targets }: { targets: string[] }) {
           key={target}
           className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
         >
-          {target.replace(/_/g, " ")}
+          {titleCase(target)}
         </span>
       ))}
     </div>
@@ -79,7 +80,7 @@ function RedactionTargetPills({ targets }: { targets: string[] }) {
 }
 
 function formatAccessLabel(value: string) {
-  return value.replace(/_/g, " ");
+  return titleCase(value);
 }
 
 function permissionClass(permission: AccessPermission): string {
@@ -125,7 +126,7 @@ function AssetList({ assets }: { assets: EvidenceAsset[] }) {
             {viewBadge(asset.asset_view)}
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-gray-400">{asset.redaction_status.replace(/_/g, " ")}</span>
+            <span className="text-gray-400">{titleCase(asset.redaction_status)}</span>
             <RedactionTargetPills targets={asset.redaction_targets} />
           </div>
         </li>
@@ -190,15 +191,15 @@ export function EvidencePrivacyPolicyPreview({
         Evidence privacy and access
       </p>
       <h2 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[var(--color-ink)]">
-        Request-declared roles now map to explicit sensitive-evidence permissions
+        Evidence Access Permissions
       </h2>
       <p className="mt-3 text-sm leading-6 text-[rgba(19,32,41,0.74)]">
-        Redacted evidence is still the default operator-facing view, but the backend now enforces separate permissions for original evidence, exports, incident review actions, watchlists, policy settings, and sensitive audit trails.
+        Redacted evidence is the default view. Separate permissions control access to original evidence, exports, incident review actions, watchlists, policy settings, and audit trails.
       </p>
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {viewBadge("redacted")}
         <span className="rounded-full bg-[rgba(19,32,41,0.08)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[rgba(19,32,41,0.72)]">
-          Original by request for privacy_officer / evidence_admin
+          Original available to authorized roles
         </span>
         <span className="rounded-full bg-[rgba(77,151,177,0.14)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[rgba(29,91,112,1)]">
           Previewing {formatAccessLabel(selectedRole)}
@@ -216,7 +217,7 @@ export function EvidencePrivacyPolicyPreview({
                 ))}
               </div>
               <p className="mt-3 text-sm leading-6 text-[rgba(19,32,41,0.72)]">
-                The frontend preview mirrors the same backend policy returned by <span className="font-mono">GET /api/v1/access/policy</span>. It is descriptive only; the actual allow and deny decisions still happen server-side.
+                This preview reflects the access policy for the selected role. It is descriptive only — actual permissions are enforced by the server.
               </p>
             </div>
 
@@ -289,15 +290,15 @@ export function EvidencePrivacyPolicyPreview({
         <div className="mt-6 rounded-[1.4rem] border border-[rgba(216,87,75,0.14)] bg-[rgba(255,244,241,0.92)] p-4">
           <p className="text-sm font-semibold text-[var(--color-danger)]">Access policy preview unavailable</p>
           <p className="mt-2 text-sm leading-6 text-[rgba(19,32,41,0.74)]">
-            {error ?? "The frontend could not reach the access policy endpoint, so this page is falling back to the static privacy summary only."}
+            {error ?? "The access policy could not be loaded right now. Please try again later."}
           </p>
         </div>
       )}
 
       <ul className="mt-4 space-y-2 text-sm leading-6 text-[rgba(19,32,41,0.74)]">
         <li>Original evidence requests are denied unless the role also has view unredacted evidence permission.</li>
-        <li>Redacted assets keep provenance through <span className="font-mono">derived_from_asset_key</span>.</li>
-        <li>Some redacted asset references remain planned until the masking pipeline materializes them.</li>
+        <li>Redacted assets maintain traceability to their source assets.</li>
+        <li>Some redacted assets are still pending processing by the media pipeline.</li>
       </ul>
     </section>
   );

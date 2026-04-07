@@ -4,6 +4,7 @@ import { buildEvaluationDashboardModel, coerceTaskType, getSingleParam } from "@
 import { fetchAccessPolicy } from "@/features/evidence/api";
 import { coerceEvidenceAccessRole } from "@/features/evidence/types";
 
+export const metadata = { title: "Evaluation | TrafficMind" };
 export const dynamic = "force-dynamic";
 
 type EvaluationPageProps = {

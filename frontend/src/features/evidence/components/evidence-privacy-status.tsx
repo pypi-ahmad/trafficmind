@@ -16,10 +16,10 @@ function viewBadge(view: "original" | "redacted") {
   const isRedacted = view === "redacted";
   return (
     <span
-      className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.12em] ${
         isRedacted
-          ? "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
-          : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+          ? "bg-[rgba(226,176,71,0.16)] text-[var(--color-warning-ink)]"
+          : "bg-[rgba(56,183,118,0.14)] text-[var(--color-ok-ink)]"
       }`}
     >
       {isRedacted ? "Redacted" : "Original"}
@@ -33,23 +33,23 @@ function viewBadge(view: "original" | "redacted") {
 
 function AccessResolutionPanel({ access }: { access: EvidenceAccessResolution }) {
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-3 space-y-2 text-sm">
+    <div className="rounded-[1.4rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(243,237,228,0.74)] p-4 space-y-2 text-sm">
       <div className="flex items-center gap-2">
-        <span className="font-medium text-gray-600 dark:text-gray-300">Active view:</span>
+        <span className="font-medium text-[rgba(19,32,41,0.60)]">Active view:</span>
         {viewBadge(access.resolved_view)}
       </div>
       <div className="flex items-center gap-2">
-        <span className="font-medium text-gray-600 dark:text-gray-300">Role:</span>
-        <span className="text-gray-800 dark:text-gray-200">{titleCase(access.requested_role)}</span>
+        <span className="font-medium text-[rgba(19,32,41,0.60)]">Role:</span>
+        <span className="text-[var(--color-ink)]">{titleCase(access.requested_role)}</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="font-medium text-gray-600 dark:text-gray-300">Original access:</span>
-        <span className={access.original_access_authorized ? "text-green-700 dark:text-green-400" : "text-amber-700 dark:text-amber-400"}>
+        <span className="font-medium text-[rgba(19,32,41,0.60)]">Original access:</span>
+        <span className={access.original_access_authorized ? "text-[var(--color-ok-ink)]" : "text-[var(--color-warning-ink)]"}>
           {access.original_access_authorized ? "Authorized" : "Restricted"}
         </span>
       </div>
       {access.resolution_notes.length > 0 && (
-        <ul className="list-disc list-inside text-xs text-gray-500 dark:text-gray-400 space-y-0.5">
+        <ul className="list-disc list-inside text-xs text-[rgba(19,32,41,0.56)] space-y-0.5">
           {access.resolution_notes.map((note, i) => (
             <li key={i}>{note}</li>
           ))}
@@ -70,7 +70,7 @@ function RedactionTargetPills({ targets }: { targets: string[] }) {
       {targets.map((target) => (
         <span
           key={target}
-          className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+          className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.10em] bg-[rgba(19,32,41,0.08)] text-[rgba(19,32,41,0.68)]"
         >
           {titleCase(target)}
         </span>
@@ -115,18 +115,18 @@ function PermissionPill({ permission }: { permission: AccessPermission }) {
 
 function AssetList({ assets }: { assets: EvidenceAsset[] }) {
   if (assets.length === 0) {
-    return <p className="text-xs text-gray-400">No visible assets.</p>;
+    return <p className="text-xs text-[rgba(19,32,41,0.44)]">No visible assets.</p>;
   }
   return (
-    <ul className="divide-y divide-gray-100 dark:divide-gray-700 text-xs">
+    <ul className="divide-y divide-[rgba(23,57,69,0.08)] text-xs">
       {assets.map((asset) => (
         <li key={asset.asset_key} className="py-1.5 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="truncate font-mono text-gray-700 dark:text-gray-300">{asset.label}</span>
+            <span className="truncate font-[var(--font-operations-mono)] text-[var(--color-ink)]">{asset.label}</span>
             {viewBadge(asset.asset_view)}
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-gray-400">{titleCase(asset.redaction_status)}</span>
+            <span className="text-[rgba(19,32,41,0.44)]">{titleCase(asset.redaction_status)}</span>
             <RedactionTargetPills targets={asset.redaction_targets} />
           </div>
         </li>
@@ -146,26 +146,26 @@ export function EvidencePrivacyStatus({ manifest }: { manifest: EvidenceManifest
 
   return (
     <section className="space-y-3">
-      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+      <h3 className="text-sm font-semibold text-[var(--color-ink)]">
         Privacy &amp; Redaction Status
       </h3>
 
       <AccessResolutionPanel access={manifest.access} />
 
       {manifest.has_restricted_original_assets && (
-        <p className="text-xs text-amber-600 dark:text-amber-400">
+        <p className="text-xs text-[var(--color-warning-ink)]">
           Original assets exist but are restricted under the current access policy.
         </p>
       )}
 
       {plannedAssets > 0 && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-[rgba(19,32,41,0.56)]">
           {plannedAssets} visible asset{plannedAssets === 1 ? " is" : "s are"} still declared as planned redactions. The policy boundary is active, but the media pipeline has not materialized those redacted files yet.
         </p>
       )}
 
       <details className="text-sm">
-        <summary className="cursor-pointer font-medium text-gray-600 dark:text-gray-300">
+        <summary className="cursor-pointer font-medium text-[rgba(19,32,41,0.60)]">
           Visible assets ({manifest.visible_assets.length})
         </summary>
         <div className="mt-1">

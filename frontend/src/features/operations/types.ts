@@ -433,6 +433,7 @@ export interface FeedStatus {
 
 export interface MapProviderConfig {
   provider: MapProviderKind;
+  displayName: string;
   requestedProvider: string;
   styleUrl: string | null;
   token: string | null;

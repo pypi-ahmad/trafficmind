@@ -46,6 +46,7 @@ export function getMapProviderConfig(): MapProviderConfig {
   if (requestedProvider === "maplibre" && styleUrl) {
     return {
       provider: "maplibre",
+      displayName: "Interactive Map",
       requestedProvider,
       styleUrl,
       token,
@@ -56,6 +57,7 @@ export function getMapProviderConfig(): MapProviderConfig {
   if (requestedProvider === "maplibre" && !styleUrl) {
     return {
       provider: "coordinate-grid",
+      displayName: "Basic Map View",
       requestedProvider,
       styleUrl: null,
       token,
@@ -65,6 +67,7 @@ export function getMapProviderConfig(): MapProviderConfig {
 
   return {
     provider: "coordinate-grid",
+    displayName: "Basic Map View",
     requestedProvider,
     styleUrl: null,
     token,

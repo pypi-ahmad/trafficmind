@@ -1,9 +1,11 @@
 import Link from "next/link";
 
 import { fetchAccessPolicy } from "@/features/evidence/api";
+import { EvidencePrivacyPolicyPreview } from "@/features/evidence/components/evidence-privacy-status";
 import type { AccessPolicyRead } from "@/features/evidence/types";
 import { titleCase } from "@/features/shared/format-labels";
 
+export const metadata = { title: "Settings | TrafficMind" };
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
@@ -93,6 +95,18 @@ export default async function SettingsPage() {
           </div>
         )}
       </section>
+
+      {/* ── Evidence access ────────────────────────────── */}
+      {policy ? (
+        <EvidencePrivacyPolicyPreview policy={policy} selectedRole={policy.current_role} />
+      ) : (
+        <section className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.82)] p-6 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">
+          <p className="text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-[rgba(19,32,41,0.56)]">Evidence privacy and access</p>
+          <p className="mt-3 text-sm text-[rgba(19,32,41,0.72)]">
+            {policyResult.error ?? "Evidence access policy could not be loaded."}
+          </p>
+        </section>
+      )}
 
       {/* ── Quick links ─────────────────────────────────── */}
       <section className="rounded-[2rem] border border-[rgba(23,57,69,0.12)] bg-[rgba(255,255,255,0.82)] p-6 shadow-[0_18px_40px_rgba(18,32,41,0.06)]">

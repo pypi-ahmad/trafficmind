@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import { reviewViolation } from "@/app/cases/actions";
 import type { ReviewActionState } from "@/app/cases/actions";
 
 const INITIAL: ReviewActionState = { ok: false, error: null, violationId: null };
+const STORAGE_KEY = "trafficmind:reviewer-name";
 
 const btnBase =
   "rounded-full px-3 py-1 text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
@@ -15,7 +16,30 @@ const dismissBtn = `${btnBase} border border-[rgba(240,90,79,0.20)] text-[var(--
 export function ViolationActions({ violationId, currentStatus }: { violationId: string; currentStatus: string }) {
   const [expanded, setExpanded] = useState(false);
   const [selectedAction, setSelectedAction] = useState<"approve" | "reject" | null>(null);
+  const [confirmingDismiss, setConfirmingDismiss] = useState(false);
   const [state, formAction, pending] = useActionState(reviewViolation, INITIAL);
+  const [savedName, setSavedName] = useState("");
+  const actorRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  /* Load persisted reviewer name on mount */
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) setSavedName(stored);
+    } catch { /* localStorage unavailable */ }
+  }, []);
+
+  /* Persist reviewer name on successful review */
+  useEffect(() => {
+    if (state.ok && state.violationId === violationId && actorRef.current) {
+      const name = actorRef.current.value.trim();
+      if (name) {
+        try { localStorage.setItem(STORAGE_KEY, name); } catch { /* ignore */ }
+        setSavedName(name);
+      }
+    }
+  }, [state.ok, state.violationId, violationId]);
 
   const justReviewed = state.ok && state.violationId === violationId;
   const failed = !state.ok && state.error && state.violationId === violationId;
@@ -58,7 +82,7 @@ export function ViolationActions({ violationId, currentStatus }: { violationId: 
 
   /* Expanded: show review form */
   return (
-    <form action={formAction} className="mt-2 rounded-[1.25rem] border border-[rgba(23,57,69,0.10)] bg-[rgba(246,240,229,0.60)] p-3">
+    <form ref={formRef} action={formAction} className="mt-2 rounded-[1.25rem] border border-[rgba(23,57,69,0.10)] bg-[rgba(246,240,229,0.60)] p-3">
       <input type="hidden" name="violationId" value={violationId} />
       <input type="hidden" name="action" value={selectedAction ?? ""} />
 
@@ -73,12 +97,14 @@ export function ViolationActions({ violationId, currentStatus }: { violationId: 
 
       <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_2fr_auto]">
         <input
+          ref={actorRef}
           name="actor"
           type="text"
           placeholder="Your name"
           required
           minLength={1}
           maxLength={120}
+          defaultValue={savedName}
           className="rounded-lg border border-[rgba(23,57,69,0.14)] bg-white px-3 py-1.5 text-xs text-[var(--color-ink)] placeholder:text-[rgba(19,32,41,0.36)] focus:border-[rgba(23,57,69,0.32)] focus:outline-none"
         />
         <input
@@ -88,14 +114,47 @@ export function ViolationActions({ violationId, currentStatus }: { violationId: 
           maxLength={500}
           className="rounded-lg border border-[rgba(23,57,69,0.14)] bg-white px-3 py-1.5 text-xs text-[var(--color-ink)] placeholder:text-[rgba(19,32,41,0.36)] focus:border-[rgba(23,57,69,0.32)] focus:outline-none"
         />
-        <button
-          type="submit"
-          disabled={pending}
-          className={selectedAction === "approve" ? confirmBtn : dismissBtn}
-        >
-          {pending ? "Submitting…" : selectedAction === "approve" ? "Confirm" : "Dismiss"}
-        </button>
+        {selectedAction === "approve" ? (
+          <button
+            type="submit"
+            disabled={pending}
+            className={confirmBtn}
+          >
+            {pending ? "Submitting…" : "Confirm"}
+          </button>
+        ) : !confirmingDismiss ? (
+          <button
+            type="button"
+            onClick={() => {
+              if (formRef.current?.reportValidity()) setConfirmingDismiss(true);
+            }}
+            className={dismissBtn}
+          >
+            Dismiss
+          </button>
+        ) : (
+          <button
+            type="submit"
+            disabled={pending}
+            className={dismissBtn}
+          >
+            {pending ? "Submitting…" : "Yes, dismiss"}
+          </button>
+        )}
       </div>
+
+      {confirmingDismiss && !pending ? (
+        <p className="mt-2 flex items-center gap-2 text-xs text-[var(--color-danger)]">
+          This will permanently dismiss this violation.
+          <button
+            type="button"
+            onClick={() => setConfirmingDismiss(false)}
+            className="font-medium text-[rgba(19,32,41,0.56)] hover:text-[var(--color-ink)]"
+          >
+            Cancel
+          </button>
+        </p>
+      ) : null}
 
       {failed ? (
         <p className="mt-2 text-xs text-[var(--color-danger)]">{state.error}</p>

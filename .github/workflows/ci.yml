@@ -66,11 +66,24 @@ jobs:
 
       - name: Test — pytest backend suite
         run: |
+          set -o pipefail
           python -m pytest tests/ -q --tb=short \
             -m "not integration" \
             -k "not test_demo_seed_surfaces_in_camera_and_observability_apis" \
-            2>&1 | while IFS= read -r line; do echo "::warning::$line"; done
-          exit "${PIPESTATUS[0]}"
+            2>&1 | tee /tmp/pytest_output.txt
+        shell: bash
+
+      - name: Upload pytest log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-output
+          path: /tmp/pytest_output.txt
+
+      - name: Emit failure lines as annotations
+        if: failure()
+        run: |
+          grep -E "^FAILED|^ERROR|^  [A-Z]" /tmp/pytest_output.txt | head -40 | while IFS= read -r line; do echo "::error::$line"; done || true
         shell: bash
 
   frontend:

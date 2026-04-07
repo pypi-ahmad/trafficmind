@@ -6,6 +6,12 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
+from services.flow.schemas import (
+    CongestionLevel,
+    LaneAnalytics,
+    LaneOccupancyMetrics,
+    LaneQueueMetrics,
+)
 from services.hotspot import (
     aggregate_hotspots,
     compute_trend,
@@ -19,8 +25,6 @@ from services.hotspot.schemas import (
     HotspotSourceKind,
     TimeGranularity,
 )
-from services.flow.schemas import CongestionLevel, LaneAnalytics, LaneOccupancyMetrics, LaneQueueMetrics
-
 
 T0 = datetime(2026, 4, 1, 0, 0, 0, tzinfo=timezone.utc)
 T7 = T0 + timedelta(days=7)

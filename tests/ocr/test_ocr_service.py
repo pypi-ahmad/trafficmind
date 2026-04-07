@@ -14,7 +14,6 @@ from apps.api.app.db.base import Base
 from apps.api.app.db.enums import CameraStatus, PlateReadStatus, WatchlistReason
 from apps.api.app.db.models import Camera, WatchlistAlert
 from services.anpr.watchlist import create_watchlist_entry
-
 from services.ocr.config import OcrSettings
 from services.ocr.interface import OcrEngine, OcrEngineRegistry
 from services.ocr.normalizer import normalize_plate_text, register_country_formatter
@@ -22,7 +21,6 @@ from services.ocr.persistence import plate_result_to_orm_kwargs, save_plate_read
 from services.ocr.pipeline import read_plate, run_ocr
 from services.ocr.schemas import OcrContext, OcrDomain, OcrResult, PlateOcrResult
 from services.vision.schemas import BBox
-
 
 # ---------------------------------------------------------------------------
 # Stub engine for unit tests (no PaddleOCR dependency)

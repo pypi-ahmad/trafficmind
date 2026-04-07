@@ -8,8 +8,8 @@ from datetime import datetime, timedelta, timezone
 from services.rules.config import RulesSettings
 from services.rules.engine import RulesEngine
 from services.rules.schemas import (
-    LineGeometry,
     LineCrossingRuleConfig,
+    LineGeometry,
     PolygonGeometry,
     RedLightRuleConfig,
     SceneContext,

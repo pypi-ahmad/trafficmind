@@ -23,7 +23,6 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime, timedelta
-from typing import Any
 
 import numpy as np
 import pytest
@@ -43,7 +42,6 @@ from services.rules.schemas import (
     RedLightRuleConfig,
     RuleType,
     StopLineCrossingRuleConfig,
-    ViolationRecord,
     ZoneConfig,
 )
 from services.streams.pipeline import FramePipeline, FrameResult

@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+import uuid
 from datetime import date, datetime, timezone
 from enum import StrEnum
 from typing import Any, Literal, TypeAlias
-
-import uuid
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
 

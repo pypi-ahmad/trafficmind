@@ -3,19 +3,26 @@
 from __future__ import annotations
 
 import abc
+import uuid
 from collections import defaultdict
 from datetime import datetime, time, timedelta, timezone
 from typing import Any
-
-import uuid
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import selectinload
 
 from apps.api.app.db.enums import EvidenceSubjectKind, ViolationStatus, WatchlistAlertStatus
-from packages.shared_types.enums import WorkflowStatus, WorkflowType
-from apps.api.app.db.models import Camera, DetectionEvent, EvidenceManifest, PlateRead, ViolationEvent, WatchlistAlert, WorkflowRun, Zone
+from apps.api.app.db.models import (
+    Camera,
+    DetectionEvent,
+    EvidenceManifest,
+    PlateRead,
+    ViolationEvent,
+    WatchlistAlert,
+    WorkflowRun,
+    Zone,
+)
 from apps.workflow.app.workflows.schemas import (
     CameraDailySummary,
     CameraHealthConcern,
@@ -36,14 +43,15 @@ from apps.workflow.app.workflows.schemas import (
     OperatorAssistEventHit,
     OperatorAssistGrounding,
     OperatorAssistIntent,
-    OperatorAssistPlateHit,
     OperatorAssistPlan,
+    OperatorAssistPlateHit,
     OperatorAssistReference,
     OperatorAssistReferenceKind,
     OperatorAssistRequest,
     OperatorAssistViolationHit,
     PriorReviewRecord,
     RepeatedIncidentSummary,
+    ReviewBacklog,
     ReviewContext,
     StoredCameraRecord,
     StoredDetectionEventRecord,
@@ -55,12 +63,16 @@ from apps.workflow.app.workflows.schemas import (
     WatchlistSection,
     WeeklySummaryContext,
     WeeklySummaryRequest,
-    ReviewBacklog,
     WorkflowName,
 )
+from packages.shared_types.enums import WorkflowStatus, WorkflowType
 from services.anpr.search import search_plates
-from services.evidence.schemas import EvidenceAssetKind, EvidenceManifestDocument, EvidenceStorageState
 from services.events.search import search_detection_events
+from services.evidence.schemas import (
+    EvidenceAssetKind,
+    EvidenceManifestDocument,
+    EvidenceStorageState,
+)
 from services.violations.search import search_violation_events
 
 

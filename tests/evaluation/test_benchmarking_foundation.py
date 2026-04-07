@@ -5,9 +5,8 @@ from pathlib import Path
 import pytest
 
 from services.evaluation.__main__ import main
-from services.evaluation.schemas import BenchmarkReportArtifact
 from services.evaluation.metrics import evaluate_fixture_suite
-from services.evaluation.schemas import BenchmarkFixtureSuite
+from services.evaluation.schemas import BenchmarkFixtureSuite, BenchmarkReportArtifact
 
 FIXTURE_PATH = Path(__file__).resolve().parent.parent / "fixtures" / "evaluation" / "benchmark_suite.json"
 

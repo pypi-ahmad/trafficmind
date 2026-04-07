@@ -7,11 +7,11 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
 from apps.api.app.db.enums import ViolationSeverity, ViolationType, ZoneType
-from packages.shared_types.enums import (  # noqa: F401 — re-exported
+from packages.shared_types.enums import (
     RuleType,
     ViolationLifecycleStage,
 )
-from packages.shared_types.events import (  # noqa: F401 — re-exported
+from packages.shared_types.events import (
     Explanation,
     PreViolationRecord,
     RuleEvaluationResult,

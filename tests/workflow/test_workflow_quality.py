@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
 import uuid
+from datetime import date, datetime, timezone
 
 import pytest
 
@@ -9,7 +9,6 @@ from apps.workflow.app.workflows.providers import HeuristicWorkflowProvider
 from apps.workflow.app.workflows.quality import evaluate_report_output
 from apps.workflow.app.workflows.schemas import (
     CameraDailySummary,
-    CameraHealthConcern,
     DailySummaryContext,
     DailySummaryOutput,
     HotspotEntry,
@@ -19,7 +18,6 @@ from apps.workflow.app.workflows.schemas import (
     ReviewBacklog,
     WatchlistSection,
     WeeklySummaryContext,
-    WeeklySummaryOutput,
 )
 
 NOW = datetime(2026, 4, 5, 12, 0, tzinfo=timezone.utc)

@@ -20,7 +20,14 @@ from apps.api.app.db.enums import (
     ZoneStatus,
     ZoneType,
 )
-from apps.api.app.db.models import Camera, CameraStream, DetectionEvent, PlateRead, ViolationEvent, Zone
+from apps.api.app.db.models import (
+    Camera,
+    CameraStream,
+    DetectionEvent,
+    PlateRead,
+    ViolationEvent,
+    Zone,
+)
 from services.ocr.normalizer import normalize_plate_text
 
 FIXTURES_ROOT = Path(__file__).resolve().parent

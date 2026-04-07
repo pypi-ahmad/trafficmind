@@ -9,8 +9,8 @@ from typing import Any
 from apps.api.app.db.enums import DetectionEventType
 from services.model_registry import (
     ModelRegistryService,
-    build_model_registry_provenance_snapshot,
     build_detector_registry_spec,
+    build_model_registry_provenance_snapshot,
     build_tracking_registry_spec,
 )
 from services.vision.schemas import Detection

@@ -19,7 +19,6 @@ from services.dwell.schemas import (
 )
 from services.tracking.schemas import TrackedObject, TrajectoryPoint
 
-
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------

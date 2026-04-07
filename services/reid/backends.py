@@ -149,7 +149,7 @@ class InMemorySimilarityIndex(SimilarityIndex):
 class _IndexEntry:
     """Internal bookkeeping for an indexed sighting."""
 
-    __slots__ = ("sighting_id", "camera_id", "subject_type", "entity_id", "vector")
+    __slots__ = ("camera_id", "entity_id", "sighting_id", "subject_type", "vector")
 
     def __init__(
         self,

@@ -22,10 +22,17 @@ from apps.api.app.db.enums import (
     ZoneStatus,
     ZoneType,
 )
-from apps.api.app.db.models import Camera, DetectionEvent, PlateRead, ViolationEvent, WatchlistAlert, WatchlistEntry, Zone
+from apps.api.app.db.models import (
+    Camera,
+    DetectionEvent,
+    PlateRead,
+    ViolationEvent,
+    WatchlistAlert,
+    WatchlistEntry,
+    Zone,
+)
 from apps.api.app.db.session import get_db_session
 from apps.api.app.main import create_app
-
 
 T0 = datetime(2026, 4, 1, 0, 0, 0, tzinfo=timezone.utc)
 T7 = T0 + timedelta(days=7)

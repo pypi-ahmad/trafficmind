@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import uuid
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
 
@@ -11,7 +10,16 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from apps.api.app.db.base import Base
-from apps.api.app.db.enums import CameraStatus, SourceType, StreamKind, StreamStatus, ViolationSeverity, ViolationType, ZoneStatus, ZoneType
+from apps.api.app.db.enums import (
+    CameraStatus,
+    SourceType,
+    StreamKind,
+    StreamStatus,
+    ViolationSeverity,
+    ViolationType,
+    ZoneStatus,
+    ZoneType,
+)
 from apps.api.app.db.models import Camera, CameraStream, ModelRegistryEntry, Zone
 from apps.api.app.db.session import get_db_session
 from apps.api.app.main import create_app

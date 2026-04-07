@@ -18,13 +18,12 @@ Run standalone::
 
 from __future__ import annotations
 
-import uuid
 from datetime import UTC, datetime, timedelta
 
 import numpy as np
 import pytest
 from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from apps.api.app.db.base import Base
 from apps.api.app.db.enums import (
@@ -35,16 +34,15 @@ from apps.api.app.db.enums import (
 from apps.api.app.db.models import Camera, CameraStream, DetectionEvent, PlateRead, ViolationEvent
 from packages.shared_types.geometry import BBox, ObjectCategory, Point2D
 from services.ocr.interface import OcrEngine
-from services.ocr.schemas import OcrContext, OcrResult, PlateOcrResult
+from services.ocr.schemas import OcrResult
 from services.rules.schemas import (
     LineCrossingRuleConfig,
     LineGeometry,
-    RuleType,
     StopLineCrossingRuleConfig,
     ZoneConfig,
 )
 from services.streams.schemas import PipelineFlags, SourceKind
-from services.streams.worker_pipeline import WorkerPipelineSummary, run_worker_pipeline
+from services.streams.worker_pipeline import run_worker_pipeline
 from services.tracking.interface import Tracker
 from services.tracking.schemas import TrackedObject, TrackingResult, TrajectoryPoint
 from services.vision.interface import Detector
@@ -294,7 +292,6 @@ class TestWorkerPipeline:
         engine = create_async_engine("sqlite+aiosqlite:///:memory:")
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
         # Run pipeline — we need to pass the same DB URL, but since it's
         # :memory: we must use the same engine.  Easiest approach: use

@@ -18,7 +18,7 @@ from apps.api.app.db.enums import (
     WatchlistEntryStatus,
     WatchlistReason,
 )
-from apps.api.app.db.models import Camera, DetectionEvent, PlateRead, WatchlistEntry
+from apps.api.app.db.models import Camera, DetectionEvent, PlateRead
 from apps.api.app.db.session import get_db_session
 from apps.api.app.main import create_app
 from services.anpr.search import get_plate_read, search_plates
@@ -31,7 +31,6 @@ from services.anpr.watchlist import (
     update_watchlist_entry,
 )
 from services.ocr.normalizer import normalize_plate_text
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

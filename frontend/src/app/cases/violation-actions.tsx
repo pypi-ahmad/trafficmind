@@ -18,17 +18,12 @@ export function ViolationActions({ violationId, currentStatus }: { violationId: 
   const [selectedAction, setSelectedAction] = useState<"approve" | "reject" | null>(null);
   const [confirmingDismiss, setConfirmingDismiss] = useState(false);
   const [state, formAction, pending] = useActionState(reviewViolation, INITIAL);
-  const [savedName, setSavedName] = useState("");
+  const [savedName, setSavedName] = useState(() => {
+    if (typeof window === "undefined") return "";
+    try { return localStorage.getItem(STORAGE_KEY) ?? ""; } catch { return ""; }
+  });
   const actorRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
-
-  /* Load persisted reviewer name on mount */
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setSavedName(stored);
-    } catch { /* localStorage unavailable */ }
-  }, []);
 
   /* Persist reviewer name on successful review */
   useEffect(() => {

@@ -2,13 +2,18 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
-
 import uuid
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from apps.api.app.db.enums import DetectionEventType, PlateReadStatus, ViolationStatus, ViolationType, ZoneType
+from apps.api.app.db.enums import (
+    DetectionEventType,
+    PlateReadStatus,
+    ViolationStatus,
+    ViolationType,
+    ZoneType,
+)
 from apps.workflow.app.workflows.operator_assist import plan_operator_assist_request
 from apps.workflow.app.workflows.schemas import (
     OperatorAssistIntent,

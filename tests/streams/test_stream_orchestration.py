@@ -36,7 +36,6 @@ from services.streams.startup import build_stream_startup_report
 from services.streams.worker import StreamWorker
 from services.vision.config import VisionSettings
 
-
 # ═══════════════════════════════════════════════════════════════════════════
 # Schema / state-machine tests
 # ═══════════════════════════════════════════════════════════════════════════
@@ -572,7 +571,7 @@ class TestStreamOrchestrator:
             source_config={"max_frames": 3},
             pipeline=PipelineFlags(detection=False, tracking=False),
         )
-        state = await orch.start_job(req)
+        await orch.start_job(req)
         jobs = orch.list_jobs(include_finished=False)
         assert len(jobs) >= 1
         await orch.stop_all()

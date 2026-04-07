@@ -7,7 +7,6 @@ from collections.abc import Sequence
 from services.flow.schemas import CongestionLevel, LaneAnalytics
 from services.hotspot.schemas import EventRecord, HotspotSourceKind
 
-
 _DEFAULT_INCLUDED_LEVELS = {
     CongestionLevel.HEAVY,
     CongestionLevel.QUEUED,

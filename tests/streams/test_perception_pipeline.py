@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import uuid
+from datetime import datetime, timezone
 
 import numpy as np
 import pytest
@@ -14,13 +14,12 @@ from services.streams.events import (
 from services.streams.pipeline import FramePipeline, FrameResult
 from services.streams.schemas import JobSpec, PipelineFlags, SourceKind
 from services.streams.worker import StreamWorker
-from services.tracking.config import TrackingSettings
 from services.tracking.interface import Tracker
 from services.tracking.schemas import (
     Point2D,
-    TrackLifecycleStatus,
     TrackedObject,
     TrackingResult,
+    TrackLifecycleStatus,
     TrajectoryPoint,
 )
 from services.vision.config import VisionSettings

@@ -18,7 +18,6 @@ Algorithm per frame:
 
 from __future__ import annotations
 
-
 import numpy as np
 
 from services.tracking.config import TrackingSettings

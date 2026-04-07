@@ -8,7 +8,7 @@ import json
 import os
 import uuid
 from collections.abc import AsyncIterator
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Any
 from unittest.mock import AsyncMock, patch
 
@@ -21,9 +21,6 @@ from apps.api.app.db.enums import (
     AlertDeliveryState,
     AlertRoutingChannel,
     CameraStatus,
-    OperationalAlertSeverity,
-    OperationalAlertSourceKind,
-    OperationalAlertStatus,
     PlateReadStatus,
     SourceType,
     StreamKind,
@@ -50,7 +47,6 @@ from apps.api.app.services.delivery import (
     WebhookDeliveryAdapter,
     build_default_dispatcher,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers: fake AlertDeliveryAttempt-like objects for unit tests

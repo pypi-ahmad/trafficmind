@@ -2,15 +2,14 @@
 
 from __future__ import annotations
 
+import uuid
 from datetime import datetime, timezone
 from enum import StrEnum
 from typing import Any
 
-import uuid
-
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from packages.shared_types.enums import SourceKind  # noqa: F401 — re-exported
+from packages.shared_types.enums import SourceKind
 
 
 class JobStatus(StrEnum):

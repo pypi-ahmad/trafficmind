@@ -8,9 +8,9 @@ workflow stays grounded in stored platform data.
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
 import re
 import uuid
+from datetime import datetime, timedelta, timezone
 
 from apps.api.app.db.enums import (
     DetectionEventStatus,
@@ -26,7 +26,6 @@ from apps.workflow.app.workflows.schemas import (
     OperatorAssistRequest,
 )
 from services.ocr.normalizer import normalize_plate_text
-
 
 _UUID_RE = re.compile(
     r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b"

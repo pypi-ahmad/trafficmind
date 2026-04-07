@@ -24,12 +24,10 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-
 # ---------------------------------------------------------------------------
 # Enums (canonical source in packages.shared_types.enums; re-exported here)
 # ---------------------------------------------------------------------------
-
-from packages.shared_types.enums import ReIdMatchStatus, ReIdSubjectType  # noqa: F401
+from packages.shared_types.enums import ReIdMatchStatus, ReIdSubjectType
 
 
 class ReIdConfidenceBand(StrEnum):

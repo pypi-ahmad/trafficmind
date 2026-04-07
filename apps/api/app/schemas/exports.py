@@ -17,7 +17,6 @@ from apps.api.app.db.enums import (
 from apps.api.app.schemas.domain import ORMSchema
 from services.evidence.schemas import EvidenceAccessRole, EvidenceAssetView
 
-
 # ---------------------------------------------------------------------------
 # Request schemas
 # ---------------------------------------------------------------------------

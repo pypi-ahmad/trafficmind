@@ -8,7 +8,11 @@ from sqlalchemy.exc import IntegrityError
 from apps.api.app.db.enums import ReIdMatchStatus, ReIdSubjectType
 from apps.api.app.db.models import ReIdMatch, ReIdSighting
 from services.reid.linking import canonical_pair_key
-from tests.fixtures.sample_data import make_sqlite_session_factory, seed_camera, seed_detection_event
+from tests.fixtures.sample_data import (
+    make_sqlite_session_factory,
+    seed_camera,
+    seed_detection_event,
+)
 
 
 def _bbox() -> dict[str, float]:

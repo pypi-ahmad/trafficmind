@@ -7,18 +7,17 @@ from services.rules.engine import RulesEngine
 from services.rules.schemas import (
     LineGeometry,
     PedestrianOnRedRuleConfig,
+    PolygonGeometry,
     RedLightRuleConfig,
     RuleType,
     SceneContext,
     SceneSignalState,
     TrafficLightState,
     ZoneConfig,
-    PolygonGeometry,
 )
 from services.signals.schemas import SignalPhase
 from services.tracking.schemas import Point2D, TrackedObject, TrackingResult, TrajectoryPoint
 from services.vision.schemas import BBox, ObjectCategory
-
 from tests.fixtures.sample_data import load_json_fixture
 
 NOW = datetime(2026, 4, 5, 12, 0, 0, tzinfo=timezone.utc)

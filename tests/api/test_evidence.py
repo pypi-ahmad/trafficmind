@@ -23,11 +23,23 @@ from apps.api.app.db.enums import (
     ZoneStatus,
     ZoneType,
 )
-from apps.api.app.db.models import Camera, CameraStream, DetectionEvent, PlateRead, ViolationEvent, Zone
+from apps.api.app.db.models import (
+    Camera,
+    CameraStream,
+    DetectionEvent,
+    PlateRead,
+    ViolationEvent,
+    Zone,
+)
 from apps.api.app.db.session import get_db_session
 from apps.api.app.main import create_app
 from services.access_control.policy import AccessDeniedError
-from services.evidence.schemas import EvidenceAccessRole, EvidenceAssetKind, EvidenceAssetView, EvidenceStorageState
+from services.evidence.schemas import (
+    EvidenceAccessRole,
+    EvidenceAssetKind,
+    EvidenceAssetView,
+    EvidenceStorageState,
+)
 from services.evidence.service import (
     build_violation_evidence_manifest,
     get_violation_evidence_manifest,

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import uuid
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
-import uuid
 
 import pytest
 from httpx import ASGITransport, AsyncClient

@@ -1,9 +1,8 @@
 from __future__ import annotations
 
+import uuid
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
-
-import uuid
 
 import pytest
 from fastapi.testclient import TestClient
@@ -36,8 +35,8 @@ from apps.api.app.db.models import (
 )
 from apps.workflow.app.core.config import Settings
 from apps.workflow.app.main import create_app
-from apps.workflow.app.workflows.repository import SqlAlchemyWorkflowRepository, WorkflowRepository
 from apps.workflow.app.workflows.operator_assist import plan_operator_assist_request
+from apps.workflow.app.workflows.repository import SqlAlchemyWorkflowRepository, WorkflowRepository
 from apps.workflow.app.workflows.schemas import (
     CameraDailySummary,
     CameraHealthConcern,
@@ -58,9 +57,8 @@ from apps.workflow.app.workflows.schemas import (
     OperatorAssistEventHit,
     OperatorAssistGrounding,
     OperatorAssistIntent,
-    OperatorAssistOutput,
-    OperatorAssistPlateHit,
     OperatorAssistPlan,
+    OperatorAssistPlateHit,
     OperatorAssistReference,
     OperatorAssistReferenceKind,
     OperatorAssistRequest,
@@ -2447,7 +2445,7 @@ def test_workflow_app_has_no_hot_path_imports() -> None:
     }
 
     workflow_modules: list[str] = []
-    for importer, modname, ispkg in pkgutil.walk_packages(
+    for _, modname, _ in pkgutil.walk_packages(
         workflow_pkg.__path__,
         prefix="apps.workflow.app.",
     ):

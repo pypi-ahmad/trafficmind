@@ -6,7 +6,6 @@ import pytest
 
 from services.anpr.search import search_plates
 from services.ocr.normalizer import normalize_plate_text
-
 from tests.fixtures.sample_data import (
     load_json_fixture,
     make_sqlite_session_factory,

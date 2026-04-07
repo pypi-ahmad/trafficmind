@@ -8,8 +8,11 @@ rewrites source records.
 
 from __future__ import annotations
 
-from apps.workflow.app.workflows.schemas import MultimodalReviewContext, MultimodalReviewGrounding, PriorReviewRecord
-
+from apps.workflow.app.workflows.schemas import (
+    MultimodalReviewContext,
+    MultimodalReviewGrounding,
+    PriorReviewRecord,
+)
 
 MULTIMODAL_REVIEW_BOUNDARY_NOTE = (
     "This workflow is advisory only; deterministic violation logic and stored source records remain the system of record."

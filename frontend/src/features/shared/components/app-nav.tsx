@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 const primaryItems = [
   { href: "/", label: "Dashboard", match: (p: string) => p === "/" },
@@ -22,8 +22,9 @@ export function AppNav() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  /* Close drawer on route change */
-  useEffect(() => {
+  /* Close drawer on route change — intentional state sync to navigation. */
+  useLayoutEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileOpen(false);
   }, [pathname]);
 

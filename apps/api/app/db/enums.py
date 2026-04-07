@@ -9,7 +9,7 @@ from enum import StrEnum
 # deterministic service layer never has to depend on apps.api.*.
 # Re-exported here for full backward compatibility with existing consumers.
 # ---------------------------------------------------------------------------
-from packages.shared_types.enums import (  # noqa: F401
+from packages.shared_types.enums import (  # noqa: F401 — re-exported for consumers that import from apps.api.app.db.enums
     DetectionEventStatus,
     DetectionEventType,
     ReIdMatchStatus,

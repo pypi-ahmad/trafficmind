@@ -10,15 +10,14 @@ from typing import Any
 from sqlalchemy import Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from services.access_control.policy import AccessPermission, require_permissions, resolve_access_context
-from services.model_registry import (
-    ModelRegistryService,
-    build_evidence_registry_spec,
-    build_model_registry_provenance_snapshot,
-)
 
 from apps.api.app.db.enums import EvidenceSubjectKind
 from apps.api.app.db.models import DetectionEvent, EvidenceManifest, PlateRead, ViolationEvent
+from services.access_control.policy import (
+    AccessPermission,
+    require_permissions,
+    resolve_access_context,
+)
 from services.evidence.privacy import (
     mask_plate_text,
     resolve_access_resolution,
@@ -42,6 +41,11 @@ from services.evidence.schemas import (
     EvidenceSubjectRef,
     EvidenceTimeline,
     EvidenceTimelineFrame,
+)
+from services.model_registry import (
+    ModelRegistryService,
+    build_evidence_registry_spec,
+    build_model_registry_provenance_snapshot,
 )
 
 _SAFE_PATH_SEGMENT = re.compile(r"[^a-z0-9_-]+")

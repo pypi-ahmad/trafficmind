@@ -1,1 +1,0 @@
-"""TrafficMind shared configuration contracts."""

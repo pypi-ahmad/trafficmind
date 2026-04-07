@@ -15,7 +15,6 @@ from typing import Any
 import uuid
 
 from services.streams.config import StreamSettings, get_stream_settings
-from services.streams.pipeline import FrameResult
 from services.streams.schemas import (
     JobListResponse,
     JobResponse,

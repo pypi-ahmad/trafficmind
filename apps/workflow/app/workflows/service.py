@@ -24,7 +24,7 @@ from apps.workflow.app.workflows.graphs import (
     build_weekly_summary_graph,
 )
 from apps.workflow.app.workflows.providers import WorkflowReasoningProvider, build_reasoning_provider
-from apps.workflow.app.workflows.repository import RecordNotFoundError, WorkflowRepository
+from apps.workflow.app.workflows.repository import WorkflowRepository
 from apps.workflow.app.workflows.schemas import (
     DailySummaryOutput,
     DailySummaryRequest,

@@ -17,7 +17,7 @@ from packages.shared_types.events import (  # noqa: F401 — re-exported
     RuleEvaluationResult,
     ViolationRecord,
 )
-from packages.shared_types.geometry import LineSegment, ObjectCategory, Point2D, PolygonZone
+from packages.shared_types.geometry import LineSegment, ObjectCategory, PolygonZone
 from packages.shared_types.scene import (
     SceneContext,
     SceneSignalState,

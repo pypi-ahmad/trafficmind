@@ -14,12 +14,10 @@ from datetime import datetime
 from services.dwell.schemas import (
     DwellAnalysis,
     DwellOutcome,
-    DwellScenario,
     DwellThresholds,
     StationarityAssessment,
 )
 from services.tracking.schemas import TrackedObject, TrajectoryPoint
-from services.vision.schemas import ObjectCategory
 
 
 # ---------------------------------------------------------------------------

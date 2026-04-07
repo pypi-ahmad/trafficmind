@@ -12,7 +12,6 @@ from apps.api.app.db.enums import (
     CameraStatus,
     DetectionEventStatus,
     DetectionEventType,
-    ModelRegistryTaskType,
     PlateReadStatus,
     SourceType,
     StreamKind,

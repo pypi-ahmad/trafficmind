@@ -103,11 +103,6 @@ export interface CameraListResponse {
   total: number;
 }
 
-export interface PlaceholderApiResponse {
-  resource: string;
-  detail: string;
-}
-
 // ---------------------------------------------------------------------------
 // Real event / violation feed response types
 // ---------------------------------------------------------------------------

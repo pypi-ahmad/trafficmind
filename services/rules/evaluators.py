@@ -17,7 +17,6 @@ from services.dwell.analyzer import analyze_dwell
 from services.dwell.schemas import DwellOutcome, DwellScenario, DwellThresholds
 from services.tracking.schemas import (
     CardinalDirection,
-    LineCrossingCheck,
     LineSegment,
     Point2D,
     PolygonZone,

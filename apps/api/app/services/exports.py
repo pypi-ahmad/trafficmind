@@ -40,7 +40,6 @@ from services.evidence.privacy import mask_plate_text, resolve_access_resolution
 from services.evidence.schemas import (
     EvidenceAccessResolution,
     EvidenceAccessRole,
-    EvidenceAssetKind,
     EvidenceAssetView,
     EvidenceManifestDocument,
     EvidencePrivacyPolicy,

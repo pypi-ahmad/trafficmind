@@ -34,21 +34,17 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
 
-import numpy as np
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from apps.api.app.db.base import Base
 from apps.api.app.db.enums import CameraStatus, SourceType, StreamKind, StreamStatus
 from apps.api.app.db.models import Camera, CameraStream
-from services.ocr.interface import OcrEngine
 from services.rules.schemas import ZoneConfig
 from services.signals.schemas import SignalHeadConfig
-from services.streams.frame_source import FrameSource, create_frame_source
+from services.streams.frame_source import create_frame_source
 from services.streams.persist import PersistenceSummary, persist_frame_result
-from services.streams.pipeline import FramePipeline, FrameResult
+from services.streams.pipeline import FramePipeline
 from services.streams.schemas import PipelineFlags, SourceKind
-from services.tracking.interface import Tracker
-from services.vision.interface import Detector
 
 logger = logging.getLogger(__name__)
 
@@ -409,7 +405,6 @@ def _build_parser():
 
 
 async def _cli_main() -> int:
-    import asyncio
 
     parser = _build_parser()
     args = parser.parse_args()
